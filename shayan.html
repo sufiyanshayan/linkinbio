@@ -1,763 +1,400 @@
 <!DOCTYPE html>
 <html lang="bn">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Link in Bio | My Links</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Supabase লগইন সিস্টেম</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
 
-<!-- Google Font -->
-<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+Bengali:wght@400;700&display=swap" rel="stylesheet">
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
 
-<!-- Supabase SDK -->
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+        /* লগইন ফর্ম স্টাইল */
+        .login-container {
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.2);
+            padding: 40px;
+            width: 400px;
+            max-width: 100%;
+            animation: fadeIn 0.5s ease-in;
+        }
 
-<!-- CryptoJS for Password Hashing -->
-<script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.2.0/crypto-js.min.js"></script>
+        /* ড্যাশবোর্ড স্টাইল */
+        .dashboard-container {
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.2);
+            width: 600px;
+            max-width: 100%;
+            animation: fadeIn 0.5s ease-in;
+        }
 
-<style>
-* {
-  box-sizing: border-box;
-}
+        .dashboard-header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 20px;
+            border-radius: 10px 10px 0 0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+        }
 
-html, body {
-  margin: 0;
-  padding: 0;
-  min-height: 100%;
-  font-family: "Noto Serif Bengali", serif;
-  background: #f7f7f7;
-  overflow-x: hidden;
-}
+        .dashboard-content {
+            padding: 30px;
+        }
 
-.wrapper {
-  min-height: 100vh;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  flex-direction: column;
-  padding: 20px 0;
-}
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
 
-.container {
-  width: 100%;
-  max-width: 400px;
-  padding: 16px;
-  text-align: center;
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-}
+        h2 {
+            text-align: center;
+            margin-bottom: 10px;
+            color: #333;
+            font-size: 28px;
+        }
 
-/* Profile Picture */
-.profile img {
-  width: 100px;
-  height: 100px;
-  border-radius: 50%;
-  border: 2px solid #000;
-  object-fit: cover;
-  margin-bottom: 12px;
-  box-shadow: 0 0 0 4px #fff, 0 0 14px rgba(0,0,0,0.35);
-}
+        .subtitle {
+            text-align: center;
+            color: #666;
+            margin-bottom: 30px;
+            font-size: 14px;
+        }
 
-/* Name */
-.name {
-  font-size: 22px;
-  font-weight: 700;
-  margin-bottom: 4px;
-}
+        .input-group {
+            margin-bottom: 20px;
+        }
 
-/* Title */
-.title {
-  font-size: 14px;
-  color: #555;
-  margin-bottom: 8px;
-}
+        .input-group label {
+            display: block;
+            margin-bottom: 8px;
+            color: #555;
+            font-weight: 500;
+        }
 
-/* Buttons */
-.btn {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 12px;
-  padding: 14px 12px;
-  border-radius: 14px;
-  text-decoration: none;
-  background: #ffffff;
-  color: #000;
-  font-size: 15px;
-  font-weight: 500;
-  box-shadow: 0 4px 12px rgba(0,0,0,0.08);
-  transition: all 0.2s ease;
-  border: 1px solid rgba(0,0,0,0.05);
-}
+        .input-group input {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e0e0e0;
+            border-radius: 6px;
+            font-size: 16px;
+            transition: all 0.3s;
+        }
 
-.btn img {
-  width: 20px;
-  height: 20px;
-  object-fit: contain;
-}
+        .input-group input:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
 
-.btn:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 6px 18px rgba(0,0,0,0.12);
-}
+        button {
+            width: 100%;
+            padding: 12px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 6px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
 
-/* Admin Button */
-.admin-fab {
-  position: fixed;
-  bottom: 25px;
-  right: 25px;
-  width: 55px;
-  height: 55px;
-  border-radius: 50%;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  color: white;
-  border: none;
-  font-size: 24px;
-  cursor: pointer;
-  box-shadow: 0 4px 15px rgba(0,0,0,0.2);
-  transition: all 0.3s ease;
-  z-index: 1000;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+        }
 
-.admin-fab:hover {
-  transform: scale(1.1);
-  box-shadow: 0 6px 20px rgba(0,0,0,0.3);
-}
+        button:active {
+            transform: translateY(0);
+        }
 
-/* Modal */
-.modal {
-  display: none;
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background: rgba(0,0,0,0.85);
-  z-index: 2000;
-  align-items: center;
-  justify-content: center;
-}
+        .logout-btn {
+            background: linear-gradient(135deg, #f56565 0%, #ed64a6 100%);
+            width: auto;
+            padding: 8px 20px;
+        }
 
-.modal-content {
-  background: white;
-  border-radius: 24px;
-  padding: 28px;
-  max-width: 500px;
-  width: 90%;
-  max-height: 85vh;
-  overflow-y: auto;
-}
+        .message {
+            margin-top: 20px;
+            padding: 12px;
+            border-radius: 6px;
+            text-align: center;
+            display: none;
+            font-size: 14px;
+        }
 
-.modal-header {
-  font-size: 24px;
-  font-weight: bold;
-  margin-bottom: 20px;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-}
+        .message.error {
+            background: #fee;
+            color: #c33;
+            border: 1px solid #fcc;
+            display: block;
+            animation: shake 0.5s;
+        }
 
-.close-btn {
-  background: none;
-  border: none;
-  font-size: 28px;
-  cursor: pointer;
-  color: #999;
-  padding: 0 8px;
-}
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-10px); }
+            75% { transform: translateX(10px); }
+        }
 
-.close-btn:hover {
-  color: #333;
-}
+        .message.success {
+            background: #efe;
+            color: #3c3;
+            border: 1px solid #cfc;
+            display: block;
+        }
 
-.form-group {
-  margin-bottom: 20px;
-}
+        .loading {
+            display: none;
+            text-align: center;
+            margin-top: 15px;
+            color: #667eea;
+        }
 
-.form-group label {
-  display: block;
-  margin-bottom: 8px;
-  font-weight: 600;
-  color: #333;
-  font-size: 14px;
-}
+        .loading.active {
+            display: block;
+        }
 
-.form-group input, .form-group textarea {
-  width: 100%;
-  padding: 12px;
-  border: 2px solid #e0e0e0;
-  border-radius: 12px;
-  font-size: 14px;
-  font-family: inherit;
-  transition: border-color 0.2s;
-}
+        .info {
+            margin-top: 20px;
+            text-align: center;
+            font-size: 12px;
+            color: #999;
+        }
 
-.form-group input:focus, .form-group textarea:focus {
-  outline: none;
-  border-color: #667eea;
-}
+        .user-card {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 8px;
+            margin-top: 20px;
+        }
 
-.btn-primary {
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  color: white;
-  padding: 12px 24px;
-  border: none;
-  border-radius: 12px;
-  font-size: 16px;
-  font-weight: 600;
-  cursor: pointer;
-  width: 100%;
-}
+        .user-card h3 {
+            color: #667eea;
+            margin-bottom: 15px;
+        }
 
-.btn-danger {
-  background: linear-gradient(135deg, #f56565 0%, #c53030 100%);
-}
+        .user-info {
+            background: #e8f4f8;
+            padding: 15px;
+            border-radius: 8px;
+        }
 
-.link-admin-item {
-  background: #f8f9fa;
-  border-radius: 12px;
-  padding: 15px;
-  margin-bottom: 12px;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  border: 1px solid #e9ecef;
-}
+        .user-info p {
+            margin: 8px 0;
+            color: #555;
+            word-break: break-all;
+        }
 
-.link-admin-info {
-  flex: 1;
-  text-align: left;
-}
+        .user-info strong {
+            color: #333;
+        }
 
-.link-admin-title {
-  font-weight: 600;
-  margin-bottom: 4px;
-}
+        .test-mode {
+            margin-top: 20px;
+            padding: 15px;
+            background: #fff3cd;
+            border: 1px solid #ffc107;
+            border-radius: 6px;
+            font-size: 13px;
+        }
 
-.link-admin-url {
-  font-size: 11px;
-  color: #6c757d;
-  word-break: break-all;
-}
-
-.admin-action-buttons {
-  display: flex;
-  gap: 10px;
-}
-
-.edit-link-btn, .delete-link-btn {
-  background: none;
-  border: none;
-  font-size: 20px;
-  cursor: pointer;
-  padding: 8px;
-  border-radius: 8px;
-  transition: background 0.2s;
-}
-
-.edit-link-btn:hover {
-  background: #e9ecef;
-}
-
-.delete-link-btn:hover {
-  background: #fee2e2;
-  color: #dc2626;
-}
-
-.logout-btn {
-  background: #6c757d;
-  margin-top: 15px;
-}
-
-.toast {
-  position: fixed;
-  bottom: 90px;
-  right: 20px;
-  background: #333;
-  color: white;
-  padding: 12px 20px;
-  border-radius: 10px;
-  font-size: 14px;
-  z-index: 3000;
-  animation: slideIn 0.3s ease;
-}
-
-@keyframes slideIn {
-  from {
-    transform: translateX(100%);
-    opacity: 0;
-  }
-  to {
-    transform: translateX(0);
-    opacity: 1;
-  }
-}
-
-.footer {
-  margin-top: 24px;
-  font-size: 11px;
-  color: #888;
-  text-align: center;
-}
-
-.loading-spinner {
-  text-align: center;
-  padding: 20px;
-  color: #667eea;
-}
-</style>
+        .test-mode h4 {
+            color: #856404;
+            margin-bottom: 10px;
+        }
+    </style>
 </head>
-
 <body>
+    <div id="app"></div>
 
-<div class="wrapper">
-  <div class="container" id="linksContainer">
-    <!-- Links will be loaded dynamically -->
-    <div class="loading-spinner">Loading links...</div>
-  </div>
-
-  <div class="footer">
-    Copyright © 2026 MADE BY <br> Your_Name. <br> All Rights Reserved.
-  </div>
-</div>
-
-<!-- Admin FAB Button -->
-<button class="admin-fab" id="adminFabBtn">🔒</button>
-
-<!-- Login Modal -->
-<div id="loginModal" class="modal">
-  <div class="modal-content">
-    <div class="modal-header">
-      <span>Admin Login</span>
-      <button class="close-btn" onclick="closeLoginModal()">&times;</button>
-    </div>
-    <div class="form-group">
-      <label>Username</label>
-      <input type="text" id="loginUsername" placeholder="Enter username">
-    </div>
-    <div class="form-group">
-      <label>Password</label>
-      <input type="password" id="loginPassword" placeholder="Enter password">
-    </div>
-    <button class="btn-primary" onclick="handleLogin()">Login</button>
-  </div>
-</div>
-
-<!-- Admin Panel Modal -->
-<div id="adminModal" class="modal">
-  <div class="modal-content">
-    <div class="modal-header">
-      <span>🔧 Manage Links</span>
-      <button class="close-btn" onclick="closeAdminModal()">&times;</button>
-    </div>
-    
-    <!-- Add New Link Form -->
-    <div style="margin-bottom: 25px; padding-bottom: 20px; border-bottom: 2px solid #e9ecef;">
-      <h4 style="margin-bottom: 15px;">Add New Link</h4>
-      <div class="form-group">
-        <input type="text" id="newLinkTitle" placeholder="Link Title (e.g., Facebook)">
-      </div>
-      <div class="form-group">
-        <input type="text" id="newLinkUrl" placeholder="URL (e.g., https://facebook.com/username)">
-      </div>
-      <div class="form-group">
-        <input type="text" id="newLinkIcon" placeholder="Icon URL or Emoji (optional)">
-      </div>
-      <button class="btn-primary" onclick="addNewLink()">➕ Add Link</button>
-    </div>
-    
-    <!-- Existing Links List -->
-    <h4 style="margin-bottom: 15px;">Existing Links</h4>
-    <div id="adminLinksList">
-      <!-- Links will appear here -->
-    </div>
-    
-    <button class="btn-primary logout-btn" onclick="logout()">🚪 Logout</button>
-  </div>
-</div>
-
-<!-- Edit Link Modal -->
-<div id="editModal" class="modal">
-  <div class="modal-content">
-    <div class="modal-header">
-      <span>✏️ Edit Link</span>
-      <button class="close-btn" onclick="closeEditModal()">&times;</button>
-    </div>
-    <input type="hidden" id="editLinkId">
-    <div class="form-group">
-      <label>Title</label>
-      <input type="text" id="editLinkTitle">
-    </div>
-    <div class="form-group">
-      <label>URL</label>
-      <input type="text" id="editLinkUrl">
-    </div>
-    <div class="form-group">
-      <label>Icon (Emoji or URL)</label>
-      <input type="text" id="editLinkIcon">
-    </div>
-    <button class="btn-primary" onclick="updateLink()">💾 Update Link</button>
-    <button class="btn-primary btn-danger" style="margin-top: 10px;" onclick="deleteLinkFromEdit()">🗑️ Delete Link</button>
-  </div>
-</div>
-
-<script>
-// ============ SUPABASE CONFIGURATION ============
-// ⚠️ IMPORTANT: Replace these with your actual Supabase credentials
-const SUPABASE_URL = "https://lsodigwljvsvvspvhjpn.supabase.co/rest/v1/";
-const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imxzb2RpZ3dsanZzdnZzcHZoanBuIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzkxMTk5OTUsImV4cCI6MjA5NDY5NTk5NX0.ysvkIIuOprA-ZtEoY96GpEuSqfHhMeHexpeLoN_XOho";
-
-// Initialize Supabase client
-const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-
-// Table name for links
-const LINKS_TABLE = "links";
-
-// ============ GLOBAL VARIABLES ============
-let currentUser = null;
-let allLinks = [];
-
-// ============ UTILITY FUNCTIONS ============
-function showToast(message, isError = false) {
-  const toast = document.createElement('div');
-  toast.className = 'toast';
-  toast.style.background = isError ? '#dc2626' : '#10b981';
-  toast.textContent = message;
-  document.body.appendChild(toast);
-  setTimeout(() => toast.remove(), 3000);
-}
-
-// Hash password for storage (in production, use proper bcrypt)
-function hashPassword(password) {
-  return CryptoJS.SHA256(password).toString();
-}
-
-// ============ LINK MANAGEMENT FUNCTIONS ============
-async function loadLinks() {
-  try {
-    const { data, error } = await supabase
-      .from(LINKS_TABLE)
-      .select('*')
-      .order('sort_order', { ascending: true });
-    
-    if (error) throw error;
-    
-    allLinks = data || [];
-    renderLinksToUI();
-    if (currentUser) {
-      renderAdminLinksList();
-    }
-  } catch (error) {
-    console.error('Error loading links:', error);
-    showToast('Failed to load links', true);
-  }
-}
-
-function renderLinksToUI() {
-  const container = document.getElementById('linksContainer');
-  
-  if (!allLinks.length) {
-    container.innerHTML = `
-      <div class="profile">
-        <img src="Your_Profile_Picture_Link" alt="Profile Picture">
-      </div>
-      <div class="name">Your_Name</div>
-      <div class="title">Your_Title</div>
-      <div style="text-align: center; color: #666; padding: 20px;">No links added yet</div>
-    `;
-    return;
-  }
-  
-  let html = `
-    <div class="profile">
-      <img src="Your_Profile_Picture_Link" alt="Profile Picture">
-    </div>
-    <div class="name">Your_Name</div>
-    <div class="title">Your_Title</div>
-  `;
-  
-  for (const link of allLinks) {
-    const iconHtml = link.icon && (link.icon.startsWith('http') || link.icon.startsWith('https')) 
-      ? `<img src="${link.icon}" alt="icon">` 
-      : `<span style="font-size: 20px;">${link.icon || '🔗'}</span>`;
-    
-    html += `
-      <a class="btn" href="${link.url}" target="_blank" rel="noopener noreferrer">
-        ${iconHtml}
-        ${escapeHtml(link.title)}
-      </a>
-    `;
-  }
-  
-  container.innerHTML = html;
-}
-
-function renderAdminLinksList() {
-  const container = document.getElementById('adminLinksList');
-  if (!container) return;
-  
-  if (!allLinks.length) {
-    container.innerHTML = '<div style="text-align: center; color: #999; padding: 20px;">No links found. Add your first link above!</div>';
-    return;
-  }
-  
-  let html = '';
-  for (let i = 0; i < allLinks.length; i++) {
-    const link = allLinks[i];
-    html += `
-      <div class="link-admin-item">
-        <div class="link-admin-info">
-          <div class="link-admin-title">${escapeHtml(link.title)}</div>
-          <div class="link-admin-url">${escapeHtml(link.url)}</div>
-        </div>
-        <div class="admin-action-buttons">
-          <button class="edit-link-btn" onclick="openEditModal(${link.id})">✏️</button>
-          <button class="delete-link-btn" onclick="confirmDeleteLink(${link.id})">🗑️</button>
-        </div>
-      </div>
-    `;
-  }
-  container.innerHTML = html;
-}
-
-async function addNewLink() {
-  const title = document.getElementById('newLinkTitle').value.trim();
-  const url = document.getElementById('newLinkUrl').value.trim();
-  const icon = document.getElementById('newLinkIcon').value.trim();
-  
-  if (!title || !url) {
-    showToast('Please enter both title and URL', true);
-    return;
-  }
-  
-  const newLink = {
-    title: title,
-    url: url,
-    icon: icon || '🔗',
-    sort_order: allLinks.length
-  };
-  
-  try {
-    const { data, error } = await supabase
-      .from(LINKS_TABLE)
-      .insert([newLink])
-      .select();
-    
-    if (error) throw error;
-    
-    document.getElementById('newLinkTitle').value = '';
-    document.getElementById('newLinkUrl').value = '';
-    document.getElementById('newLinkIcon').value = '';
-    
-    await loadLinks();
-    showToast('Link added successfully!');
-  } catch (error) {
-    console.error('Error adding link:', error);
-    showToast('Failed to add link', true);
-  }
-}
-
-async function updateLink() {
-  const id = parseInt(document.getElementById('editLinkId').value);
-  const title = document.getElementById('editLinkTitle').value.trim();
-  const url = document.getElementById('editLinkUrl').value.trim();
-  const icon = document.getElementById('editLinkIcon').value.trim();
-  
-  if (!title || !url) {
-    showToast('Please enter both title and URL', true);
-    return;
-  }
-  
-  try {
-    const { error } = await supabase
-      .from(LINKS_TABLE)
-      .update({ title, url, icon: icon || '🔗' })
-      .eq('id', id);
-    
-    if (error) throw error;
-    
-    closeEditModal();
-    await loadLinks();
-    showToast('Link updated successfully!');
-  } catch (error) {
-    console.error('Error updating link:', error);
-    showToast('Failed to update link', true);
-  }
-}
-
-async function confirmDeleteLink(id) {
-  if (confirm('Are you sure you want to delete this link?')) {
-    await deleteLink(id);
-  }
-}
-
-async function deleteLink(id) {
-  try {
-    const { error } = await supabase
-      .from(LINKS_TABLE)
-      .delete()
-      .eq('id', id);
-    
-    if (error) throw error;
-    
-    await loadLinks();
-    showToast('Link deleted successfully!');
-  } catch (error) {
-    console.error('Error deleting link:', error);
-    showToast('Failed to delete link', true);
-  }
-}
-
-async function deleteLinkFromEdit() {
-  const id = parseInt(document.getElementById('editLinkId').value);
-  closeEditModal();
-  await confirmDeleteLink(id);
-}
-
-function openEditModal(id) {
-  const link = allLinks.find(l => l.id === id);
-  if (!link) return;
-  
-  document.getElementById('editLinkId').value = link.id;
-  document.getElementById('editLinkTitle').value = link.title;
-  document.getElementById('editLinkUrl').value = link.url;
-  document.getElementById('editLinkIcon').value = link.icon || '';
-  
-  document.getElementById('editModal').style.display = 'flex';
-}
-
-// ============ AUTHENTICATION FUNCTIONS ============
-// ⚠️ IMPORTANT: Create an 'admins' table in Supabase with columns: id, username, password_hash
-async function handleLogin() {
-  const username = document.getElementById('loginUsername').value.trim();
-  const password = document.getElementById('loginPassword').value;
-  
-  if (!username || !password) {
-    showToast('Please enter username and password', true);
-    return;
-  }
-  
-  const passwordHash = hashPassword(password);
-  
-  try {
-    // First, create the admins table in Supabase SQL editor:
-    /*
-    CREATE TABLE admins (
-      id SERIAL PRIMARY KEY,
-      username TEXT UNIQUE NOT NULL,
-      password_hash TEXT NOT NULL
-    );
-    
-    INSERT INTO admins (username, password_hash) 
-    VALUES ('admin', '${hashPassword('your_password_here')}');
-    */
-    
-    const { data, error } = await supabase
-      .from('admins')
-      .select('*')
-      .eq('username', username)
-      .eq('password_hash', passwordHash)
-      .single();
-    
-    if (error || !data) {
-      showToast('Invalid username or password', true);
-      return;
-    }
-    
-    currentUser = data;
-    localStorage.setItem('adminLoggedIn', 'true');
-    localStorage.setItem('adminUsername', username);
-    
-    closeLoginModal();
-    document.getElementById('adminModal').style.display = 'flex';
-    renderAdminLinksList();
-    showToast('Login successful!');
-  } catch (error) {
-    console.error('Login error:', error);
-    showToast('Login failed. Please check your credentials.', true);
-  }
-}
-
-function logout() {
-  currentUser = null;
-  localStorage.removeItem('adminLoggedIn');
-  localStorage.removeItem('adminUsername');
-  closeAdminModal();
-  showToast('Logged out successfully');
-}
-
-function checkExistingLogin() {
-  const loggedIn = localStorage.getItem('adminLoggedIn');
-  if (loggedIn === 'true') {
-    document.getElementById('adminModal').style.display = 'flex';
-    currentUser = { username: localStorage.getItem('adminUsername') };
-    renderAdminLinksList();
-  }
-}
-
-// ============ MODAL CONTROL FUNCTIONS ============
-function openAdminPanel() {
-  if (currentUser) {
-    document.getElementById('adminModal').style.display = 'flex';
-    renderAdminLinksList();
-  } else {
-    document.getElementById('loginModal').style.display = 'flex';
-  }
-}
-
-function closeLoginModal() {
-  document.getElementById('loginModal').style.display = 'none';
-  document.getElementById('loginUsername').value = '';
-  document.getElementById('loginPassword').value = '';
-}
-
-function closeAdminModal() {
-  document.getElementById('adminModal').style.display = 'none';
-}
-
-function closeEditModal() {
-  document.getElementById('editModal').style.display = 'none';
-}
-
-function escapeHtml(str) {
-  if (!str) return '';
-  return str.replace(/[&<>]/g, function(m) {
-    if (m === '&') return '&amp;';
-    if (m === '<') return '&lt;';
-    if (m === '>') return '&gt;';
-    return m;
-  });
-}
-
-// ============ EVENT LISTENERS & INITIALIZATION ============
-document.getElementById('adminFabBtn').addEventListener('click', openAdminPanel);
-
-// Close modals when clicking outside
-window.onclick = function(event) {
-  if (event.target.classList.contains('modal')) {
-    event.target.style.display = 'none';
-  }
-}
-
-// Initialize
-async function init() {
-  await loadLinks();
-  checkExistingLogin();
-  
-  // Enable Supabase Realtime for automatic updates
-  supabase
-    .channel('links_changes')
-    .on('postgres_changes', { event: '*', schema: 'public', table: LINKS_TABLE }, () => {
-      loadLinks();
-    })
-    .subscribe();
-}
-
-init();
-</script>
-
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script>
+        // ============= Supabase কনফিগারেশন =============
+        const SUPABASE_URL = 'https://lsodigwljvsvvspvhjpn.supabase.co';
+        const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imxzb2RpZ3dsanZzdnZzcHZoanBuIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzkxMTk5OTUsImV4cCI6MjA5NDY5NTk5NX0.ysvkIIuOprA-ZtEoY96GpEuSqfHhMeHexpeLoN_XOho';
+        
+        // Supabase ক্লায়েন্ট তৈরি
+        const supabase = supabaseJs.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+        
+        // অ্যাপ রেন্ডার ফাংশন
+        function renderLoginPage() {
+            document.getElementById('app').innerHTML = `
+                <div class="login-container">
+                    <h2>🔐 লগইন করুন</h2>
+                    <div class="subtitle">আপনার অ্যাকাউন্টে প্রবেশ করুন</div>
+                    
+                    <form id="loginForm">
+                        <div class="input-group">
+                            <label>📧 ইমেইল</label>
+                            <input type="email" id="email" required placeholder="আপনার ইমেইল দিন" autocomplete="email">
+                        </div>
+                        <div class="input-group">
+                            <label>🔒 পাসওয়ার্ড</label>
+                            <input type="password" id="password" required placeholder="আপনার পাসওয়ার্ড দিন" autocomplete="current-password">
+                        </div>
+                        <button type="submit">লগইন করুন</button>
+                    </form>
+                    
+                    <div id="message" class="message"></div>
+                    <div id="loading" class="loading">লগইন হচ্ছে</div>
+                    
+                    <div class="test-mode">
+                        <h4>📝 টেস্ট নির্দেশনা:</h4>
+                        <p>1. <strong>Supabase ড্যাশবোর্ড</strong> এ গিয়ে একটি ইউজার তৈরি করুন</p>
+                        <p>2. Authentication → Users → Add User</p>
+                        <p>3. ইমেইল ও পাসওয়ার্ড দিন এবং লগইন করুন</p>
+                        <p>4. অথবা SQL এডিটর চালান:</p>
+                        <code style="background:#f4f4f4; display:block; padding:8px; margin-top:5px; font-size:11px;">
+                            INSERT INTO auth.users (email, encrypted_password, email_confirmed_at)<br>
+                            VALUES ('test@test.com', crypt('test123', gen_salt('bf')), now());
+                        </code>
+                    </div>
+                    
+                    <div class="info">
+                        💡 নিরাপদ লগইন সিস্টেম | Supabase দ্বারা চালিত
+                    </div>
+                </div>
+            `;
+            
+            // ফর্ম ইভেন্ট লিসেনার
+            document.getElementById('loginForm').addEventListener('submit', handleLogin);
+            document.getElementById('password').addEventListener('keypress', (e) => {
+                if (e.key === 'Enter') {
+                    document.getElementById('loginForm').dispatchEvent(new Event('submit'));
+                }
+            });
+        }
+        
+        function renderDashboard(user) {
+            document.getElementById('app').innerHTML = `
+                <div class="dashboard-container">
+                    <div class="dashboard-header">
+                        <div>
+                            <h2>👋 স্বাগতম!</h2>
+                            <p style="opacity: 0.9;">আপনি সফলভাবে লগইন করেছেন</p>
+                        </div>
+                        <button class="logout-btn" onclick="handleLogout()">🚪 লগআউট</button>
+                    </div>
+                    <div class="dashboard-content">
+                        <div class="user-card">
+                            <h3>📊 আপনার অ্যাকাউন্ট তথ্য</h3>
+                            <div class="user-info">
+                                <p><strong>📧 ইমেইল:</strong> ${user.email}</p>
+                                <p><strong>🆔 ইউজার আইডি:</strong> ${user.id}</p>
+                                <p><strong>📅 লগইন সময়:</strong> ${new Date(user.last_sign_in_at).toLocaleString('bn-BD')}</p>
+                                <p><strong>📆 অ্যাকাউন্ট তৈরি:</strong> ${new Date(user.created_at).toLocaleString('bn-BD')}</p>
+                                <p><strong>✅ ইমেইল কনফার্ম:</strong> ${user.email_confirmed_at ? 'হ্যাঁ' : 'না'}</p>
+                            </div>
+                        </div>
+                        
+                        <div class="test-mode" style="margin-top: 20px;">
+                            <h4>✨ সফলভাবে লগইন সম্পন্ন!</h4>
+                            <p>আপনি এখন Supabase এ সংযুক্ত।</p>
+                            <p><strong>লগআউট</strong> করতে উপরের বাটন ব্যবহার করুন।</p>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+        
+        // লগইন হ্যান্ডলার
+        async function handleLogin(e) {
+            e.preventDefault();
+            
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+            const messageDiv = document.getElementById('message');
+            const loadingDiv = document.getElementById('loading');
+            
+            messageDiv.className = 'message';
+            messageDiv.style.display = 'none';
+            
+            if (!email || !password) {
+                messageDiv.className = 'message error';
+                messageDiv.innerHTML = '❌ দয়া করে ইমেইল এবং পাসওয়ার্ড দিন!';
+                return;
+            }
+            
+            loadingDiv.classList.add('active');
+            
+            try {
+                const { data, error } = await supabase.auth.signInWithPassword({
+                    email: email,
+                    password: password
+                });
+                
+                if (error) throw error;
+                
+                messageDiv.className = 'message success';
+                messageDiv.innerHTML = '✅ লগইন সফল! ড্যাশবোর্ড লোড হচ্ছে...';
+                
+                setTimeout(() => {
+                    renderDashboard(data.user);
+                }, 1000);
+                
+            } catch (error) {
+                messageDiv.className = 'message error';
+                
+                if (error.message.includes('Invalid login credentials')) {
+                    messageDiv.innerHTML = '❌ ইমেইল বা পাসওয়ার্ড ভুল! সঠিক তথ্য দিন।';
+                } else if (error.message.includes('Email not confirmed')) {
+                    messageDiv.innerHTML = '❌ ইমেইল কনফার্ম করা হয়নি। ইমেইল চেক করুন।';
+                } else {
+                    messageDiv.innerHTML = `❌ ${error.message}`;
+                }
+                
+                console.error('Login error:', error);
+            } finally {
+                loadingDiv.classList.remove('active');
+            }
+        }
+        
+        // লগআউট হ্যান্ডলার
+        window.handleLogout = async function() {
+            const { error } = await supabase.auth.signOut();
+            if (error) {
+                console.error('Logout error:', error);
+            } else {
+                renderLoginPage();
+            }
+        };
+        
+        // চেক করা আগে থেকে লগইন করা আছে কিনা
+        async function checkAuth() {
+            const { data: { session }, error } = await supabase.auth.getSession();
+            
+            if (session) {
+                renderDashboard(session.user);
+            } else {
+                renderLoginPage();
+            }
+        }
+        
+        // অ্যাপ শুরু করুন
+        checkAuth();
+    </script>
 </body>
 </html>
