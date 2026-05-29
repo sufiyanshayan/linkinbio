@@ -1,833 +1,217 @@
 <!DOCTYPE html>
 <html lang="bn">
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Link-In-Bio</title>
 
-<title>Your_Name</title>
+    <!-- Google Font -->
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+Bengali:wght@400;700&display=swap" rel="stylesheet">
+    <!-- Supabase SDK -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <style>
+        * { box-sizing: border-box; }
+        html, body { margin: 0; padding: 0; font-family: "Noto Serif Bengali", serif; background: #f7f7f7; color: #333; }
+        
+        .wrapper { min-height: 100vh; display: flex; flex-direction: column; align-items: center; padding: 40px 20px; }
+        .container { width: 100%; max-width: 400px; text-align: center; display: flex; flex-direction: column; gap: 10px; }
 
-<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+Bengali:wght@400;500;700&display=swap" rel="stylesheet">
+        /* Profile Section */
+        .profile img { width: 100px; height: 100px; border-radius: 50%; border: 2px solid #000; object-fit: cover; margin-bottom: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.1); }
+        .name { font-size: 18px; font-weight: 700; margin-bottom: 4px; }
+        .title { font-size: 12px; color: #555; margin-bottom: 20px; }
 
-<link rel="icon" type="image/png" href="Your_Favicon_Link">
+        /* Links List */
+        #links-list { display: flex; flex-direction: column; gap: 10px; width: 100%; }
+        
+        /* Link Buttons & Admin Button Style */
+        .btn { display: flex; align-items: center; justify-content: center; gap: 10px; padding: 12px; border-radius: 12px; text-decoration: none; background: #ffffff; color: #000; font-size: 14px; font-weight: 500; box-shadow: 0 4px 12px rgba(0,0,0,0.08); transition: all 0.2s ease; border: none; cursor: pointer; width: 100%; }
+        .btn:hover { transform: translateY(-2px); box-shadow: 0 6px 18px rgba(0,0,0,0.12); }
+        .btn img { width: 18px; height: 18px; }
 
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+        /* Admin Specific Styling */
+        .admin-section { margin-top: 30px; width: 100%; max-width: 400px; }
+        .btn-admin { background: #000 !important; color: #fff !important; margin-top: 20px; }
+        
+        #login-form, #admin-panel { display: none; background: #fff; padding: 20px; border-radius: 15px; margin-top: 15px; box-shadow: 0 10px 25px rgba(0,0,0,0.1); text-align: left; }
+        #login-form h4, #admin-panel h4 { margin-top: 0; text-align: center; }
+        
+        input { width: 100%; padding: 10px; margin: 8px 0; border: 1px solid #ddd; border-radius: 8px; font-size: 14px; }
+        .btn-action { width: 100%; padding: 12px; border: none; border-radius: 8px; cursor: pointer; font-weight: bold; margin-top: 10px; font-size: 14px; }
+        .btn-login { background: #007bff; color: #fff; }
+        .btn-add { background: #28a745; color: #fff; }
+        .btn-logout { background: #dc3545; color: #fff; margin-top: 15px; }
+        
+        .link-item { position: relative; width: 100%; }
+        .delete-btn { background: #ff4d4d; color: white; border: none; padding: 5px 10px; border-radius: 5px; cursor: pointer; font-size: 11px; margin-top: 5px; float: right; }
 
-<style>
-*{
-  margin:0;
-  padding:0;
-  box-sizing:border-box;
-}
-
-html,body{
-  width:100%;
-  min-height:100%;
-  font-family:"Noto Serif Bengali", serif;
-  background:#f5f5f5;
-  color:#111;
-}
-
-body{
-  display:flex;
-  justify-content:center;
-}
-
-.wrapper{
-  width:100%;
-  min-height:100vh;
-  display:flex;
-  flex-direction:column;
-  justify-content:center;
-  align-items:center;
-  padding:30px 15px;
-}
-
-.container{
-  width:100%;
-  max-width:400px;
-  text-align:center;
-}
-
-.profile img{
-  width:110px;
-  height:110px;
-  object-fit:cover;
-  border-radius:50%;
-  border:3px solid #000;
-  box-shadow:
-    0 0 0 5px #fff,
-    0 8px 20px rgba(0,0,0,0.18);
-}
-
-.name{
-  margin-top:15px;
-  font-size:22px;
-  font-weight:700;
-}
-
-.title{
-  margin-top:6px;
-  color:#666;
-  font-size:13px;
-  margin-bottom:25px;
-}
-
-#linksContainer{
-  display:flex;
-  flex-direction:column;
-  gap:12px;
-}
-
-.btn{
-  width:100%;
-  background:#fff;
-  text-decoration:none;
-  color:#111;
-  padding:14px 16px;
-  border-radius:14px;
-
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  gap:10px;
-
-  font-size:14px;
-  font-weight:600;
-
-  transition:0.2s ease;
-
-  box-shadow:0 5px 15px rgba(0,0,0,0.08);
-}
-
-.btn:hover{
-  transform:translateY(-2px);
-  box-shadow:0 8px 18px rgba(0,0,0,0.12);
-}
-
-.btn img{
-  width:18px;
-  height:18px;
-  object-fit:contain;
-}
-
-.footer{
-  margin-top:25px;
-  text-align:center;
-  font-size:12px;
-  color:#666;
-  line-height:1.8;
-}
-
-/* ADMIN BUTTON */
-
-#adminBtn{
-  position:fixed;
-  top:15px;
-  right:15px;
-  z-index:1000;
-
-  border:none;
-  outline:none;
-
-  background:#000;
-  color:#fff;
-
-  padding:10px 16px;
-  border-radius:10px;
-
-  cursor:pointer;
-  font-weight:700;
-}
-
-/* MODAL */
-
-.modal{
-  position:fixed;
-  inset:0;
-  background:rgba(0,0,0,0.7);
-
-  display:none;
-  justify-content:center;
-  align-items:center;
-
-  z-index:2000;
-  padding:15px;
-}
-
-.modal-content{
-  width:100%;
-  max-width:430px;
-  max-height:92vh;
-
-  overflow-y:auto;
-
-  background:#fff;
-  border-radius:16px;
-
-  padding:22px;
-}
-
-.modal-content h2{
-  margin-bottom:18px;
-}
-
-.modal-content h3{
-  margin-top:18px;
-  margin-bottom:10px;
-}
-
-input{
-  width:100%;
-  padding:12px;
-  margin-bottom:12px;
-
-  border:1px solid #ccc;
-  border-radius:10px;
-
-  font-size:14px;
-  font-family:inherit;
-}
-
-button{
-  border:none;
-  outline:none;
-
-  padding:12px 16px;
-  border-radius:10px;
-
-  cursor:pointer;
-  font-size:14px;
-  font-family:inherit;
-}
-
-.primary-btn{
-  background:#000;
-  color:#fff;
-}
-
-.secondary-btn{
-  background:#ececec;
-}
-
-.delete-btn{
-  background:#ffdddd;
-  color:#c00000;
-  margin-top:8px;
-}
-
-.link-card{
-  background:#f8f8f8;
-  padding:12px;
-  border-radius:12px;
-  margin-top:10px;
-  text-align:left;
-}
-
-.link-card small{
-  word-break:break-all;
-  color:#555;
-}
-</style>
+        .footer { margin-top: 40px; font-size: 12px; color: #888; text-align: center; }
+    </style>
 </head>
-
 <body>
 
-<button id="adminBtn">🔧 ADMIN</button>
-
 <div class="wrapper">
+    <div class="container">
+        <!-- Profile -->
+        <div class="profile">
+            <img src="https://via.placeholder.com/100" alt="Profile Picture">
+        </div>
+        <div class="name">আপনার নাম</div>
+        <div class="title">আপনার টাইটেল / বায়ো</div>
 
-  <div class="container">
+        <!-- Links Container -->
+        <div id="links-list">
+            <p>লিঙ্ক লোড হচ্ছে...</p>
+        </div>
 
-    <div class="profile">
-      <img src="Your_Profile_Picture_Link" alt="Profile">
+        <!-- Admin Area -->
+        <div class="admin-section">
+            <!-- মেইন এডমিন বাটন -->
+            <button id="admin-toggle-btn" class="btn btn-admin" onclick="toggleAdminView()">ADMIN</button>
+
+            <!-- লগইন ফর্ম -->
+            <div id="login-form">
+                <h4>এডমিন লগইন</h4>
+                <input type="email" id="email" placeholder="ইমেইল">
+                <input type="password" id="password" placeholder="পাসওয়ার্ড">
+                <button class="btn-action btn-login" onclick="handleLogin()">লগইন করুন</button>
+            </div>
+
+            <!-- এডমিন কন্ট্রোল প্যানেল -->
+            <div id="admin-panel">
+                <h4>নতুন লিঙ্ক যোগ করুন</h4>
+                <input type="text" id="link-title" placeholder="লিঙ্ক নাম (যেমন: Facebook)">
+                <input type="text" id="link-url" placeholder="URL (https://...)">
+                <input type="text" id="link-icon" placeholder="আইকন নাম (যেমন: facebook, instagram)">
+                <button class="btn-action btn-add" onclick="addNewLink()">সেভ করুন</button>
+                <button class="btn-action btn-logout" onclick="handleLogout()">লগআউট</button>
+            </div>
+        </div>
+
+        <div class="footer">
+            Copyright © 2026 MADE BY YOUR NAME
+        </div>
     </div>
-
-    <div class="name">Your_Name</div>
-
-    <div class="title">
-      Your_Title
-    </div>
-
-    <div id="linksContainer"></div>
-
-  </div>
-
-  <div class="footer">
-    Copyright © 2026 <br>
-    MADE BY "Your_Name" <br>
-    All Rights Reserved.
-  </div>
-
-</div>
-
-<!-- MODAL -->
-
-<div class="modal" id="adminModal">
-  <div class="modal-content" id="modalContent"></div>
 </div>
 
 <script>
-/* =========================
-   SUPABASE CONFIG
-========================= */
-
-const SUPABASE_URL =
-"https://YOUR_PROJECT.supabase.co";
-
-const SUPABASE_ANON_KEY =
-"YOUR_SUPABASE_ANON_KEY";
-
-/* =========================
-   CREATE CLIENT
-========================= */
-
-const { createClient } = supabase;
-
-const client = createClient(
-  SUPABASE_URL,
-  SUPABASE_ANON_KEY
-);
-
-/* =========================
-   LOAD PUBLIC LINKS
-========================= */
-
-async function loadLinks(){
-
-  const container =
-    document.getElementById("linksContainer");
-
-  container.innerHTML = "Loading...";
-
-  const { data, error } = await client
-    .from("links")
-    .select("*")
-    .order("sort_order", {
-      ascending:true
-    });
-
-  if(error){
-
-    console.error(error);
-
-    container.innerHTML =
-      `<p style="color:red">
-        লিংক লোড করতে সমস্যা হয়েছে
-      </p>`;
-
-    return;
-  }
-
-  if(!data || data.length === 0){
-
-    container.innerHTML =
-      `<p>কোনো লিংক পাওয়া যায়নি</p>`;
-
-    return;
-  }
-
-  container.innerHTML = "";
-
-  data.forEach(link => {
-
-    const a = document.createElement("a");
-
-    a.className = "btn";
-
-    a.href = link.url;
-
-    a.target = "_blank";
-
-    a.rel = "noopener noreferrer";
-
-    a.innerHTML = `
-      ${link.icon
-        ? `<img src="${link.icon}" alt="">`
-        : ""
-      }
-
-      <span>${link.title}</span>
-    `;
-
-    container.appendChild(a);
-
-  });
-
-}
-
-/* =========================
-   OPEN LOGIN MODAL
-========================= */
-
-document
-  .getElementById("adminBtn")
-  .addEventListener("click", showLogin);
-
-/* =========================
-   LOGIN PAGE
-========================= */
-
-function showLogin(){
-
-  const content =
-    document.getElementById("modalContent");
-
-  content.innerHTML = `
-
-    <h2>🔑 Admin Login</h2>
-
-    <input
-      type="email"
-      id="email"
-      placeholder="ইমেইল লিখুন"
-    >
-
-    <input
-      type="password"
-      id="password"
-      placeholder="পাসওয়ার্ড"
-    >
-
-    <button
-      class="primary-btn"
-      onclick="login()"
-    >
-      Login
-    </button>
-
-    <button
-      class="secondary-btn"
-      onclick="showSignup()"
-    >
-      অ্যাকাউন্ট তৈরি করুন
-    </button>
-
-  `;
-
-  document
-    .getElementById("adminModal")
-    .style.display = "flex";
-}
-
-/* =========================
-   SIGNUP PAGE
-========================= */
-
-function showSignup(){
-
-  const content =
-    document.getElementById("modalContent");
-
-  content.innerHTML = `
-
-    <h2>📝 নতুন অ্যাকাউন্ট তৈরি</h2>
-
-    <input
-      type="email"
-      id="signupEmail"
-      placeholder="ইমেইল"
-    >
-
-    <input
-      type="password"
-      id="signupPassword"
-      placeholder="পাসওয়ার্ড (৬+ অক্ষর)"
-    >
-
-    <button
-      class="primary-btn"
-      onclick="signup()"
-    >
-      Sign Up
-    </button>
-
-    <button
-      class="secondary-btn"
-      onclick="showLogin()"
-    >
-      Back
-    </button>
-
-  `;
-}
-
-/* =========================
-   LOGIN
-========================= */
-
-async function login(){
-
-  const email =
-    document.getElementById("email").value.trim();
-
-  const password =
-    document.getElementById("password").value;
-
-  if(!email || !password){
-
-    alert("ইমেইল ও পাসওয়ার্ড দিন");
-
-    return;
-  }
-
-  const { error } =
-    await client.auth.signInWithPassword({
-      email,
-      password
-    });
-
-  if(error){
-
-    alert(error.message);
-
-    return;
-  }
-
-  alert("✅ লগইন সফল হয়েছে");
-
-  showAdminDashboard();
-
-}
-
-/* =========================
-   SIGNUP
-========================= */
-
-async function signup(){
-
-  const email =
-    document.getElementById("signupEmail")
-    .value
-    .trim();
-
-  const password =
-    document.getElementById("signupPassword")
-    .value;
-
-  if(!email || !password){
-
-    alert("সব তথ্য দিন");
-
-    return;
-  }
-
-  if(password.length < 6){
-
-    alert("পাসওয়ার্ড কমপক্ষে ৬ অক্ষরের হতে হবে");
-
-    return;
-  }
-
-  const { error } =
-    await client.auth.signUp({
-      email,
-      password
-    });
-
-  if(error){
-
-    alert(error.message);
-
-    return;
-  }
-
-  alert("অ্যাকাউন্ট তৈরি হয়েছে");
-
-  showLogin();
-
-}
-
-/* =========================
-   ADMIN DASHBOARD
-========================= */
-
-async function showAdminDashboard(){
-
-  const content =
-    document.getElementById("modalContent");
-
-  content.innerHTML = `
-
-    <h2>⚙️ Admin Panel</h2>
-
-    <h3>নতুন লিংক যোগ করুন</h3>
-
-    <input
-      type="text"
-      id="title"
-      placeholder="লিংকের নাম"
-    >
-
-    <input
-      type="text"
-      id="url"
-      placeholder="https://..."
-    >
-
-    <input
-      type="text"
-      id="icon"
-      placeholder="Icon URL (optional)"
-    >
-
-    <input
-      type="number"
-      id="sort_order"
-      placeholder="Order"
-      value="0"
-    >
-
-    <button
-      class="primary-btn"
-      onclick="addLink()"
-    >
-      Add Link
-    </button>
-
-    <hr style="margin:20px 0;">
-
-    <h3>বর্তমান লিংকসমূহ</h3>
-
-    <div id="existingLinks"></div>
-
-    <br>
-
-    <button
-      class="secondary-btn"
-      onclick="logout()"
-    >
-      Logout
-    </button>
-
-  `;
-
-  loadExistingLinks();
-
-}
-
-/* =========================
-   ADD LINK
-========================= */
-
-async function addLink(){
-
-  const title =
-    document.getElementById("title")
-    .value
-    .trim();
-
-  const url =
-    document.getElementById("url")
-    .value
-    .trim();
-
-  const icon =
-    document.getElementById("icon")
-    .value
-    .trim();
-
-  const sort_order =
-    parseInt(
-      document.getElementById("sort_order")
-      .value
-    ) || 0;
-
-  if(!title || !url){
-
-    alert("Title এবং URL দিতে হবে");
-
-    return;
-  }
-
-  const { error } =
-    await client
-      .from("links")
-      .insert([
-        {
-          title,
-          url,
-          icon: icon || null,
-          sort_order
+    // Supabase Configuration
+    const SB_URL = "https://lsodigwljvsvvspvhjpn.supabase.co";
+    const SB_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imxzb2RpZ3dsanZzdnZzcHZoanBuIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzkxMTk5OTUsImV4cCI6MjA5NDY5NTk5NX0.ysvkIIuOprA-ZtEoY96GpEuSqfHhMeHexpeLoN_XOho";
+    const _supabase = supabase.createClient(SB_URL, SB_KEY);
+
+    let isLoggedIn = false;
+
+    // ১. ডাটাবেস থেকে লিঙ্কগুলো নিয়ে আসা
+    async function fetchLinks() {
+        const { data, error } = await _supabase
+            .from('links')
+            .select('*')
+            .order('created_at', { ascending: true });
+
+        if (!error) renderLinks(data);
+    }
+
+    // ২. স্ক্রিনে লিঙ্কগুলো দেখানো
+    function renderLinks(links) {
+        const list = document.getElementById('links-list');
+        list.innerHTML = '';
+        
+        if (links.length === 0) {
+            list.innerHTML = '<p style="color:#888">কোন লিঙ্ক নেই।</p>';
+            return;
         }
-      ]);
 
-  if(error){
-
-    alert(error.message);
-
-    return;
-  }
-
-  alert("লিংক যোগ হয়েছে");
-
-  document.getElementById("title").value = "";
-  document.getElementById("url").value = "";
-  document.getElementById("icon").value = "";
-  document.getElementById("sort_order").value = "0";
-
-  loadLinks();
-
-  loadExistingLinks();
-
-}
-
-/* =========================
-   LOAD EXISTING LINKS
-========================= */
-
-async function loadExistingLinks(){
-
-  const div =
-    document.getElementById("existingLinks");
-
-  div.innerHTML = "Loading...";
-
-  const { data, error } =
-    await client
-      .from("links")
-      .select("*")
-      .order("sort_order", {
-        ascending:true
-      });
-
-  if(error){
-
-    div.innerHTML =
-      `<p style="color:red">
-        Data load failed
-      </p>`;
-
-    return;
-  }
-
-  if(!data || data.length === 0){
-
-    div.innerHTML =
-      `<p>কোনো লিংক নেই</p>`;
-
-    return;
-  }
-
-  div.innerHTML = data.map(link => `
-
-    <div class="link-card">
-
-      <strong>${link.title}</strong>
-
-      <br><br>
-
-      <small>${link.url}</small>
-
-      <br>
-
-      <button
-        class="delete-btn"
-        onclick="deleteLink('${link.id}')"
-      >
-        Delete
-      </button>
-
-    </div>
-
-  `).join("");
-
-}
-
-/* =========================
-   DELETE LINK
-========================= */
-
-async function deleteLink(id){
-
-  const confirmDelete =
-    confirm("এই লিংক ডিলিট করবেন?");
-
-  if(!confirmDelete) return;
-
-  const { error } =
-    await client
-      .from("links")
-      .delete()
-      .eq("id", id);
-
-  if(error){
-
-    alert(error.message);
-
-    return;
-  }
-
-  loadLinks();
-
-  loadExistingLinks();
-
-}
-
-/* =========================
-   LOGOUT
-========================= */
-
-async function logout(){
-
-  await client.auth.signOut();
-
-  document
-    .getElementById("adminModal")
-    .style.display = "none";
-
-  alert("Logged Out");
-
-}
-
-/* =========================
-   CLOSE MODAL ON OUTSIDE CLICK
-========================= */
-
-window.onclick = function(e){
-
-  const modal =
-    document.getElementById("adminModal");
-
-  if(e.target === modal){
-
-    modal.style.display = "none";
-
-  }
-
-};
-
-/* =========================
-   AUTO LOGIN CHECK
-========================= */
-
-async function checkUser(){
-
-  const {
-    data: { session }
-  } = await client.auth.getSession();
-
-  if(session){
-
-    console.log("User already logged in");
-
-  }
-
-}
-
-/* =========================
-   INIT
-========================= */
-
-loadLinks();
-
-checkUser();
-
-console.log(
-  "✅ Link in Bio Ready"
-);
+        links.forEach(link => {
+            const div = document.createElement('div');
+            div.className = 'link-item';
+            div.innerHTML = `
+                <a href="${link.url}" target="_blank" class="btn">
+                    <img src="https://cdn.simpleicons.org/${link.icon || 'link'}/000" alt="icon">
+                    ${link.title}
+                </a>
+                ${isLoggedIn ? `<button class="delete-btn" onclick="deleteLink('${link.id}')">Delete</button>` : ''}
+            `;
+            list.appendChild(div);
+        });
+    }
+
+    // ৩. এডমিন লগইন হ্যান্ডেল করা
+    async function handleLogin() {
+        const email = document.getElementById('email').value;
+        const password = document.getElementById('password').value;
+
+        const { data, error } = await _supabase.auth.signInWithPassword({ email, password });
+
+        if (error) {
+            alert("ভুল ইমেইল বা পাসওয়ার্ড দিয়েছেন!");
+        } else {
+            alert("লগইন সফল হয়েছে!");
+            location.reload(); // পেজ রিফ্রেশ করে এডমিন প্যানেল দেখাবে
+        }
+    }
+
+    // ৪. লগআউট
+    async function handleLogout() {
+        await _supabase.auth.signOut();
+        location.reload();
+    }
+
+    // ৫. নতুন লিঙ্ক যোগ করা
+    async function addNewLink() {
+        const title = document.getElementById('link-title').value;
+        const url = document.getElementById('link-url').value;
+        const icon = document.getElementById('link-icon').value;
+
+        if (!title || !url) return alert("দয়া করে নাম এবং লিঙ্ক দিন!");
+
+        const { error } = await _supabase.from('links').insert([{ title, url, icon }]);
+        
+        if (error) alert("Error: " + error.message);
+        else {
+            document.getElementById('link-title').value = '';
+            document.getElementById('link-url').value = '';
+            document.getElementById('link-icon').value = '';
+            alert("লিঙ্ক যোগ হয়েছে!");
+        }
+    }
+
+    // ৬. লিঙ্ক ডিলিট করা
+    async function deleteLink(id) {
+        if (!confirm("আপনি কি এটি ডিলিট করতে চান?")) return;
+        const { error } = await _supabase.from('links').delete().eq('id', id);
+        if (error) alert(error.message);
+    }
+
+    // ৭. এডমিন সেকশন টগল (ADMIN বাটন চাপলে যা হবে)
+    function toggleAdminView() {
+        const loginForm = document.getElementById('login-form');
+        const adminPanel = document.getElementById('admin-panel');
+        
+        if (isLoggedIn) {
+            adminPanel.style.display = adminPanel.style.display === 'block' ? 'none' : 'block';
+        } else {
+            loginForm.style.display = loginForm.style.display === 'block' ? 'none' : 'block';
+        }
+    }
+
+    // ৮. চেক করা ইউজার লগইন আছে কি না
+    async function checkUser() {
+        const { data: { session } } = await _supabase.auth.getSession();
+        if (session) {
+            isLoggedIn = true;
+            document.getElementById('admin-toggle-btn').innerText = "ADMIN PANEL";
+        }
+        fetchLinks();
+    }
+
+    // রিয়েল টাইম আপডেট লিসেনার
+    _supabase.channel('links-db').on('postgres_changes', { event: '*', schema: 'public', table: 'links' }, () => {
+        fetchLinks();
+    }).subscribe();
+
+    checkUser();
 </script>
 
 </body>
