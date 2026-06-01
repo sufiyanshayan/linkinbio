@@ -4,13 +4,10 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>অ্যাকাউন্ট ক্রিয়েট - Supabase অথেনটিকেশন</title>
+    <!-- Supabase JS Library -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
+        * { margin: 0; padding: 0; box-sizing: border-box; }
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
@@ -20,7 +17,6 @@
             align-items: center;
             padding: 20px;
         }
-
         .container {
             background: white;
             border-radius: 20px;
@@ -29,223 +25,38 @@
             max-width: 500px;
             padding: 40px;
         }
-
-        h2 {
-            text-align: center;
-            color: #333;
-            margin-bottom: 10px;
-            font-size: 28px;
-        }
-
-        .subtitle {
-            text-align: center;
-            color: #666;
-            margin-bottom: 30px;
-            font-size: 14px;
-        }
-
-        .form-group {
-            margin-bottom: 20px;
-        }
-
-        label {
-            display: block;
-            margin-bottom: 8px;
-            color: #333;
-            font-weight: 500;
-        }
-
+        h2 { text-align: center; color: #333; margin-bottom: 10px; font-size: 28px; }
+        .subtitle { text-align: center; color: #666; margin-bottom: 30px; font-size: 14px; }
+        .form-group { margin-bottom: 20px; }
+        label { display: block; margin-bottom: 8px; color: #333; font-weight: 500; }
         input {
-            width: 100%;
-            padding: 12px 15px;
-            border: 2px solid #e0e0e0;
-            border-radius: 10px;
-            font-size: 16px;
-            transition: all 0.3s;
+            width: 100%; padding: 12px 15px; border: 2px solid #e0e0e0;
+            border-radius: 10px; font-size: 16px; transition: all 0.3s;
         }
-
-        input:focus {
-            outline: none;
-            border-color: #667eea;
-            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
-        }
-
+        input:focus { outline: none; border-color: #667eea; box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1); }
         button {
-            width: 100%;
-            padding: 12px;
+            width: 100%; padding: 12px;
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            border: none;
-            border-radius: 10px;
-            font-size: 16px;
-            font-weight: 600;
-            cursor: pointer;
+            color: white; border: none; border-radius: 10px;
+            font-size: 16px; font-weight: 600; cursor: pointer;
             transition: transform 0.2s, box-shadow 0.2s;
         }
-
-        button:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
-        }
-
-        button:disabled {
-            opacity: 0.7;
-            cursor: not-allowed;
-            transform: none;
-        }
-
-        .message {
-            margin-top: 20px;
-            padding: 12px;
-            border-radius: 10px;
-            display: none;
-            animation: slideIn 0.3s ease;
-        }
-
-        @keyframes slideIn {
-            from {
-                transform: translateY(-10px);
-                opacity: 0;
-            }
-            to {
-                transform: translateY(0);
-                opacity: 1;
-            }
-        }
-
-        .message.success {
-            background: #d4edda;
-            color: #155724;
-            border: 1px solid #c3e6cb;
-            display: block;
-        }
-
-        .message.error {
-            background: #f8d7da;
-            color: #721c24;
-            border: 1px solid #f5c6cb;
-            display: block;
-        }
-
-        .message.info {
-            background: #d1ecf1;
-            color: #0c5460;
-            border: 1px solid #bee5eb;
-            display: block;
-        }
-
-        .users-section {
-            margin-top: 30px;
-            padding-top: 20px;
-            border-top: 2px solid #f0f0f0;
-        }
-
-        .users-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 15px;
-        }
-
-        .users-header h3 {
-            color: #333;
-            font-size: 18px;
-        }
-
-        .refresh-btn {
-            background: #28a745;
-            padding: 8px 15px;
-            width: auto;
-            font-size: 13px;
-        }
-
-        .users-list {
-            max-height: 350px;
-            overflow-y: auto;
-        }
-
+        button:hover { transform: translateY(-2px); box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4); }
+        button:disabled { opacity: 0.7; cursor: not-allowed; }
+        .message { margin-top: 20px; padding: 12px; border-radius: 10px; display: none; }
+        .message.success { background: #d4edda; color: #155724; border: 1px solid #c3e6cb; display: block; }
+        .message.error { background: #f8d7da; color: #721c24; border: 1px solid #f5c6cb; display: block; }
+        .message.info { background: #d1ecf1; color: #0c5460; border: 1px solid #bee5eb; display: block; }
+        .users-section { margin-top: 30px; padding-top: 20px; border-top: 2px solid #f0f0f0; }
+        .users-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; }
         .user-item {
-            background: #f8f9fa;
-            padding: 12px;
-            margin-bottom: 10px;
-            border-radius: 10px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            transition: all 0.2s;
+            background: #f8f9fa; padding: 12px; margin-bottom: 10px;
+            border-radius: 10px; border-left: 4px solid #667eea;
         }
-
-        .user-item:hover {
-            background: #e9ecef;
-            transform: translateX(5px);
-        }
-
-        .user-info {
-            flex: 1;
-        }
-
-        .user-email {
-            font-weight: 600;
-            color: #333;
-            font-size: 14px;
-        }
-
-        .user-id {
-            font-size: 11px;
-            color: #666;
-            margin-top: 4px;
-            font-family: monospace;
-        }
-
-        .user-date {
-            font-size: 10px;
-            color: #999;
-            margin-top: 4px;
-        }
-
-        .delete-btn {
-            background: #dc3545;
-            padding: 6px 12px;
-            width: auto;
-            font-size: 12px;
-            margin-left: 10px;
-        }
-
-        .delete-btn:hover {
-            background: #c82333;
-            transform: translateY(-1px);
-        }
-
-        .loading {
-            text-align: center;
-            color: #666;
-            padding: 20px;
-        }
-
-        .empty-state {
-            text-align: center;
-            color: #999;
-            padding: 30px;
-            font-size: 14px;
-        }
-
-        .stats {
-            margin-top: 15px;
-            padding: 10px;
-            background: #f8f9fa;
-            border-radius: 10px;
-            text-align: center;
-            font-size: 13px;
-            color: #666;
-        }
-
-        .password-strength {
-            font-size: 12px;
-            margin-top: 5px;
-        }
-
+        .user-email { font-weight: 600; color: #333; font-size: 14px; }
+        .user-id { font-size: 11px; color: #666; font-family: monospace; }
+        .password-strength { font-size: 12px; margin-top: 5px; }
         .strength-weak { color: #dc3545; }
-        .strength-medium { color: #ffc107; }
         .strength-strong { color: #28a745; }
     </style>
 </head>
@@ -257,23 +68,22 @@
         <form id="signupForm">
             <div class="form-group">
                 <label for="email">📧 ইমেইল ঠিকানা</label>
-                <input type="email" id="email" name="email" required placeholder="আপনার ইমেইল লিখুন" autocomplete="off">
+                <input type="email" id="email" required placeholder="আপনার ইমেইল লিখুন">
             </div>
 
             <div class="form-group">
                 <label for="password">🔒 পাসওয়ার্ড</label>
-                <input type="password" id="password" name="password" required placeholder="মিনিমাম ৬ অক্ষর">
+                <input type="password" id="password" required placeholder="মিনিমাম ৬ অক্ষর">
                 <div id="passwordStrength" class="password-strength"></div>
             </div>
 
             <div class="form-group">
                 <label for="confirmPassword">✅ পাসওয়ার্ড নিশ্চিত করুন</label>
-                <input type="password" id="confirmPassword" name="confirmPassword" required placeholder="পাসওয়ার্ড পুনরায় লিখুন">
+                <input type="password" id="confirmPassword" required placeholder="পাসওয়ার্ড পুনরায় লিখুন">
             </div>
 
             <button type="submit" id="submitBtn">
                 <span id="btnText">🚀 অ্যাকাউন্ট তৈরি করুন</span>
-                <span id="btnLoading" style="display: none;">⏳ প্রক্রিয়াকরণ...</span>
             </button>
         </form>
 
@@ -281,171 +91,71 @@
 
         <div class="users-section">
             <div class="users-header">
-                <h3>👥 রেজিস্টার্ড ইউজার</h3>
-                <button id="refreshUsers" class="refresh-btn">🔄 রিফ্রেশ</button>
+                <h3>👤 বর্তমান ইউজার সেশন</h3>
+                <button id="logoutBtn" style="width: auto; padding: 5px 10px; background: #dc3545; font-size: 12px; display: none;">লগ আউট</button>
             </div>
-            <div id="usersList" class="users-list">
-                <div class="loading">⏳ লোড হচ্ছে...</div>
+            <div id="usersList">
+                <div class="empty-state" style="text-align: center; color: #999;">কোনো ইউজার লগইন নেই</div>
             </div>
         </div>
     </div>
 
     <script>
-        // Supabase configuration - আপনার দেওয়া তথ্য ব্যবহার করে
+        // ১. Supabase কনফিগারেশন
         const SUPABASE_URL = 'https://lsodigwljvsvvspvhjpn.supabase.co';
         const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imxzb2RpZ3dsanZzdnZzcHZoanBuIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzkxMTk5OTUsImV4cCI6MjA5NDY5NTk5NX0.ysvkIIuOprA-ZtEoY96GpEuSqfHhMeHexpeLoN_XOho';
+        
+        const supabase = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-        // Initialize Supabase client
-        const supabaseClient = {
-            url: SUPABASE_URL,
-            key: SUPABASE_ANON_KEY,
-            
-            async signUp(email, password) {
-                const response = await fetch(`${this.url}/auth/v1/signup`, {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'apikey': this.key,
-                    },
-                    body: JSON.stringify({
-                        email: email,
-                        password: password,
-                        data: {
-                            created_at: new Date().toISOString()
-                        }
-                    })
-                });
-                
-                const data = await response.json();
-                if (!response.ok) throw new Error(data.message || data.msg || 'Signup failed');
-                return data;
-            },
-            
-            async getAllUsers() {
-                // Note: This requires admin access. For demo, we'll show only current user
-                // In production, you'd need a backend API or service role key
-                const { data: { user } } = await this.getSession();
-                if (user) {
-                    return [{ 
-                        id: user.id, 
-                        email: user.email, 
-                        created_at: user.created_at || new Date().toISOString() 
-                    }];
-                }
-                return [];
-            },
-            
-            async getSession() {
-                const response = await fetch(`${this.url}/auth/v1/user`, {
-                    headers: {
-                        'apikey': this.key,
-                        'Authorization': `Bearer ${localStorage.getItem('sb-access-token') || ''}`
-                    }
-                });
-                
-                if (response.status === 200) {
-                    const user = await response.json();
-                    return { data: { user }, error: null };
-                }
-                return { data: { user: null }, error: null };
-            },
-            
-            async signOut() {
-                localStorage.removeItem('sb-access-token');
-                localStorage.removeItem('sb-refresh-token');
-            }
-        };
-
-        // DOM elements
+        // DOM এলিমেন্টস
         const form = document.getElementById('signupForm');
         const emailInput = document.getElementById('email');
         const passwordInput = document.getElementById('password');
         const confirmPasswordInput = document.getElementById('confirmPassword');
         const submitBtn = document.getElementById('submitBtn');
-        const btnText = document.getElementById('btnText');
-        const btnLoading = document.getElementById('btnLoading');
         const messageDiv = document.getElementById('message');
         const usersListDiv = document.getElementById('usersList');
-        const refreshBtn = document.getElementById('refreshUsers');
+        const logoutBtn = document.getElementById('logoutBtn');
 
-        // Password strength checker
-        function checkPasswordStrength(password) {
-            let strength = 0;
-            if (password.length >= 6) strength++;
-            if (password.length >= 10) strength++;
-            if (/[A-Z]/.test(password)) strength++;
-            if (/[0-9]/.test(password)) strength++;
-            if (/[^A-Za-z0-9]/.test(password)) strength++;
-            
+        // পাসওয়ার্ড স্ট্রেন্থ চেক
+        passwordInput.addEventListener('input', () => {
+            const val = passwordInput.value;
             const strengthDiv = document.getElementById('passwordStrength');
-            if (password.length === 0) {
-                strengthDiv.innerHTML = '';
-                return;
-            }
-            
-            if (strength <= 2) {
-                strengthDiv.innerHTML = '<span class="strength-weak">⚠️ দুর্বল পাসওয়ার্ড</span>';
-            } else if (strength <= 4) {
-                strengthDiv.innerHTML = '<span class="strength-medium">⚠️ মাঝারি পাসওয়ার্ড</span>';
+            if (val.length < 6) {
+                strengthDiv.innerHTML = '<span class="strength-weak">⚠️ খুব ছোট (কমপক্ষে ৬ অক্ষর)</span>';
             } else {
-                strengthDiv.innerHTML = '<span class="strength-strong">✓ শক্তিশালী পাসওয়ার্ড</span>';
+                strengthDiv.innerHTML = '<span class="strength-strong">✅ পাসওয়ার্ড ঠিক আছে</span>';
             }
-        }
-
-        passwordInput.addEventListener('input', (e) => {
-            checkPasswordStrength(e.target.value);
         });
 
-        // Show message function
-        function showMessage(text, type = 'error') {
+        // মেসেজ দেখানোর ফাংশন
+        function showMessage(text, type) {
             messageDiv.textContent = text;
             messageDiv.className = `message ${type}`;
-            setTimeout(() => {
-                messageDiv.style.display = 'none';
-                messageDiv.className = 'message';
-            }, 5000);
+            messageDiv.style.display = 'block';
+            setTimeout(() => { messageDiv.style.display = 'none'; }, 5000);
         }
 
-        // Load users
-        async function loadUsers() {
-            try {
-                usersListDiv.innerHTML = '<div class="loading">⏳ ইউজার লোড হচ্ছে...</div>';
-                
-                const users = await supabaseClient.getAllUsers();
-                
-                if (!users || users.length === 0) {
-                    usersListDiv.innerHTML = '<div class="empty-state">👋 এখনো কোনো ইউজার নেই</div>';
-                    return;
-                }
-
-                usersListDiv.innerHTML = users.map(user => `
+        // ইউজার ইনফো আপডেট করা
+        async function updateUserInfo() {
+            const { data: { user } } = await supabase.auth.getUser();
+            
+            if (user) {
+                usersListDiv.innerHTML = `
                     <div class="user-item">
-                        <div class="user-info">
-                            <div class="user-email">📧 ${user.email}</div>
-                            <div class="user-id">🆔 ID: ${user.id.substring(0, 20)}...</div>
-                            <div class="user-date">📅 তৈরি: ${new Date(user.created_at).toLocaleDateString('bn-BD')}</div>
-                        </div>
+                        <div class="user-email">📧 ${user.email}</div>
+                        <div class="user-id">🆔 UID: ${user.id}</div>
+                        <div style="font-size: 10px; color: green; margin-top: 5px;">● বর্তমানে লগইন আছেন</div>
                     </div>
-                `).join('');
-                
-                // Update stats
-                const statsDiv = document.querySelector('.stats');
-                if (!statsDiv && users.length > 0) {
-                    const usersSection = document.querySelector('.users-section');
-                    const stats = document.createElement('div');
-                    stats.className = 'stats';
-                    stats.innerHTML = `📊 মোট ইউজার: ${users.length}`;
-                    usersSection.appendChild(stats);
-                } else if (statsDiv) {
-                    statsDiv.innerHTML = `📊 মোট ইউজার: ${users.length}`;
-                }
-            } catch (error) {
-                console.error('Error loading users:', error);
-                usersListDiv.innerHTML = '<div class="empty-state">❌ ইউজার লোড করতে সমস্যা হয়েছে</div>';
+                `;
+                logoutBtn.style.display = 'block';
+            } else {
+                usersListDiv.innerHTML = '<div class="empty-state">কোনো ইউজার লগইন নেই</div>';
+                logoutBtn.style.display = 'none';
             }
         }
 
-        // Create new user
+        // সাইন আপ প্রসেস
         form.addEventListener('submit', async (e) => {
             e.preventDefault();
             
@@ -453,94 +163,40 @@
             const password = passwordInput.value;
             const confirmPassword = confirmPasswordInput.value;
 
-            // Validation
-            if (!email || !password) {
-                showMessage('❌ ইমেইল এবং পাসওয়ার্ড প্রয়োজন', 'error');
-                return;
-            }
-
-            if (!email.includes('@') || !email.includes('.')) {
-                showMessage('❌ সঠিক ইমেইল ঠিকানা দিন', 'error');
-                return;
-            }
-
             if (password !== confirmPassword) {
-                showMessage('❌ পাসওয়ার্ড মেলেনি', 'error');
+                showMessage('❌ পাসওয়ার্ড মেলেনি!', 'error');
                 return;
             }
 
-            if (password.length < 6) {
-                showMessage('❌ পাসওয়ার্ড কমপক্ষে ৬ অক্ষরের হতে হবে', 'error');
-                return;
-            }
-
-            // Disable button during process
             submitBtn.disabled = true;
-            btnText.style.display = 'none';
-            btnLoading.style.display = 'inline';
+            submitBtn.innerText = '⏳ প্রসেসিং...';
 
-            try {
-                // Sign up user
-                const result = await supabaseClient.signUp(email, password);
-                
-                if (result.user) {
-                    showMessage(`✅ অ্যাকাউন্ট সফলভাবে তৈরি হয়েছে! ${email}\n🎉 আপনার অ্যাকাউন্ট এখন Supabase এ রেজিস্টার হয়েছে।`, 'success');
-                    form.reset();
-                    document.getElementById('passwordStrength').innerHTML = '';
-                    
-                    // Store session
-                    if (result.session) {
-                        localStorage.setItem('sb-access-token', result.session.access_token);
-                        localStorage.setItem('sb-refresh-token', result.session.refresh_token);
-                    }
-                    
-                    // Refresh user list
-                    await loadUsers();
-                } else {
-                    showMessage('⚠️ অ্যাকাউন্ট তৈরি করতে সমস্যা হয়েছে', 'error');
-                }
-            } catch (error) {
-                console.error('Signup error:', error);
-                
-                let errorMessage = '❌ অ্যাকাউন্ট তৈরি করতে সমস্যা হয়েছে';
-                if (error.message.toLowerCase().includes('already registered') || 
-                    error.message.toLowerCase().includes('user already')) {
-                    errorMessage = '⚠️ এই ইমেইল ইতিমধ্যে রেজিস্টার করা আছে';
-                } else if (error.message.toLowerCase().includes('password')) {
-                    errorMessage = '⚠️ পাসওয়ার্ড খুব ছোট বা অযোগ্য';
-                } else if (error.message.includes('validation')) {
-                    errorMessage = '⚠️ ইমেইল ভ্যালিডেশন error';
-                } else {
-                    errorMessage = `❌ ${error.message}`;
-                }
-                
-                showMessage(errorMessage, 'error');
-            } finally {
-                submitBtn.disabled = false;
-                btnText.style.display = 'inline';
-                btnLoading.style.display = 'none';
+            const { data, error } = await supabase.auth.signUp({
+                email: email,
+                password: password,
+            });
+
+            if (error) {
+                showMessage('❌ এরর: ' + error.message, 'error');
+            } else {
+                showMessage('✅ সফল! আপনার ইমেইল চেক করুন (Verification Link-এর জন্য)', 'success');
+                form.reset();
+                updateUserInfo();
             }
+
+            submitBtn.disabled = false;
+            submitBtn.innerText = '🚀 অ্যাকাউন্ট তৈরি করুন';
         });
 
-        // Refresh users
-        refreshBtn.addEventListener('click', () => {
-            loadUsers();
-            showMessage('🔄 ইউজার লিস্ট রিফ্রেশ করা হয়েছে', 'info');
+        // লগআউট
+        logoutBtn.addEventListener('click', async () => {
+            await supabase.auth.signOut();
+            showMessage('👋 লগ আউট সফল হয়েছে', 'info');
+            updateUserInfo();
         });
 
-        // Check for stored session on load
-        async function init() {
-            await loadUsers();
-            
-            // Check if there's a session
-            const session = await supabaseClient.getSession();
-            if (session.data.user) {
-                showMessage(`👋 স্বাগতম ${session.data.user.email}!`, 'success');
-            }
-        }
-
-        // Initialize
-        init();
+        // পেজ লোড হলে চেক করা
+        updateUserInfo();
     </script>
 </body>
 </html>
