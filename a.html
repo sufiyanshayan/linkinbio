@@ -3,47 +3,47 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>LinkInBio Admin | Supabase</title>
+<title>Admin Panel | Link-In-Bio</title>
 <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+Bengali:wght@400;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 <style>
+/* মেইন ডিজাইন */
 * { margin: 0; padding: 0; box-sizing: border-box; }
-html, body { min-height: 100%; font-family: "Noto Serif Bengali", serif; background: #f8f9fa; color: #333; }
+html, body { min-height: 100%; font-family: "Noto Serif Bengali", serif; background: #f4f6f9; color: #333; }
 .wrapper { min-height: 100vh; display: flex; justify-content: center; align-items: center; flex-direction: column; padding: 20px; }
 .container { width: 100%; max-width: 500px; display: flex; flex-direction: column; gap: 15px; }
-.card { background: #fff; border-radius: 24px; padding: 2rem; box-shadow: 0 10px 30px rgba(0,0,0,0.05); }
-.input-group { margin-bottom: 1.2rem; text-align: left; }
-label { font-size: 0.75rem; font-weight: 700; display: flex; align-items: center; gap: 6px; margin-bottom: 6px; color: #555; text-transform: uppercase; }
-input, textarea, select { width: 100%; padding: 12px 15px; border-radius: 12px; border: 1px solid #ddd; outline: none; font-size: 0.9rem; font-family: inherit; transition: 0.2s; }
+.card { background: #fff; border-radius: 20px; padding: 1.5rem; box-shadow: 0 10px 25px rgba(0,0,0,0.05); }
+.input-group { margin-bottom: 1rem; text-align: left; }
+label { font-size: 0.75rem; font-weight: 700; display: flex; align-items: center; gap: 6px; margin-bottom: 5px; color: #555; text-transform: uppercase; }
+input, textarea, select { width: 100%; padding: 12px 14px; border-radius: 10px; border: 1px solid #ddd; outline: none; font-size: 0.9rem; transition: 0.3s; font-family: inherit; }
 input:focus, select:focus { border-color: #000; box-shadow: 0 0 0 3px rgba(0,0,0,0.05); }
 
-/* Password & Eye Icon */
+/* পাসওয়ার্ড এবং আই বাটন */
 .password-wrapper { position: relative; display: flex; align-items: center; }
-.eye-btn { position: absolute; right: 15px; cursor: pointer; color: #999; font-size: 1.2rem; z-index: 10; padding: 5px; }
+.eye-btn { position: absolute; right: 15px; cursor: pointer; color: #888; font-size: 1.1rem; z-index: 10; padding: 5px; }
 
-/* Smart Input Wrapper */
-.smart-input { display: flex; align-items: center; background: #fff; border: 1px solid #ddd; border-radius: 12px; overflow: hidden; }
-.prefix { padding-left: 14px; font-size: 0.85rem; color: #666; font-family: monospace; white-space: nowrap; pointer-events: none; }
+/* স্মার্ট ইনপুট (Prefix Link) */
+.smart-input { display: flex; align-items: center; background: #fff; border: 1px solid #ddd; border-radius: 10px; overflow: hidden; }
+.prefix { padding-left: 12px; font-size: 0.8rem; color: #777; font-family: monospace; white-space: nowrap; pointer-events: none; }
 .smart-input input { border: none; flex: 1; }
 
-/* Phone & Country Section */
-.phone-grid { display: flex; gap: 10px; flex-wrap: wrap; }
-.country-code-box { display: flex; align-items: center; background: #f0f0f0; border-radius: 12px; width: 90px; border: 1px solid #ddd; }
-.plus { padding-left: 10px; font-weight: bold; }
-.code-input { border: none; background: transparent; padding: 12px 5px; width: 100%; }
-.country-hint { font-size: 0.7rem; color: #0077b6; margin-top: 5px; display: block; }
+/* কান্ট্রি কোড এবং ফোন */
+.phone-grid { display: flex; gap: 8px; flex-wrap: wrap; }
+.code-box { display: flex; align-items: center; background: #f8f8f8; border-radius: 10px; width: 85px; border: 1px solid #ddd; }
+.code-box span { padding-left: 8px; font-weight: bold; }
+.code-input { border: none; background: transparent; padding: 10px 4px; width: 100%; }
+.hint { font-size: 0.7rem; color: #0077b6; margin-top: 3px; display: block; }
 
-/* Buttons */
-.btn { width: 100%; padding: 14px; border: none; border-radius: 12px; background: #000; color: #fff; font-weight: 700; cursor: pointer; font-size: 1rem; margin-top: 10px; transition: 0.3s; font-family: inherit; }
+/* বাটন ডিজাইন */
+.btn { width: 100%; padding: 14px; border: none; border-radius: 12px; background: #000; color: #fff; font-weight: 700; cursor: pointer; font-size: 0.95rem; margin-top: 10px; transition: 0.3s; font-family: inherit; }
 .btn:hover { background: #222; transform: translateY(-2px); }
-.btn-logout { background: #d00000; margin-top: 15px; }
-.btn-logout:hover { background: #a00000; }
+.btn-logout { background: #cc0000; margin-top: 15px; }
 
 .hidden { display: none; }
-.scroll-card { max-height: 85vh; overflow-y: auto; padding-right: 10px; }
-.status { margin-top: 15px; padding: 12px; border-radius: 12px; font-size: 0.85rem; text-align: center; display: none; }
-.status-error { display: block; background: #fff5f5; color: #c00; border: 1px solid #ffc1c1; }
-.status-success { display: block; background: #f0fff4; color: #28a745; border: 1px solid #c6f6d5; }
+.form-scroll { max-height: 85vh; overflow-y: auto; padding-right: 5px; }
+.status { margin-top: 15px; padding: 10px; border-radius: 10px; font-size: 0.85rem; text-align: center; display: none; }
+.status-error { display: block; background: #ffebee; color: #c62828; }
+.status-success { display: block; background: #e8f5e9; color: #2e7d32; }
 </style>
 </head>
 <body>
@@ -51,250 +51,157 @@ input:focus, select:focus { border-color: #000; box-shadow: 0 0 0 3px rgba(0,0,0
 <div class="wrapper">
   <div class="container">
     
-    <!-- LOGIN CARD -->
+    <!-- লগইন কার্ড -->
     <div class="card" id="loginCard">
       <h2 style="text-align:center; margin-bottom:1.5rem;">🔐 Admin Login</h2>
       <div class="input-group">
-        <label>Email</label>
-        <input type="email" id="loginEmail" placeholder="admin@example.com">
+        <label>Email Address</label>
+        <input type="email" id="logEmail" placeholder="admin@example.com">
       </div>
       <div class="input-group">
         <label>Password</label>
         <div class="password-wrapper">
-          <input type="password" id="loginPass" placeholder="••••••••">
-          <i class="fa-regular fa-eye eye-btn" id="eyeIcon"></i>
+          <input type="password" id="logPass" placeholder="••••••••">
+          <i class="fa-regular fa-eye eye-btn" id="eyeIcon" onclick="togglePass()"></i>
         </div>
       </div>
-      <button class="btn" onclick="handleLogin()" id="loginBtn">LOGIN</button>
-      <div id="loginStatus" class="status"></div>
+      <button class="btn" onclick="handleLogin()" id="logBtn">LOGIN</button>
+      <div id="logStatus" class="status"></div>
     </div>
 
-    <!-- MAIN FORM CARD -->
-    <div class="card hidden scroll-card" id="formCard">
-      <h3 style="margin-bottom:1.5rem; border-bottom:2px solid #eee; padding-bottom:10px;">
+    <!-- মেইন ফরম কার্ড -->
+    <div class="card hidden form-scroll" id="formCard">
+      <h3 style="margin-bottom:1.5rem; border-bottom:2px solid #eee; padding-bottom:8px;">
         <i class="fa-regular fa-pen-to-square"></i> YOUR INFORMATION
       </h3>
 
-      <!-- Fields 1 & 2 -->
-      <div class="input-group">
-        <label>1. EMAIL *</label>
-        <input type="email" id="fEmail" placeholder="your@email.com">
-      </div>
-      <div class="input-group">
-        <label>2. YOUR NAME *</label>
-        <input type="text" id="fName" placeholder="John Doe">
+      <div class="input-group"><label>1. EMAIL *</label><input type="email" id="f1" placeholder="email@mail.com"></div>
+      <div class="input-group"><label>2. YOUR NAME *</label><input type="text" id="f2" placeholder="John Doe"></div>
+      <div class="input-group"><label>3. PROFILE PICTURE LINK</label><input type="url" id="f3" placeholder="https://..."></div>
+
+      <div class="input-group"><label>4. FACEBOOK</label>
+        <div class="smart-input"><span class="prefix">https://www.facebook.com/</span><input type="text" id="f4"></div>
       </div>
 
-      <!-- Field 3 -->
-      <div class="input-group">
-        <label>3. PROFILE PICTURE LINK</label>
-        <input type="url" id="fPic" placeholder="https://link-to-image.com">
+      <div class="input-group"><label>5. FACEBOOK PAGE LINK</label>
+        <div class="smart-input"><span class="prefix">https://www.facebook.com/</span><input type="text" id="f5"></div>
       </div>
 
-      <!-- Field 4 (Facebook) -->
-      <div class="input-group">
-        <label>4. FACEBOOK</label>
-        <div class="smart-input">
-          <span class="prefix">https://www.facebook.com/</span>
-          <input type="text" id="fFb" placeholder="username">
-        </div>
+      <div class="input-group"><label>6. INSTAGRAM</label>
+        <div class="smart-input"><span class="prefix">https://www.instagram.com/</span><input type="text" id="f6"></div>
       </div>
 
-      <!-- Field 5 (FB Page) -->
-      <div class="input-group">
-        <label>5. FACEBOOK PAGE LINK</label>
-        <div class="smart-input">
-          <span class="prefix">https://www.facebook.com/</span>
-          <input type="text" id="fFbPage" placeholder="pagename">
-        </div>
-      </div>
-
-      <!-- Field 6 (Instagram) -->
-      <div class="input-group">
-        <label>6. INSTAGRAM</label>
-        <div class="smart-input">
-          <span class="prefix">https://www.instagram.com/</span>
-          <input type="text" id="fIg" placeholder="username">
-        </div>
-      </div>
-
-      <!-- Field 7 (WhatsApp with Country Selector) -->
+      <!-- ৭. WhatsApp -->
       <div class="input-group">
         <label>7. WHATSAPP</label>
         <div class="phone-grid">
-          <select id="waSelect" onchange="syncCode('wa')"></select>
-          <div class="country-code-box">
-            <span class="plus">+</span>
-            <input type="number" id="waCode" class="code-input" placeholder="Code">
-          </div>
-          <input type="tel" id="fWa" class="code-input" placeholder="Phone Number" style="flex:1.5; border:1px solid #ddd; border-radius:12px; padding-left:10px;">
+          <select id="waSel" onchange="sync('wa')"></select>
+          <div class="code-box"><span>+</span><input type="number" id="waCode" class="code-input"></div>
+          <input type="tel" id="f7" class="code-input" placeholder="Number" style="flex:1.5; border:1px solid #ddd; border-radius:10px;">
         </div>
-        <span class="country-hint" id="waHint">No country selected</span>
+        <span class="hint" id="waHint">No country</span>
       </div>
 
-      <!-- Fields 8-10 -->
-      <div class="input-group">
-        <label>8. TIKTOK</label>
-        <div class="smart-input">
-          <span class="prefix">https://www.tiktok.com/@</span>
-          <input type="text" id="fTt" placeholder="username">
-        </div>
-      </div>
-      <div class="input-group">
-        <label>9. TELEGRAM</label>
-        <div class="smart-input">
-          <span class="prefix">https://t.me/</span>
-          <input type="text" id="fTg" placeholder="username">
-        </div>
-      </div>
-      <div class="input-group">
-        <label>10. TWITTER (X)</label>
-        <div class="smart-input">
-          <span class="prefix">https://x.com/</span>
-          <input type="text" id="fTw" placeholder="username">
-        </div>
+      <div class="input-group"><label>8. TIKTOK</label>
+        <div class="smart-input"><span class="prefix">https://www.tiktok.com/@</span><input type="text" id="f8"></div>
       </div>
 
-      <!-- Field 11 (Phone with Country Selector) -->
+      <div class="input-group"><label>9. TELEGRAM</label>
+        <div class="smart-input"><span class="prefix">https://t.me/</span><input type="text" id="f9"></div>
+      </div>
+
+      <div class="input-group"><label>10. TWITTER (X)</label>
+        <div class="smart-input"><span class="prefix">https://x.com/</span><input type="text" id="f10"></div>
+      </div>
+
+      <!-- ১১. Phone -->
       <div class="input-group">
         <label>11. PHONE</label>
         <div class="phone-grid">
-          <select id="phSelect" onchange="syncCode('ph')"></select>
-          <div class="country-code-box">
-            <span class="plus">+</span>
-            <input type="number" id="phCode" class="code-input" placeholder="Code">
-          </div>
-          <input type="tel" id="fPh" class="code-input" placeholder="Phone Number" style="flex:1.5; border:1px solid #ddd; border-radius:12px; padding-left:10px;">
+          <select id="phSel" onchange="sync('ph')"></select>
+          <div class="code-box"><span>+</span><input type="number" id="phCode" class="code-input"></div>
+          <input type="tel" id="f11" class="code-input" placeholder="Number" style="flex:1.5; border:1px solid #ddd; border-radius:10px;">
         </div>
-        <span class="country-hint" id="phHint">No country selected</span>
+        <span class="hint" id="phHint">No country</span>
       </div>
 
-      <!-- Fields 12-13 -->
-      <div class="input-group">
-        <label>12. ABOUT</label>
-        <textarea id="fAbout" rows="3" placeholder="Write about yourself..."></textarea>
-      </div>
-      <div class="input-group">
-        <label>13. WEBSITE</label>
-        <input type="url" id="fWeb" placeholder="https://yourdomain.com">
-      </div>
+      <div class="input-group"><label>12. ABOUT</label><textarea id="f12" rows="3" placeholder="About you..."></textarea></div>
+      <div class="input-group"><label>13. WEBSITE</label><input type="url" id="f13" placeholder="https://..."></div>
 
-      <button class="btn" onclick="updateInfo()" id="updateBtn">UPDATE INFORMATION</button>
-      <button class="btn btn-logout" onclick="handleLogout()"><i class="fa-solid fa-power-off"></i> LOGOUT</button>
+      <button class="btn" onclick="updateInfo()" id="upBtn">UPDATE INFORMATION</button>
+      <button class="btn btn-logout" onclick="handleLogout()">LOGOUT</button>
       
-      <div id="formStatus" class="status"></div>
+      <div id="fStatus" class="status"></div>
     </div>
 
   </div>
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-
 <script>
-// --- CONFIGURATION ---
+// --- সুপাবেস কানেকশন ---
 const S_URL = "https://emrbjxmbzmldzjkztwwr.supabase.co";
 const S_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImVtcmJqeG1iem1sZHpqa3p0d3dyIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODAzOTIyOTEsImV4cCI6MjA5NTk2ODI5MX0.LybcpC-nZTCinsNJVJCYKRpPcXhqVFKYaxPWyn1AFEg";
-const sbClient = supabase.createClient(S_URL, S_KEY);
+const sb = supabase.createClient(S_URL, S_KEY);
 
-// --- COUNTRY DATA ---
-const countries = [
-    { code: "880", name: "Bangladesh" }, { code: "91", name: "India" }, { code: "92", name: "Pakistan" },
-    { code: "1", name: "USA/Canada" }, { code: "44", name: "UK" }, { code: "966", name: "Saudi Arabia" },
-    { code: "971", name: "UAE" }, { code: "60", name: "Malaysia" }, { code: "65", name: "Singapore" }
-];
+// কান্ট্রি ডাটা
+const ct = [{c:"880",n:"Bangladesh"},{c:"91",n:"India"},{c:"92",n:"Pakistan"},{c:"1",n:"USA"},{c:"44",n:"UK"},{c:"966",n:"Saudi"}];
 
-// --- INITIALIZE COUNTRY SELECTS ---
-function initCountries() {
-    const waS = document.getElementById('waSelect');
-    const phS = document.getElementById('phSelect');
-    let html = '<option value="">Select Country</option>';
-    countries.forEach(c => { html += `<option value="${c.code}">${c.name} (+${c.code})</option>`; });
-    waS.innerHTML = html; phS.innerHTML = html;
+function initCt() {
+    let h = '<option value="">Country</option>';
+    ct.forEach(i=>{ h+=`<option value="${i.c}">${i.n}</option>`; });
+    document.getElementById('waSel').innerHTML=h; document.getElementById('phSel').innerHTML=h;
+}
+function sync(t) {
+    const s=document.getElementById(t+'Sel'), i=document.getElementById(t+'Code'), hi=document.getElementById(t+'Hint');
+    i.value=s.value; let found=ct.find(x=>x.c===s.value); hi.innerText=found?found.n:"Custom";
 }
 
-function syncCode(type) {
-    const sel = document.getElementById(type + 'Select');
-    const inp = document.getElementById(type + 'Code');
-    const hint = document.getElementById(type + 'Hint');
-    inp.value = sel.value;
-    const country = countries.find(c => c.code === sel.value);
-    hint.innerText = country ? country.name : "Custom Code";
+// আই বাটন ফিক্স
+function togglePass() {
+    const p = document.getElementById('logPass'), ic = document.getElementById('eyeIcon');
+    if(p.type==="password"){ p.type="text"; ic.classList.replace('fa-eye','fa-eye-slash'); }
+    else { p.type="password"; ic.classList.replace('fa-eye-slash','fa-eye'); }
 }
 
-// --- EYE TOGGLE (FIXED) ---
-const eyeIcon = document.getElementById('eyeIcon');
-const passInp = document.getElementById('loginPass');
-
-eyeIcon.addEventListener('click', function() {
-    const isPass = passInp.type === 'password';
-    passInp.type = isPass ? 'text' : 'password';
-    this.classList.toggle('fa-eye');
-    this.classList.toggle('fa-eye-slash');
-});
-
-// --- LOGIN LOGIC ---
+// লগইন
 async function handleLogin() {
-    const email = document.getElementById('loginEmail').value;
-    const pass = document.getElementById('loginPass').value;
-    const btn = document.getElementById('loginBtn');
-    const status = document.getElementById('loginStatus');
-
-    if(!email || !pass) { status.innerText = "Email & Password required!"; status.className="status status-error"; return; }
-
-    btn.disabled = true; btn.innerText = "Processing...";
-    
-    const { data, error } = await sbClient.auth.signInWithPassword({ email, password: pass });
-
-    if(error) {
-        status.innerText = error.message; status.className="status status-error";
-        btn.disabled = false; btn.innerText = "LOGIN";
-    } else {
-        document.getElementById('loginCard').classList.add('hidden');
-        document.getElementById('formCard').classList.remove('hidden');
-    }
+    const e=document.getElementById('logEmail').value, p=document.getElementById('logPass').value;
+    const st=document.getElementById('logStatus'), b=document.getElementById('logBtn');
+    if(!e || !p) return;
+    b.disabled=true; b.innerText="Checking...";
+    const { error } = await sb.auth.signInWithPassword({ email:e, password:p });
+    if(error) { st.innerText=error.message; st.className="status status-error"; b.disabled=false; b.innerText="LOGIN"; }
+    else { document.getElementById('loginCard').classList.add('hidden'); document.getElementById('formCard').classList.remove('hidden'); }
 }
 
-// --- UPDATE LOGIC ---
+// ডাটা আপডেট
 async function updateInfo() {
-    const btn = document.getElementById('updateBtn');
-    const status = document.getElementById('formStatus');
-
-    const payload = {
-        email: document.getElementById('fEmail').value,
-        name: document.getElementById('fName').value,
-        profile_pic: document.getElementById('fPic').value,
-        facebook: 'https://www.facebook.com/' + document.getElementById('fFb').value,
-        fb_page: 'https://www.facebook.com/' + document.getElementById('fFbPage').value,
-        instagram: 'https://www.instagram.com/' + document.getElementById('fIg').value,
-        whatsapp: 'https://wa.me/' + document.getElementById('waCode').value + document.getElementById('fWa').value.replace(/\D/g,''),
-        tiktok: 'https://www.tiktok.com/@' + document.getElementById('fTt').value,
-        telegram: 'https://t.me/' + document.getElementById('fTg').value,
-        twitter: 'https://x.com/' + document.getElementById('fTw').value,
-        phone: '+' + document.getElementById('phCode').value + document.getElementById('fPh').value.replace(/\D/g,''),
-        about: document.getElementById('fAbout').value,
-        website: document.getElementById('fWeb').value
+    const b=document.getElementById('upBtn'), st=document.getElementById('fStatus');
+    const d = {
+        email: document.getElementById('f1').value,
+        name: document.getElementById('f2').value,
+        profile_pic: document.getElementById('f3').value,
+        facebook: 'https://www.facebook.com/'+document.getElementById('f4').value,
+        fb_page: 'https://www.facebook.com/'+document.getElementById('f5').value,
+        instagram: 'https://www.instagram.com/'+document.getElementById('f6').value,
+        whatsapp: 'https://wa.me/'+document.getElementById('waCode').value + document.getElementById('f7').value.replace(/\D/g,''),
+        tiktok: 'https://www.tiktok.com/@'+document.getElementById('f8').value,
+        telegram: 'https://t.me/'+document.getElementById('f9').value,
+        twitter: 'https://x.com/'+document.getElementById('f10').value,
+        phone: '+'+document.getElementById('phCode').value + document.getElementById('f11').value.replace(/\D/g,''),
+        about: document.getElementById('f12').value,
+        website: document.getElementById('f13').value
     };
-
-    if(!payload.name || !payload.email) { alert("Name & Email are required!"); return; }
-
-    btn.disabled = true; btn.innerText = "Updating Database...";
-
-    const { error } = await sbClient.from('linkinbio').insert([payload]);
-
-    if(error) {
-        status.innerText = "Error: " + error.message; status.className="status status-error";
-    } else {
-        status.innerText = "SUCCESS: Data updated in Supabase!"; status.className="status status-success";
-    }
-    btn.disabled = false; btn.innerText = "UPDATE INFORMATION";
+    if(!d.name) { alert("Name Required"); return; }
+    b.disabled=true; b.innerText="Updating...";
+    const { error } = await sb.from('linkinbio').insert([d]);
+    if(error) { st.innerText=error.message; st.className="status status-error"; }
+    else { st.innerText="Success: Data Updated!"; st.className="status status-success"; }
+    b.disabled=false; b.innerText="UPDATE INFORMATION";
 }
-
-async function handleLogout() {
-    await sbClient.auth.signOut();
-    location.reload();
-}
-
-initCountries();
+function handleLogout() { sb.auth.signOut(); location.reload(); }
+initCt();
 </script>
 </body>
 </html>
