@@ -3,31 +3,35 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Supabase Secured Form</title>
+<title>Hologram Request | Supabase</title>
 <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+Bengali:wght@400;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 <style>
 * { margin: 0; padding: 0; box-sizing: border-box; }
-html, body { min-height: 100%; font-family: "Noto Serif Bengali", serif; background: #f4f7f6; color: #333; }
-.wrapper { min-height: 100vh; display: flex; justify-content: center; align-items: center; padding: 20px; }
-.container { width: 100%; max-width: 450px; }
-.card { background: #fff; border-radius: 20px; padding: 2rem; box-shadow: 0 10px 30px rgba(0,0,0,0.1); text-align: center; }
-.input-group { margin-bottom: 1.2rem; text-align: left; }
-label { display: block; font-size: 0.85rem; font-weight: 600; margin-bottom: 6px; color: #555; }
-input, textarea { width: 100%; padding: 12px 15px; border-radius: 12px; border: 1px solid #ddd; outline: none; font-size: 1rem; transition: 0.3s; font-family: inherit; }
-input:focus { border-color: #000; }
-.password-wrapper { position: relative; display: flex; align-items: center; }
-.eye-btn { position: absolute; right: 15px; cursor: pointer; color: #888; font-size: 1.2rem; z-index: 10; padding: 5px; }
-.btn { width: 100%; padding: 14px; border: none; border-radius: 12px; background: #000; color: #fff; font-weight: 600; cursor: pointer; font-size: 1rem; transition: 0.3s; font-family: inherit; }
+html, body { min-height: 100%; font-family: "Noto Serif Bengali", serif; background: #f7f7f7; overflow-x: hidden; }
+.wrapper { min-height: 100vh; display: flex; justify-content: center; align-items: center; flex-direction: column; padding: 20px; }
+.container { width: 100%; max-width: 500px; display: flex; flex-direction: column; gap: 12px; }
+.card { background: #ffffff; border-radius: 24px; padding: 1.8rem; box-shadow: 0 8px 24px rgba(0,0,0,0.08); }
+.input-group { margin-bottom: 1rem; text-align: left; }
+label { font-size: 0.7rem; font-weight: 600; display: flex; align-items: center; gap: 6px; margin-bottom: 5px; color: #555; text-transform: uppercase; }
+input, textarea, select { width: 100%; padding: 12px 14px; border-radius: 12px; border: 1px solid #ddd; outline: none; font-size: 0.85rem; transition: 0.2s; font-family: inherit; }
+input:focus { border-color: #000; box-shadow: 0 0 0 2px rgba(0,0,0,0.05); }
+
+/* Password & Smart Inputs */
+.password-wrapper, .smart-input { position: relative; display: flex; align-items: center; }
+.eye-btn { position: absolute; right: 15px; cursor: pointer; color: #888; font-size: 1.1rem; z-index: 10; padding: 5px; }
+.smart-input { background: #fff; border: 1px solid #ddd; border-radius: 12px; }
+.domain-part { padding-left: 14px; font-size: 0.8rem; color: #777; font-family: monospace; white-space: nowrap; }
+.smart-input input { border: none; flex: 1; }
+
+.btn { width: 100%; padding: 14px; border: none; border-radius: 12px; background: #000; color: white; font-weight: 600; cursor: pointer; margin-top: 10px; font-family: inherit; }
 .btn:disabled { background: #666; opacity: 0.7; }
 .hidden { display: none; }
-.status { margin-top: 15px; padding: 10px; border-radius: 10px; font-size: 0.9rem; display: none; }
-.status-error { display: block; background: #fee2e2; color: #b91c1c; border: 1px solid #fecaca; }
-.status-success { display: block; background: #dcfce7; color: #15803d; border: 1px solid #bbf7d0; }
-.smart-input { display: flex; align-items: center; border: 1px solid #ddd; border-radius: 12px; background: #fff; }
-.prefix { padding-left: 12px; color: #888; font-size: 0.9rem; }
-.smart-input input { border: none; }
-.footer { margin-top: 20px; font-size: 11px; color: #aaa; text-align: center; }
+.form-card { max-height: 85vh; overflow-y: auto; }
+.status { margin-top: 12px; padding: 10px; border-radius: 12px; font-size: 0.8rem; text-align: center; display: none; }
+.status-error { display: block; background: #ffebee; color: #c62828; }
+.status-success { display: block; background: #e8f5e9; color: #2e7d32; }
+.footer { margin-top: 20px; font-size: 11px; color: #999; text-align: center; }
 </style>
 </head>
 <body>
@@ -35,153 +39,213 @@ input:focus { border-color: #000; }
 <div class="wrapper">
   <div class="container">
     
-    <!-- লগইন কার্ড -->
+    <!-- LOGIN CARD -->
     <div class="card" id="loginCard">
-      <h2 style="margin-bottom: 1.5rem;">🔐 Admin Login</h2>
+      <h2 style="margin-bottom:1.5rem; text-align:center;">🔐 Admin Login</h2>
       <div class="input-group">
-        <label>Email Address</label>
-        <input type="email" id="loginEmail" placeholder="admin@example.com">
+        <label>Email</label>
+        <input type="email" id="lEmail" placeholder="admin@example.com">
       </div>
       <div class="input-group">
         <label>Password</label>
         <div class="password-wrapper">
-          <input type="password" id="loginPass" placeholder="••••••••">
-          <!-- আই বাটন -->
-          <i class="fa-regular fa-eye eye-btn" id="eyeIcon" onclick="togglePassword()"></i>
+          <input type="password" id="lPass" placeholder="••••••••">
+          <i class="fa-regular fa-eye eye-btn" id="eyeBtn" onclick="togglePass()"></i>
         </div>
       </div>
-      <button class="btn" id="loginBtn" onclick="handleLogin()">Login</button>
+      <button class="btn" id="loginBtn" onclick="doLogin()">Login</button>
       <div id="loginStatus" class="status"></div>
     </div>
 
-    <!-- ডাটা এন্ট্রি কার্ড (লগইনের পর আসবে) -->
-    <div class="card hidden" id="formCard">
-      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1.5rem;">
-        <h3>📝 Entry Form</h3>
-        <button onclick="handleLogout()" style="color:red; background:none; border:none; cursor:pointer;"><i class="fa-solid fa-power-off"></i> Logout</button>
-      </div>
-      
-      <div class="input-group">
-        <label>Full Name</label>
-        <input type="text" id="fullName" placeholder="User Full Name">
+    <!-- MAIN DATA FORM -->
+    <div class="card form-card hidden" id="formCard">
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1.5rem; border-bottom:2px solid #f0f0f0; padding-bottom:10px;">
+        <h3>📝 YOUR INFORMATION</h3>
+        <button onclick="doLogout()" style="color:red; background:none; border:none; cursor:pointer;"><i class="fa-solid fa-power-off"></i> Logout</button>
       </div>
 
+      <!-- 1. Email -->
       <div class="input-group">
-        <label>Facebook Profile</label>
+        <label><i class="fa-regular fa-envelope"></i> 1. EMAIL</label>
+        <input type="email" id="fEmail" placeholder="user@mail.com">
+      </div>
+
+      <!-- 2. Name -->
+      <div class="input-group">
+        <label><i class="fa-regular fa-id-card"></i> 2. YOUR NAME</label>
+        <input type="text" id="fName" placeholder="John Doe">
+      </div>
+
+      <!-- 3. Profile Pic -->
+      <div class="input-group">
+        <label><i class="fa-regular fa-image"></i> 3. PROFILE PICTURE LINK</label>
+        <input type="url" id="fPic" placeholder="https://...">
+      </div>
+
+      <!-- 4. Facebook -->
+      <div class="input-group">
+        <label><i class="fa-brands fa-facebook"></i> 4. FACEBOOK</label>
         <div class="smart-input">
-          <span class="prefix">fb.com/</span>
-          <input type="text" id="fbUser" placeholder="username">
+          <span class="domain-part">fb.com/</span>
+          <input type="text" id="fFb" placeholder="username">
         </div>
       </div>
 
+      <!-- 5. FB Page -->
       <div class="input-group">
-        <label>Details / Bio</label>
-        <textarea id="bio" rows="3" placeholder="Enter details..."></textarea>
+        <label><i class="fa-brands fa-facebook"></i> 5. FACEBOOK PAGE LINK</label>
+        <div class="smart-input">
+          <span class="domain-part">fb.com/</span>
+          <input type="text" id="fFbPage" placeholder="pagename">
+        </div>
       </div>
 
-      <button class="btn" id="submitBtn" onclick="handleSubmit()">Save to Supabase</button>
+      <!-- 6. Instagram -->
+      <div class="input-group">
+        <label><i class="fa-brands fa-instagram"></i> 6. INSTAGRAM</label>
+        <div class="smart-input">
+          <span class="domain-part">ig.com/</span>
+          <input type="text" id="fIg" placeholder="username">
+        </div>
+      </div>
+
+      <!-- 7. WhatsApp -->
+      <div class="input-group">
+        <label><i class="fa-brands fa-whatsapp"></i> 7. WHATSAPP (With Code)</label>
+        <input type="tel" id="fWa" placeholder="8801700000000">
+      </div>
+
+      <!-- 8. TikTok -->
+      <div class="input-group">
+        <label><i class="fa-brands fa-tiktok"></i> 8. TIKTOK</label>
+        <div class="smart-input">
+          <span class="domain-part">tiktok.com/@</span>
+          <input type="text" id="fTt" placeholder="username">
+        </div>
+      </div>
+
+      <!-- 9. Telegram -->
+      <div class="input-group">
+        <label><i class="fa-brands fa-telegram"></i> 9. TELEGRAM</label>
+        <div class="smart-input">
+          <span class="domain-part">t.me/</span>
+          <input type="text" id="fTg" placeholder="username">
+        </div>
+      </div>
+
+      <!-- 10. Twitter -->
+      <div class="input-group">
+        <label><i class="fa-brands fa-twitter"></i> 10. TWITTER (X)</label>
+        <div class="smart-input">
+          <span class="domain-part">x.com/</span>
+          <input type="text" id="fTw" placeholder="username">
+        </div>
+      </div>
+
+      <!-- 11. Phone -->
+      <div class="input-group">
+        <label><i class="fa-solid fa-phone"></i> 11. PHONE</label>
+        <input type="tel" id="fPhone" placeholder="+880...">
+      </div>
+
+      <!-- 12. About -->
+      <div class="input-group">
+        <label><i class="fa-regular fa-user"></i> 12. ABOUT</label>
+        <textarea id="fAbout" rows="3" placeholder="Write about yourself..."></textarea>
+      </div>
+
+      <!-- 13. Website -->
+      <div class="input-group">
+        <label><i class="fa-solid fa-globe"></i> 13. WEBSITE</label>
+        <input type="url" id="fWeb" placeholder="https://yoursite.com">
+      </div>
+
+      <button class="btn" id="submitBtn" onclick="doSubmit()">SUBMIT TO SUPABASE</button>
       <div id="formStatus" class="status"></div>
     </div>
 
-    <div class="footer">Powered by Supabase Security</div>
   </div>
+  <div class="footer">Copyright © 2026 Secured by Supabase</div>
 </div>
 
-<!-- Supabase SDK -->
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
 <script>
-// --- ১. সুপাবেস কনফিগারেশন (নাম পরিবর্তন করা হয়েছে সংঘাত এড়াতে) ---
-const SB_URL = 'https://emrbjxmbzmldzjkztwwr.supabase.co';
-const SB_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImVtcmJqeG1iem1sZHpqa3p0d3dyIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODAzOTIyOTEsImV4cCI6MjA5NTk2ODI5MX0.LybcpC-nZTCinsNJVJCYKRpPcXhqVFKYaxPWyn1AFEg';
-const sbClient = supabase.createClient(SB_URL, SB_KEY);
+// --- SUPABASE CONFIG ---
+const S_URL = 'https://emrbjxmbzmldzjkztwwr.supabase.co';
+const S_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImVtcmJqeG1iem1sZHpqa3p0d3dyIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODAzOTIyOTEsImV4cCI6MjA5NTk2ODI5MX0.LybcpC-nZTCinsNJVJCYKRpPcXhqVFKYaxPWyn1AFEg';
+const sb = supabase.createClient(S_URL, S_KEY);
 
-// --- ২. আই বাটন ফাংশন (এবার এটি কাজ করবেই) ---
-function togglePassword() {
-    const pInput = document.getElementById('loginPass');
-    const icon = document.getElementById('eyeIcon');
-    
-    if (pInput.type === 'password') {
-        pInput.type = 'text';
-        icon.classList.remove('fa-eye');
-        icon.classList.add('fa-eye-slash');
+// --- EYE BUTTON ---
+function togglePass() {
+    const input = document.getElementById('lPass');
+    const icon = document.getElementById('eyeBtn');
+    if (input.type === 'password') {
+        input.type = 'text';
+        icon.classList.replace('fa-eye', 'fa-eye-slash');
     } else {
-        pInput.type = 'password';
-        icon.classList.remove('fa-eye-slash');
-        icon.classList.add('fa-eye');
+        input.type = 'password';
+        icon.classList.replace('fa-eye-slash', 'fa-eye');
     }
 }
 
-// --- ৩. লগইন ফাংশন (Supabase Auth) ---
-async function handleLogin() {
-    const email = document.getElementById('loginEmail').value.trim();
-    const password = document.getElementById('loginPass').value.trim();
+// --- LOGIN ---
+async function doLogin() {
+    const email = document.getElementById('lEmail').value;
+    const pass = document.getElementById('lPass').value;
     const status = document.getElementById('loginStatus');
     const btn = document.getElementById('loginBtn');
 
-    if(!email || !password) {
-        status.innerText = "Email এবং Password দিন!";
-        status.className = "status status-error";
-        return;
-    }
+    if(!email || !pass) { status.innerText = "পূরণ করুন!"; status.className="status status-error"; return; }
+    
+    btn.disabled = true; btn.innerText = "Checking...";
+    const { error } = await sb.auth.signInWithPassword({ email, password: pass });
 
-    btn.disabled = true;
-    btn.innerText = "Processing...";
-
-    const { data, error } = await sbClient.auth.signInWithPassword({ email, password });
-
-    if (error) {
-        status.innerText = "Error: " + error.message;
-        status.className = "status status-error";
-        btn.disabled = false;
-        btn.innerText = "Login";
+    if(error) {
+        status.innerText = error.message; status.className="status status-error";
+        btn.disabled = false; btn.innerText = "Login";
     } else {
         document.getElementById('loginCard').classList.add('hidden');
         document.getElementById('formCard').classList.remove('hidden');
     }
 }
 
-// --- ৪. ডাটা সাবমিট ফাংশন ---
-async function handleSubmit() {
-    const name = document.getElementById('fullName').value;
-    const fb = document.getElementById('fbUser').value;
-    const bio = document.getElementById('bio').value;
-    const status = document.getElementById('formStatus');
+// --- SUBMIT DATA ---
+async function doSubmit() {
     const btn = document.getElementById('submitBtn');
+    const status = document.getElementById('formStatus');
+    
+    const data = {
+        email: document.getElementById('fEmail').value,
+        name: document.getElementById('fName').value,
+        profile_pic: document.getElementById('fPic').value,
+        facebook: 'https://fb.com/' + document.getElementById('fFb').value,
+        fb_page: 'https://fb.com/' + document.getElementById('fFbPage').value,
+        instagram: 'https://ig.com/' + document.getElementById('fIg').value,
+        whatsapp: 'https://wa.me/' + document.getElementById('fWa').value,
+        tiktok: 'https://tiktok.com/@' + document.getElementById('fTt').value,
+        telegram: 'https://t.me/' + document.getElementById('fTg').value,
+        twitter: 'https://x.com/' + document.getElementById('fTw').value,
+        phone: document.getElementById('fPhone').value,
+        about: document.getElementById('fAbout').value,
+        website: document.getElementById('fWeb').value
+    };
 
-    if(!name) {
-        alert("নাম লিখুন!");
-        return;
-    }
+    if(!data.name) { alert("নাম দিন!"); return; }
 
-    btn.disabled = true;
-    btn.innerText = "Saving...";
+    btn.disabled = true; btn.innerText = "Saving...";
+    const { error } = await sb.from('hologram_requests').insert([data]);
 
-    const { error } = await sbClient
-        .from('hologram_requests') // আপনার টেবিল এর নাম ডাটাবেসে
-        .insert([{ name, facebook_url: 'https://fb.com/'+fb, bio }]);
-
-    if (error) {
-        status.innerText = "Database Error: " + error.message;
-        status.className = "status status-error";
+    if(error) {
+        status.innerText = "Error: " + error.message; status.className="status status-error";
     } else {
-        status.innerText = "ডাটা সেভ হয়েছে!";
-        status.className = "status status-success";
-        // ফরম খালি করা
-        document.getElementById('fullName').value = '';
-        document.getElementById('fbUser').value = '';
-        document.getElementById('bio').value = '';
+        status.innerText = "সফলভাবে সেভ হয়েছে!"; status.className="status status-success";
+        // Reset fields if needed
     }
-    btn.disabled = false;
-    btn.innerText = "Save to Supabase";
+    btn.disabled = false; btn.innerText = "SUBMIT TO SUPABASE";
 }
 
-// লগআউট ফাংশন
-async function handleLogout() {
-    await sbClient.auth.signOut();
-    location.reload();
-}
+async function doLogout() { await sb.auth.signOut(); location.reload(); }
 </script>
-
 </body>
 </html>
