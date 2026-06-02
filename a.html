@@ -3,32 +3,31 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Supabase Ready Form</title>
+<title>Supabase Secured Form</title>
 <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+Bengali:wght@400;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 <style>
 * { margin: 0; padding: 0; box-sizing: border-box; }
-html, body { min-height: 100%; font-family: "Noto Serif Bengali", serif; background: #f0f2f5; color: #1c1e21; }
+html, body { min-height: 100%; font-family: "Noto Serif Bengali", serif; background: #f4f7f6; color: #333; }
 .wrapper { min-height: 100vh; display: flex; justify-content: center; align-items: center; padding: 20px; }
 .container { width: 100%; max-width: 450px; }
-.card { background: #fff; border-radius: 20px; padding: 2rem; box-shadow: 0 10px 25px rgba(0,0,0,0.1); text-align: center; }
-h2, h3 { margin-bottom: 1.5rem; font-weight: 700; }
+.card { background: #fff; border-radius: 20px; padding: 2rem; box-shadow: 0 10px 30px rgba(0,0,0,0.1); text-align: center; }
 .input-group { margin-bottom: 1.2rem; text-align: left; }
-label { display: block; font-size: 0.85rem; font-weight: 600; margin-bottom: 6px; color: #444; }
-input, textarea { width: 100%; padding: 12px 15px; border-radius: 10px; border: 1px solid #ddd; outline: none; font-size: 1rem; transition: 0.3s; }
+label { display: block; font-size: 0.85rem; font-weight: 600; margin-bottom: 6px; color: #555; }
+input, textarea { width: 100%; padding: 12px 15px; border-radius: 12px; border: 1px solid #ddd; outline: none; font-size: 1rem; transition: 0.3s; font-family: inherit; }
 input:focus { border-color: #000; }
 .password-wrapper { position: relative; display: flex; align-items: center; }
-.toggle-password { position: absolute; right: 15px; cursor: pointer; color: #888; font-size: 1.1rem; z-index: 5; padding: 5px; }
-.btn { width: 100%; padding: 14px; border: none; border-radius: 10px; background: #000; color: #fff; font-weight: 600; cursor: pointer; font-size: 1rem; transition: 0.3s; }
-.btn:disabled { background: #666; cursor: not-allowed; }
+.eye-btn { position: absolute; right: 15px; cursor: pointer; color: #888; font-size: 1.2rem; z-index: 10; padding: 5px; }
+.btn { width: 100%; padding: 14px; border: none; border-radius: 12px; background: #000; color: #fff; font-weight: 600; cursor: pointer; font-size: 1rem; transition: 0.3s; font-family: inherit; }
+.btn:disabled { background: #666; opacity: 0.7; }
 .hidden { display: none; }
-.status { margin-top: 15px; padding: 10px; border-radius: 8px; font-size: 0.9rem; display: none; }
-.status-error { display: block; background: #ffebee; color: #c62828; border: 1px solid #ffcdd2; }
-.status-success { display: block; background: #e8f5e9; color: #2e7d32; border: 1px solid #c8e6c9; }
-.smart-input { display: flex; align-items: center; border: 1px solid #ddd; border-radius: 10px; background: #fff; }
-.domain { padding-left: 12px; font-size: 0.9rem; color: #777; }
+.status { margin-top: 15px; padding: 10px; border-radius: 10px; font-size: 0.9rem; display: none; }
+.status-error { display: block; background: #fee2e2; color: #b91c1c; border: 1px solid #fecaca; }
+.status-success { display: block; background: #dcfce7; color: #15803d; border: 1px solid #bbf7d0; }
+.smart-input { display: flex; align-items: center; border: 1px solid #ddd; border-radius: 12px; background: #fff; }
+.prefix { padding-left: 12px; color: #888; font-size: 0.9rem; }
 .smart-input input { border: none; }
-.footer { margin-top: 20px; font-size: 11px; color: #999; text-align: center; }
+.footer { margin-top: 20px; font-size: 11px; color: #aaa; text-align: center; }
 </style>
 </head>
 <body>
@@ -36,54 +35,55 @@ input:focus { border-color: #000; }
 <div class="wrapper">
   <div class="container">
     
-    <!-- Login Section -->
+    <!-- লগইন কার্ড -->
     <div class="card" id="loginCard">
-      <h2>🔐 Admin Login</h2>
+      <h2 style="margin-bottom: 1.5rem;">🔐 Admin Login</h2>
       <div class="input-group">
         <label>Email Address</label>
-        <input type="email" id="loginEmail" placeholder="example@mail.com">
+        <input type="email" id="loginEmail" placeholder="admin@example.com">
       </div>
       <div class="input-group">
         <label>Password</label>
         <div class="password-wrapper">
           <input type="password" id="loginPass" placeholder="••••••••">
-          <i class="fa-regular fa-eye toggle-password" id="eyeIcon"></i>
+          <!-- আই বাটন -->
+          <i class="fa-regular fa-eye eye-btn" id="eyeIcon" onclick="togglePassword()"></i>
         </div>
       </div>
       <button class="btn" id="loginBtn" onclick="handleLogin()">Login</button>
       <div id="loginStatus" class="status"></div>
     </div>
 
-    <!-- Data Entry Section -->
+    <!-- ডাটা এন্ট্রি কার্ড (লগইনের পর আসবে) -->
     <div class="card hidden" id="formCard">
       <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1.5rem;">
-        <h3>📝 New Request</h3>
+        <h3>📝 Entry Form</h3>
         <button onclick="handleLogout()" style="color:red; background:none; border:none; cursor:pointer;"><i class="fa-solid fa-power-off"></i> Logout</button>
       </div>
       
       <div class="input-group">
         <label>Full Name</label>
-        <input type="text" id="fullName" placeholder="Enter user name">
+        <input type="text" id="fullName" placeholder="User Full Name">
       </div>
 
       <div class="input-group">
         <label>Facebook Profile</label>
         <div class="smart-input">
-          <span class="domain">fb.com/</span>
+          <span class="prefix">fb.com/</span>
           <input type="text" id="fbUser" placeholder="username">
         </div>
       </div>
 
       <div class="input-group">
-        <label>Bio / Details</label>
-        <textarea id="bio" rows="3" placeholder="Additional info..."></textarea>
+        <label>Details / Bio</label>
+        <textarea id="bio" rows="3" placeholder="Enter details..."></textarea>
       </div>
 
-      <button class="btn" id="submitBtn" onclick="handleSubmit()">Save to Database</button>
+      <button class="btn" id="submitBtn" onclick="handleSubmit()">Save to Supabase</button>
       <div id="formStatus" class="status"></div>
     </div>
 
-    <div class="footer">© 2026 Secured via Supabase</div>
+    <div class="footer">Powered by Supabase Security</div>
   </div>
 </div>
 
@@ -91,39 +91,44 @@ input:focus { border-color: #000; }
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
 <script>
-// --- SUPABASE CONFIG ---
-const URL = 'https://emrbjxmbzmldzjkztwwr.supabase.co';
-const KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImVtcmJqeG1iem1sZHpqa3p0d3dyIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODAzOTIyOTEsImV4cCI6MjA5NTk2ODI5MX0.LybcpC-nZTCinsNJVJCYKRpPcXhqVFKYaxPWyn1AFEg';
-const supabase = supabase.createClient(URL, KEY);
+// --- ১. সুপাবেস কনফিগারেশন (নাম পরিবর্তন করা হয়েছে সংঘাত এড়াতে) ---
+const SB_URL = 'https://emrbjxmbzmldzjkztwwr.supabase.co';
+const SB_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImVtcmJqeG1iem1sZHpqa3p0d3dyIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODAzOTIyOTEsImV4cCI6MjA5NTk2ODI5MX0.LybcpC-nZTCinsNJVJCYKRpPcXhqVFKYaxPWyn1AFEg';
+const sbClient = supabase.createClient(SB_URL, SB_KEY);
 
-// --- PASSWORD TOGGLE (চোখের বাটন) ---
-const eyeIcon = document.getElementById('eyeIcon');
-const passInput = document.getElementById('loginPass');
+// --- ২. আই বাটন ফাংশন (এবার এটি কাজ করবেই) ---
+function togglePassword() {
+    const pInput = document.getElementById('loginPass');
+    const icon = document.getElementById('eyeIcon');
+    
+    if (pInput.type === 'password') {
+        pInput.type = 'text';
+        icon.classList.remove('fa-eye');
+        icon.classList.add('fa-eye-slash');
+    } else {
+        pInput.type = 'password';
+        icon.classList.remove('fa-eye-slash');
+        icon.classList.add('fa-eye');
+    }
+}
 
-eyeIcon.addEventListener('click', () => {
-    const isPass = passInput.type === 'password';
-    passInput.type = isPass ? 'text' : 'password';
-    eyeIcon.classList.toggle('fa-eye');
-    eyeIcon.classList.toggle('fa-eye-slash');
-});
-
-// --- LOGIN FUNCTION ---
+// --- ৩. লগইন ফাংশন (Supabase Auth) ---
 async function handleLogin() {
-    const email = document.getElementById('loginEmail').value;
-    const password = document.getElementById('loginPass').value;
+    const email = document.getElementById('loginEmail').value.trim();
+    const password = document.getElementById('loginPass').value.trim();
     const status = document.getElementById('loginStatus');
     const btn = document.getElementById('loginBtn');
 
     if(!email || !password) {
-        status.innerText = "সবগুলো ঘর পূরণ করুন!";
+        status.innerText = "Email এবং Password দিন!";
         status.className = "status status-error";
         return;
     }
 
     btn.disabled = true;
-    btn.innerText = "Checking...";
+    btn.innerText = "Processing...";
 
-    const { data, error } = await supabase.auth.signInWithPassword({ email, password });
+    const { data, error } = await sbClient.auth.signInWithPassword({ email, password });
 
     if (error) {
         status.innerText = "Error: " + error.message;
@@ -136,7 +141,7 @@ async function handleLogin() {
     }
 }
 
-// --- SUBMIT DATA FUNCTION ---
+// --- ৪. ডাটা সাবমিট ফাংশন ---
 async function handleSubmit() {
     const name = document.getElementById('fullName').value;
     const fb = document.getElementById('fbUser').value;
@@ -152,28 +157,28 @@ async function handleSubmit() {
     btn.disabled = true;
     btn.innerText = "Saving...";
 
-    const { error } = await supabase
-        .from('hologram_requests') // আপনার টেবিল এর নাম
+    const { error } = await sbClient
+        .from('hologram_requests') // আপনার টেবিল এর নাম ডাটাবেসে
         .insert([{ name, facebook_url: 'https://fb.com/'+fb, bio }]);
 
     if (error) {
         status.innerText = "Database Error: " + error.message;
         status.className = "status status-error";
     } else {
-        status.innerText = "সফলভাবে সেভ হয়েছে!";
+        status.innerText = "ডাটা সেভ হয়েছে!";
         status.className = "status status-success";
-        // ফরম রিসেট
+        // ফরম খালি করা
         document.getElementById('fullName').value = '';
         document.getElementById('fbUser').value = '';
         document.getElementById('bio').value = '';
     }
     btn.disabled = false;
-    btn.innerText = "Save to Database";
+    btn.innerText = "Save to Supabase";
 }
 
-// --- LOGOUT ---
+// লগআউট ফাংশন
 async function handleLogout() {
-    await supabase.auth.signOut();
+    await sbClient.auth.signOut();
     location.reload();
 }
 </script>
