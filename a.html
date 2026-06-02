@@ -1,202 +1,182 @@
 <!DOCTYPE html>
 <html lang="bn">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>অ্যাকাউন্ট ক্রিয়েট - Supabase অথেনটিকেশন</title>
-    <!-- Supabase JS Library -->
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            min-height: 100vh;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            padding: 20px;
-        }
-        .container {
-            background: white;
-            border-radius: 20px;
-            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
-            width: 100%;
-            max-width: 500px;
-            padding: 40px;
-        }
-        h2 { text-align: center; color: #333; margin-bottom: 10px; font-size: 28px; }
-        .subtitle { text-align: center; color: #666; margin-bottom: 30px; font-size: 14px; }
-        .form-group { margin-bottom: 20px; }
-        label { display: block; margin-bottom: 8px; color: #333; font-weight: 500; }
-        input {
-            width: 100%; padding: 12px 15px; border: 2px solid #e0e0e0;
-            border-radius: 10px; font-size: 16px; transition: all 0.3s;
-        }
-        input:focus { outline: none; border-color: #667eea; box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1); }
-        button {
-            width: 100%; padding: 12px;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white; border: none; border-radius: 10px;
-            font-size: 16px; font-weight: 600; cursor: pointer;
-            transition: transform 0.2s, box-shadow 0.2s;
-        }
-        button:hover { transform: translateY(-2px); box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4); }
-        button:disabled { opacity: 0.7; cursor: not-allowed; }
-        .message { margin-top: 20px; padding: 12px; border-radius: 10px; display: none; }
-        .message.success { background: #d4edda; color: #155724; border: 1px solid #c3e6cb; display: block; }
-        .message.error { background: #f8d7da; color: #721c24; border: 1px solid #f5c6cb; display: block; }
-        .message.info { background: #d1ecf1; color: #0c5460; border: 1px solid #bee5eb; display: block; }
-        .users-section { margin-top: 30px; padding-top: 20px; border-top: 2px solid #f0f0f0; }
-        .users-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; }
-        .user-item {
-            background: #f8f9fa; padding: 12px; margin-bottom: 10px;
-            border-radius: 10px; border-left: 4px solid #667eea;
-        }
-        .user-email { font-weight: 600; color: #333; font-size: 14px; }
-        .user-id { font-size: 11px; color: #666; font-family: monospace; }
-        .password-strength { font-size: 12px; margin-top: 5px; }
-        .strength-weak { color: #dc3545; }
-        .strength-strong { color: #28a745; }
-    </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Supabase Ready Form</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+Bengali:wght@400;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+html, body { min-height: 100%; font-family: "Noto Serif Bengali", serif; background: #f0f2f5; color: #1c1e21; }
+.wrapper { min-height: 100vh; display: flex; justify-content: center; align-items: center; padding: 20px; }
+.container { width: 100%; max-width: 450px; }
+.card { background: #fff; border-radius: 20px; padding: 2rem; box-shadow: 0 10px 25px rgba(0,0,0,0.1); text-align: center; }
+h2, h3 { margin-bottom: 1.5rem; font-weight: 700; }
+.input-group { margin-bottom: 1.2rem; text-align: left; }
+label { display: block; font-size: 0.85rem; font-weight: 600; margin-bottom: 6px; color: #444; }
+input, textarea { width: 100%; padding: 12px 15px; border-radius: 10px; border: 1px solid #ddd; outline: none; font-size: 1rem; transition: 0.3s; }
+input:focus { border-color: #000; }
+.password-wrapper { position: relative; display: flex; align-items: center; }
+.toggle-password { position: absolute; right: 15px; cursor: pointer; color: #888; font-size: 1.1rem; z-index: 5; padding: 5px; }
+.btn { width: 100%; padding: 14px; border: none; border-radius: 10px; background: #000; color: #fff; font-weight: 600; cursor: pointer; font-size: 1rem; transition: 0.3s; }
+.btn:disabled { background: #666; cursor: not-allowed; }
+.hidden { display: none; }
+.status { margin-top: 15px; padding: 10px; border-radius: 8px; font-size: 0.9rem; display: none; }
+.status-error { display: block; background: #ffebee; color: #c62828; border: 1px solid #ffcdd2; }
+.status-success { display: block; background: #e8f5e9; color: #2e7d32; border: 1px solid #c8e6c9; }
+.smart-input { display: flex; align-items: center; border: 1px solid #ddd; border-radius: 10px; background: #fff; }
+.domain { padding-left: 12px; font-size: 0.9rem; color: #777; }
+.smart-input input { border: none; }
+.footer { margin-top: 20px; font-size: 11px; color: #999; text-align: center; }
+</style>
 </head>
 <body>
-    <div class="container">
-        <h2>✨ অ্যাকাউন্ট তৈরি করুন</h2>
-        <div class="subtitle">Supabase অথেনটিকেশন সিস্টেম</div>
 
-        <form id="signupForm">
-            <div class="form-group">
-                <label for="email">📧 ইমেইল ঠিকানা</label>
-                <input type="email" id="email" required placeholder="আপনার ইমেইল লিখুন">
-            </div>
-
-            <div class="form-group">
-                <label for="password">🔒 পাসওয়ার্ড</label>
-                <input type="password" id="password" required placeholder="মিনিমাম ৬ অক্ষর">
-                <div id="passwordStrength" class="password-strength"></div>
-            </div>
-
-            <div class="form-group">
-                <label for="confirmPassword">✅ পাসওয়ার্ড নিশ্চিত করুন</label>
-                <input type="password" id="confirmPassword" required placeholder="পাসওয়ার্ড পুনরায় লিখুন">
-            </div>
-
-            <button type="submit" id="submitBtn">
-                <span id="btnText">🚀 অ্যাকাউন্ট তৈরি করুন</span>
-            </button>
-        </form>
-
-        <div id="message" class="message"></div>
-
-        <div class="users-section">
-            <div class="users-header">
-                <h3>👤 বর্তমান ইউজার সেশন</h3>
-                <button id="logoutBtn" style="width: auto; padding: 5px 10px; background: #dc3545; font-size: 12px; display: none;">লগ আউট</button>
-            </div>
-            <div id="usersList">
-                <div class="empty-state" style="text-align: center; color: #999;">কোনো ইউজার লগইন নেই</div>
-            </div>
+<div class="wrapper">
+  <div class="container">
+    
+    <!-- Login Section -->
+    <div class="card" id="loginCard">
+      <h2>🔐 Admin Login</h2>
+      <div class="input-group">
+        <label>Email Address</label>
+        <input type="email" id="loginEmail" placeholder="example@mail.com">
+      </div>
+      <div class="input-group">
+        <label>Password</label>
+        <div class="password-wrapper">
+          <input type="password" id="loginPass" placeholder="••••••••">
+          <i class="fa-regular fa-eye toggle-password" id="eyeIcon"></i>
         </div>
+      </div>
+      <button class="btn" id="loginBtn" onclick="handleLogin()">Login</button>
+      <div id="loginStatus" class="status"></div>
     </div>
 
-    <script>
-        // ১. Supabase কনফিগারেশন
-        const SUPABASE_URL = 'https://lsodigwljvsvvspvhjpn.supabase.co';
-        const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imxzb2RpZ3dsanZzdnZzcHZoanBuIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzkxMTk5OTUsImV4cCI6MjA5NDY5NTk5NX0.ysvkIIuOprA-ZtEoY96GpEuSqfHhMeHexpeLoN_XOho';
-        
-        const supabase = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+    <!-- Data Entry Section -->
+    <div class="card hidden" id="formCard">
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1.5rem;">
+        <h3>📝 New Request</h3>
+        <button onclick="handleLogout()" style="color:red; background:none; border:none; cursor:pointer;"><i class="fa-solid fa-power-off"></i> Logout</button>
+      </div>
+      
+      <div class="input-group">
+        <label>Full Name</label>
+        <input type="text" id="fullName" placeholder="Enter user name">
+      </div>
 
-        // DOM এলিমেন্টস
-        const form = document.getElementById('signupForm');
-        const emailInput = document.getElementById('email');
-        const passwordInput = document.getElementById('password');
-        const confirmPasswordInput = document.getElementById('confirmPassword');
-        const submitBtn = document.getElementById('submitBtn');
-        const messageDiv = document.getElementById('message');
-        const usersListDiv = document.getElementById('usersList');
-        const logoutBtn = document.getElementById('logoutBtn');
+      <div class="input-group">
+        <label>Facebook Profile</label>
+        <div class="smart-input">
+          <span class="domain">fb.com/</span>
+          <input type="text" id="fbUser" placeholder="username">
+        </div>
+      </div>
 
-        // পাসওয়ার্ড স্ট্রেন্থ চেক
-        passwordInput.addEventListener('input', () => {
-            const val = passwordInput.value;
-            const strengthDiv = document.getElementById('passwordStrength');
-            if (val.length < 6) {
-                strengthDiv.innerHTML = '<span class="strength-weak">⚠️ খুব ছোট (কমপক্ষে ৬ অক্ষর)</span>';
-            } else {
-                strengthDiv.innerHTML = '<span class="strength-strong">✅ পাসওয়ার্ড ঠিক আছে</span>';
-            }
-        });
+      <div class="input-group">
+        <label>Bio / Details</label>
+        <textarea id="bio" rows="3" placeholder="Additional info..."></textarea>
+      </div>
 
-        // মেসেজ দেখানোর ফাংশন
-        function showMessage(text, type) {
-            messageDiv.textContent = text;
-            messageDiv.className = `message ${type}`;
-            messageDiv.style.display = 'block';
-            setTimeout(() => { messageDiv.style.display = 'none'; }, 5000);
-        }
+      <button class="btn" id="submitBtn" onclick="handleSubmit()">Save to Database</button>
+      <div id="formStatus" class="status"></div>
+    </div>
 
-        // ইউজার ইনফো আপডেট করা
-        async function updateUserInfo() {
-            const { data: { user } } = await supabase.auth.getUser();
-            
-            if (user) {
-                usersListDiv.innerHTML = `
-                    <div class="user-item">
-                        <div class="user-email">📧 ${user.email}</div>
-                        <div class="user-id">🆔 UID: ${user.id}</div>
-                        <div style="font-size: 10px; color: green; margin-top: 5px;">● বর্তমানে লগইন আছেন</div>
-                    </div>
-                `;
-                logoutBtn.style.display = 'block';
-            } else {
-                usersListDiv.innerHTML = '<div class="empty-state">কোনো ইউজার লগইন নেই</div>';
-                logoutBtn.style.display = 'none';
-            }
-        }
+    <div class="footer">© 2026 Secured via Supabase</div>
+  </div>
+</div>
 
-        // সাইন আপ প্রসেস
-        form.addEventListener('submit', async (e) => {
-            e.preventDefault();
-            
-            const email = emailInput.value.trim();
-            const password = passwordInput.value;
-            const confirmPassword = confirmPasswordInput.value;
+<!-- Supabase SDK -->
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
-            if (password !== confirmPassword) {
-                showMessage('❌ পাসওয়ার্ড মেলেনি!', 'error');
-                return;
-            }
+<script>
+// --- SUPABASE CONFIG ---
+const URL = 'https://emrbjxmbzmldzjkztwwr.supabase.co';
+const KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImVtcmJqeG1iem1sZHpqa3p0d3dyIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODAzOTIyOTEsImV4cCI6MjA5NTk2ODI5MX0.LybcpC-nZTCinsNJVJCYKRpPcXhqVFKYaxPWyn1AFEg';
+const supabase = supabase.createClient(URL, KEY);
 
-            submitBtn.disabled = true;
-            submitBtn.innerText = '⏳ প্রসেসিং...';
+// --- PASSWORD TOGGLE (চোখের বাটন) ---
+const eyeIcon = document.getElementById('eyeIcon');
+const passInput = document.getElementById('loginPass');
 
-            const { data, error } = await supabase.auth.signUp({
-                email: email,
-                password: password,
-            });
+eyeIcon.addEventListener('click', () => {
+    const isPass = passInput.type === 'password';
+    passInput.type = isPass ? 'text' : 'password';
+    eyeIcon.classList.toggle('fa-eye');
+    eyeIcon.classList.toggle('fa-eye-slash');
+});
 
-            if (error) {
-                showMessage('❌ এরর: ' + error.message, 'error');
-            } else {
-                showMessage('✅ সফল! আপনার ইমেইল চেক করুন (Verification Link-এর জন্য)', 'success');
-                form.reset();
-                updateUserInfo();
-            }
+// --- LOGIN FUNCTION ---
+async function handleLogin() {
+    const email = document.getElementById('loginEmail').value;
+    const password = document.getElementById('loginPass').value;
+    const status = document.getElementById('loginStatus');
+    const btn = document.getElementById('loginBtn');
 
-            submitBtn.disabled = false;
-            submitBtn.innerText = '🚀 অ্যাকাউন্ট তৈরি করুন';
-        });
+    if(!email || !password) {
+        status.innerText = "সবগুলো ঘর পূরণ করুন!";
+        status.className = "status status-error";
+        return;
+    }
 
-        // লগআউট
-        logoutBtn.addEventListener('click', async () => {
-            await supabase.auth.signOut();
-            showMessage('👋 লগ আউট সফল হয়েছে', 'info');
-            updateUserInfo();
-        });
+    btn.disabled = true;
+    btn.innerText = "Checking...";
 
-        // পেজ লোড হলে চেক করা
-        updateUserInfo();
-    </script>
+    const { data, error } = await supabase.auth.signInWithPassword({ email, password });
+
+    if (error) {
+        status.innerText = "Error: " + error.message;
+        status.className = "status status-error";
+        btn.disabled = false;
+        btn.innerText = "Login";
+    } else {
+        document.getElementById('loginCard').classList.add('hidden');
+        document.getElementById('formCard').classList.remove('hidden');
+    }
+}
+
+// --- SUBMIT DATA FUNCTION ---
+async function handleSubmit() {
+    const name = document.getElementById('fullName').value;
+    const fb = document.getElementById('fbUser').value;
+    const bio = document.getElementById('bio').value;
+    const status = document.getElementById('formStatus');
+    const btn = document.getElementById('submitBtn');
+
+    if(!name) {
+        alert("নাম লিখুন!");
+        return;
+    }
+
+    btn.disabled = true;
+    btn.innerText = "Saving...";
+
+    const { error } = await supabase
+        .from('hologram_requests') // আপনার টেবিল এর নাম
+        .insert([{ name, facebook_url: 'https://fb.com/'+fb, bio }]);
+
+    if (error) {
+        status.innerText = "Database Error: " + error.message;
+        status.className = "status status-error";
+    } else {
+        status.innerText = "সফলভাবে সেভ হয়েছে!";
+        status.className = "status status-success";
+        // ফরম রিসেট
+        document.getElementById('fullName').value = '';
+        document.getElementById('fbUser').value = '';
+        document.getElementById('bio').value = '';
+    }
+    btn.disabled = false;
+    btn.innerText = "Save to Database";
+}
+
+// --- LOGOUT ---
+async function handleLogout() {
+    await supabase.auth.signOut();
+    location.reload();
+}
+</script>
+
 </body>
 </html>
