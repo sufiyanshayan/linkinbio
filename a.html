@@ -3,10 +3,11 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Hologram Request | Supabase</title>
+<title>Hologram Request | Supabase Ready</title>
 <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+Bengali:wght@400;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 <style>
+/* CSS ডিজাইন */
 * { margin: 0; padding: 0; box-sizing: border-box; }
 html, body { min-height: 100%; font-family: "Noto Serif Bengali", serif; background: #f7f7f7; overflow-x: hidden; }
 .wrapper { min-height: 100vh; display: flex; justify-content: center; align-items: center; flex-direction: column; padding: 20px; }
@@ -15,17 +16,27 @@ html, body { min-height: 100%; font-family: "Noto Serif Bengali", serif; backgro
 .input-group { margin-bottom: 1rem; text-align: left; }
 label { font-size: 0.7rem; font-weight: 600; display: flex; align-items: center; gap: 6px; margin-bottom: 5px; color: #555; text-transform: uppercase; }
 input, textarea, select { width: 100%; padding: 12px 14px; border-radius: 12px; border: 1px solid #ddd; outline: none; font-size: 0.85rem; transition: 0.2s; font-family: inherit; }
-input:focus { border-color: #000; box-shadow: 0 0 0 2px rgba(0,0,0,0.05); }
+input:focus, select:focus { border-color: #000; box-shadow: 0 0 0 2px rgba(0,0,0,0.05); }
 
 /* Password & Smart Inputs */
-.password-wrapper, .smart-input { position: relative; display: flex; align-items: center; }
+.password-wrapper, .smart-input-wrapper { position: relative; display: flex; align-items: center; background: #fff; border: 1px solid #ddd; border-radius: 12px; }
 .eye-btn { position: absolute; right: 15px; cursor: pointer; color: #888; font-size: 1.1rem; z-index: 10; padding: 5px; }
-.smart-input { background: #fff; border: 1px solid #ddd; border-radius: 12px; }
-.domain-part { padding-left: 14px; font-size: 0.8rem; color: #777; font-family: monospace; white-space: nowrap; }
-.smart-input input { border: none; flex: 1; }
+.domain-part { padding-left: 14px; font-size: 0.8rem; color: #555; font-family: monospace; white-space: nowrap; pointer-events: none; }
+.smart-input-wrapper input { border: none; flex: 1; }
 
-.btn { width: 100%; padding: 14px; border: none; border-radius: 12px; background: #000; color: white; font-weight: 600; cursor: pointer; margin-top: 10px; font-family: inherit; }
-.btn:disabled { background: #666; opacity: 0.7; }
+/* Phone Section CSS */
+.phone-wrapper { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
+.country-select { flex: 1; min-width: 150px; }
+.country-code-wrapper { display: flex; align-items: center; background: #f5f5f5; border: 1px solid #ddd; border-radius: 12px; overflow: hidden; width: 90px; }
+.plus-sign { padding-left: 10px; font-weight: bold; color: #000; }
+.country-code-input { border: none; background: transparent; padding: 12px 5px; width: 100%; text-align: left; }
+.phone-input { flex: 1.5; min-width: 150px; }
+.country-hint { font-size: 0.7rem; color: #2c7da0; margin-top: 4px; display: flex; align-items: center; gap: 4px; }
+
+/* Buttons */
+.btn { width: 100%; padding: 14px; border: none; border-radius: 12px; background: #000; color: white; font-weight: 600; cursor: pointer; margin-top: 10px; font-family: inherit; transition: 0.2s; }
+.btn:hover { transform: translateY(-2px); box-shadow: 0 4px 12px rgba(0,0,0,0.15); }
+.logout-btn { background: #c62828; margin-top: 15px; }
 .hidden { display: none; }
 .form-card { max-height: 85vh; overflow-y: auto; }
 .status { margin-top: 12px; padding: 10px; border-radius: 12px; font-size: 0.8rem; text-align: center; display: none; }
@@ -43,36 +54,35 @@ input:focus { border-color: #000; box-shadow: 0 0 0 2px rgba(0,0,0,0.05); }
     <div class="card" id="loginCard">
       <h2 style="margin-bottom:1.5rem; text-align:center;">🔐 Admin Login</h2>
       <div class="input-group">
-        <label>Email</label>
+        <label>Email Address</label>
         <input type="email" id="lEmail" placeholder="admin@example.com">
       </div>
       <div class="input-group">
         <label>Password</label>
         <div class="password-wrapper">
-          <input type="password" id="lPass" placeholder="••••••••">
-          <i class="fa-regular fa-eye eye-btn" id="eyeBtn" onclick="togglePass()"></i>
+          <input type="password" id="lPass" placeholder="••••••••" style="border:none;">
+          <i class="fa-regular fa-eye eye-btn" id="eyeIcon" onclick="togglePass()"></i>
         </div>
       </div>
       <button class="btn" id="loginBtn" onclick="doLogin()">Login</button>
       <div id="loginStatus" class="status"></div>
     </div>
 
-    <!-- MAIN DATA FORM -->
+    <!-- MAIN FORM -->
     <div class="card form-card hidden" id="formCard">
-      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1.5rem; border-bottom:2px solid #f0f0f0; padding-bottom:10px;">
-        <h3>📝 YOUR INFORMATION</h3>
-        <button onclick="doLogout()" style="color:red; background:none; border:none; cursor:pointer;"><i class="fa-solid fa-power-off"></i> Logout</button>
+      <div style="margin-bottom:1.5rem; border-bottom:2px solid #f0f0f0; padding-bottom:10px;">
+        <h3><i class="fa-regular fa-pen-to-square"></i> YOUR INFORMATION</h3>
       </div>
 
       <!-- 1. Email -->
       <div class="input-group">
-        <label><i class="fa-regular fa-envelope"></i> 1. EMAIL</label>
-        <input type="email" id="fEmail" placeholder="user@mail.com">
+        <label><i class="fa-regular fa-envelope"></i> 1. EMAIL *</label>
+        <input type="email" id="fEmail" placeholder="your@email.com">
       </div>
 
       <!-- 2. Name -->
       <div class="input-group">
-        <label><i class="fa-regular fa-id-card"></i> 2. YOUR NAME</label>
+        <label><i class="fa-regular fa-id-card"></i> 2. YOUR NAME *</label>
         <input type="text" id="fName" placeholder="John Doe">
       </div>
 
@@ -85,8 +95,8 @@ input:focus { border-color: #000; box-shadow: 0 0 0 2px rgba(0,0,0,0.05); }
       <!-- 4. Facebook -->
       <div class="input-group">
         <label><i class="fa-brands fa-facebook"></i> 4. FACEBOOK</label>
-        <div class="smart-input">
-          <span class="domain-part">fb.com/</span>
+        <div class="smart-input-wrapper">
+          <span class="domain-part">https://www.facebook.com/</span>
           <input type="text" id="fFb" placeholder="username">
         </div>
       </div>
@@ -94,8 +104,8 @@ input:focus { border-color: #000; box-shadow: 0 0 0 2px rgba(0,0,0,0.05); }
       <!-- 5. FB Page -->
       <div class="input-group">
         <label><i class="fa-brands fa-facebook"></i> 5. FACEBOOK PAGE LINK</label>
-        <div class="smart-input">
-          <span class="domain-part">fb.com/</span>
+        <div class="smart-input-wrapper">
+          <span class="domain-part">https://www.facebook.com/</span>
           <input type="text" id="fFbPage" placeholder="pagename">
         </div>
       </div>
@@ -103,23 +113,33 @@ input:focus { border-color: #000; box-shadow: 0 0 0 2px rgba(0,0,0,0.05); }
       <!-- 6. Instagram -->
       <div class="input-group">
         <label><i class="fa-brands fa-instagram"></i> 6. INSTAGRAM</label>
-        <div class="smart-input">
-          <span class="domain-part">ig.com/</span>
+        <div class="smart-input-wrapper">
+          <span class="domain-part">https://www.instagram.com/</span>
           <input type="text" id="fIg" placeholder="username">
         </div>
       </div>
 
       <!-- 7. WhatsApp -->
       <div class="input-group">
-        <label><i class="fa-brands fa-whatsapp"></i> 7. WHATSAPP (With Code)</label>
-        <input type="tel" id="fWa" placeholder="8801700000000">
+        <label><i class="fa-brands fa-whatsapp"></i> 7. WHATSAPP</label>
+        <div class="phone-wrapper">
+          <select id="waCountrySelect" class="country-select" onchange="updateWACodeFromSelect()">
+            <option value="">Select Country</option>
+          </select>
+          <div class="country-code-wrapper">
+            <span class="plus-sign">+</span>
+            <input type="number" id="waCodeInput" class="country-code-input" placeholder="Code" oninput="updateWACodeFromInput()">
+          </div>
+          <input type="tel" id="fWa" class="phone-input" placeholder="Phone Number">
+        </div>
+        <div class="country-hint"><i class="fa-regular fa-globe"></i> <span id="waCountryName">No country selected</span></div>
       </div>
 
       <!-- 8. TikTok -->
       <div class="input-group">
         <label><i class="fa-brands fa-tiktok"></i> 8. TIKTOK</label>
-        <div class="smart-input">
-          <span class="domain-part">tiktok.com/@</span>
+        <div class="smart-input-wrapper">
+          <span class="domain-part">https://www.tiktok.com/@</span>
           <input type="text" id="fTt" placeholder="username">
         </div>
       </div>
@@ -127,8 +147,8 @@ input:focus { border-color: #000; box-shadow: 0 0 0 2px rgba(0,0,0,0.05); }
       <!-- 9. Telegram -->
       <div class="input-group">
         <label><i class="fa-brands fa-telegram"></i> 9. TELEGRAM</label>
-        <div class="smart-input">
-          <span class="domain-part">t.me/</span>
+        <div class="smart-input-wrapper">
+          <span class="domain-part">https://t.me/</span>
           <input type="text" id="fTg" placeholder="username">
         </div>
       </div>
@@ -136,8 +156,8 @@ input:focus { border-color: #000; box-shadow: 0 0 0 2px rgba(0,0,0,0.05); }
       <!-- 10. Twitter -->
       <div class="input-group">
         <label><i class="fa-brands fa-twitter"></i> 10. TWITTER (X)</label>
-        <div class="smart-input">
-          <span class="domain-part">x.com/</span>
+        <div class="smart-input-wrapper">
+          <span class="domain-part">https://x.com/</span>
           <input type="text" id="fTw" placeholder="username">
         </div>
       </div>
@@ -145,7 +165,17 @@ input:focus { border-color: #000; box-shadow: 0 0 0 2px rgba(0,0,0,0.05); }
       <!-- 11. Phone -->
       <div class="input-group">
         <label><i class="fa-solid fa-phone"></i> 11. PHONE</label>
-        <input type="tel" id="fPhone" placeholder="+880...">
+        <div class="phone-wrapper">
+          <select id="phoneCountrySelect" class="country-select" onchange="updatePhoneCodeFromSelect()">
+            <option value="">Select Country</option>
+          </select>
+          <div class="country-code-wrapper">
+            <span class="plus-sign">+</span>
+            <input type="number" id="phoneCodeInput" class="country-code-input" placeholder="Code" oninput="updatePhoneCodeFromInput()">
+          </div>
+          <input type="tel" id="fPhone" class="phone-input" placeholder="Phone Number">
+        </div>
+        <div class="country-hint"><i class="fa-regular fa-globe"></i> <span id="phoneCountryName">No country selected</span></div>
       </div>
 
       <!-- 12. About -->
@@ -157,95 +187,166 @@ input:focus { border-color: #000; box-shadow: 0 0 0 2px rgba(0,0,0,0.05); }
       <!-- 13. Website -->
       <div class="input-group">
         <label><i class="fa-solid fa-globe"></i> 13. WEBSITE</label>
-        <input type="url" id="fWeb" placeholder="https://yoursite.com">
+        <input type="url" id="fWeb" placeholder="https://yourdomain.com">
       </div>
 
-      <button class="btn" id="submitBtn" onclick="doSubmit()">SUBMIT TO SUPABASE</button>
+      <!-- Buttons -->
+      <button class="btn" id="submitBtn" onclick="doSubmit()">UPDATE INFORMATION</button>
+      <button class="btn logout-btn" onclick="doLogout()"><i class="fa-solid fa-power-off"></i> LOGOUT</button>
+      
       <div id="formStatus" class="status"></div>
     </div>
 
   </div>
-  <div class="footer">Copyright © 2026 Secured by Supabase</div>
+  <div class="footer">Copyright © 2026 Secured via Supabase</div>
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
 <script>
 // --- SUPABASE CONFIG ---
-const S_URL = 'https://emrbjxmbzmldzjkztwwr.supabase.co';
-const S_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImVtcmJqeG1iem1sZHpqa3p0d3dyIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODAzOTIyOTEsImV4cCI6MjA5NTk2ODI5MX0.LybcpC-nZTCinsNJVJCYKRpPcXhqVFKYaxPWyn1AFEg';
-const sb = supabase.createClient(S_URL, S_KEY);
+const URL = 'https://emrbjxmbzmldzjkztwwr.supabase.co';
+const KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImVtcmJqeG1iem1sZHpqa3p0d3dyIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODAzOTIyOTEsImV4cCI6MjA5NTk2ODI5MX0.LybcpC-nZTCinsNJVJCYKRpPcXhqVFKYaxPWyn1AFEg';
+const sbClient = supabase.createClient(URL, KEY);
 
-// --- EYE BUTTON ---
+// --- COUNTRY DATA ---
+const countries = [
+  { code: "880", name: "Bangladesh" }, { code: "91", name: "India" },
+  { code: "92", name: "Pakistan" }, { code: "1", name: "USA/Canada" },
+  { code: "44", name: "United Kingdom" }, { code: "966", name: "Saudi Arabia" },
+  { code: "971", name: "UAE" }, { code: "60", name: "Malaysia" },
+  { code: "65", name: "Singapore" }, { code: "61", name: "Australia" }
+  // আপনি চাইলে আপনার আগের কোড থেকে সব কান্ট্রি এখানে কপি করে দিতে পারেন
+];
+
+function populateCountrySelects() {
+  const waSelect = document.getElementById("waCountrySelect");
+  const phoneSelect = document.getElementById("phoneCountrySelect");
+  countries.forEach(c => {
+    const opt = document.createElement("option");
+    opt.value = c.code;
+    opt.textContent = `+${c.code} (${c.name})`;
+    waSelect.appendChild(opt.cloneNode(true));
+    phoneSelect.appendChild(opt.cloneNode(true));
+  });
+}
+
+function updateWACodeFromSelect() {
+    const val = document.getElementById("waCountrySelect").value;
+    document.getElementById("waCodeInput").value = val;
+    updateWACodeFromInput();
+}
+
+function updateWACodeFromInput() {
+    const code = document.getElementById("waCodeInput").value;
+    const country = countries.find(c => c.code === code);
+    document.getElementById("waCountryName").textContent = country ? country.name : (code ? "Custom Code" : "No country selected");
+}
+
+function updatePhoneCodeFromSelect() {
+    const val = document.getElementById("phoneCountrySelect").value;
+    document.getElementById("phoneCodeInput").value = val;
+    updatePhoneCodeFromInput();
+}
+
+function updatePhoneCodeFromInput() {
+    const code = document.getElementById("phoneCodeInput").value;
+    const country = countries.find(c => c.code === code);
+    document.getElementById("phoneCountryName").textContent = country ? country.name : (code ? "Custom Code" : "No country selected");
+}
+
+// --- PASSWORD TOGGLE ---
 function togglePass() {
-    const input = document.getElementById('lPass');
-    const icon = document.getElementById('eyeBtn');
-    if (input.type === 'password') {
-        input.type = 'text';
-        icon.classList.replace('fa-eye', 'fa-eye-slash');
+    const p = document.getElementById('lPass');
+    const icon = document.getElementById('eyeIcon');
+    if (p.type === 'password') {
+        p.type = 'text';
+        icon.classList.remove('fa-eye');
+        icon.classList.add('fa-eye-slash');
     } else {
-        input.type = 'password';
-        icon.classList.replace('fa-eye-slash', 'fa-eye');
+        p.type = 'password';
+        icon.classList.remove('fa-eye-slash');
+        icon.classList.add('fa-eye');
     }
 }
 
 // --- LOGIN ---
 async function doLogin() {
-    const email = document.getElementById('lEmail').value;
-    const pass = document.getElementById('lPass').value;
+    const email = document.getElementById('lEmail').value.trim();
+    const password = document.getElementById('lPass').value.trim();
     const status = document.getElementById('loginStatus');
     const btn = document.getElementById('loginBtn');
 
-    if(!email || !pass) { status.innerText = "পূরণ করুন!"; status.className="status status-error"; return; }
-    
-    btn.disabled = true; btn.innerText = "Checking...";
-    const { error } = await sb.auth.signInWithPassword({ email, password: pass });
+    if(!email || !password) {
+        status.innerText = "পূরণ করুন!";
+        status.className = "status status-error";
+        return;
+    }
 
-    if(error) {
-        status.innerText = error.message; status.className="status status-error";
-        btn.disabled = false; btn.innerText = "Login";
+    btn.disabled = true;
+    btn.innerText = "Checking...";
+
+    const { data, error } = await sbClient.auth.signInWithPassword({ email, password });
+
+    if (error) {
+        status.innerText = error.message;
+        status.className = "status status-error";
+        btn.disabled = false;
+        btn.innerText = "Login";
     } else {
         document.getElementById('loginCard').classList.add('hidden');
         document.getElementById('formCard').classList.remove('hidden');
     }
 }
 
-// --- SUBMIT DATA ---
+// --- SUBMIT ---
 async function doSubmit() {
     const btn = document.getElementById('submitBtn');
     const status = document.getElementById('formStatus');
-    
+
+    const waFull = 'https://wa.me/' + document.getElementById('waCodeInput').value + document.getElementById('fWa').value.replace(/[^0-9]/g, '');
+    const phoneFull = '+' + document.getElementById('phoneCodeInput').value + document.getElementById('fPhone').value.replace(/[^0-9]/g, '');
+
     const data = {
         email: document.getElementById('fEmail').value,
         name: document.getElementById('fName').value,
         profile_pic: document.getElementById('fPic').value,
-        facebook: 'https://fb.com/' + document.getElementById('fFb').value,
-        fb_page: 'https://fb.com/' + document.getElementById('fFbPage').value,
-        instagram: 'https://ig.com/' + document.getElementById('fIg').value,
-        whatsapp: 'https://wa.me/' + document.getElementById('fWa').value,
-        tiktok: 'https://tiktok.com/@' + document.getElementById('fTt').value,
+        facebook: 'https://www.facebook.com/' + document.getElementById('fFb').value,
+        fb_page: 'https://www.facebook.com/' + document.getElementById('fFbPage').value,
+        instagram: 'https://www.instagram.com/' + document.getElementById('fIg').value,
+        whatsapp: waFull,
+        tiktok: 'https://www.tiktok.com/@' + document.getElementById('fTt').value,
         telegram: 'https://t.me/' + document.getElementById('fTg').value,
         twitter: 'https://x.com/' + document.getElementById('fTw').value,
-        phone: document.getElementById('fPhone').value,
+        phone: phoneFull,
         about: document.getElementById('fAbout').value,
         website: document.getElementById('fWeb').value
     };
 
-    if(!data.name) { alert("নাম দিন!"); return; }
+    if(!data.name) { alert("নাম দেওয়া বাধ্যতামূলক!"); return; }
 
-    btn.disabled = true; btn.innerText = "Saving...";
-    const { error } = await sb.from('hologram_requests').insert([data]);
+    btn.disabled = true; btn.innerText = "Updating...";
 
-    if(error) {
-        status.innerText = "Error: " + error.message; status.className="status status-error";
+    const { error } = await sbClient.from('hologram_requests').insert([data]);
+
+    if (error) {
+        status.innerText = "Error: " + error.message;
+        status.className = "status status-error";
     } else {
-        status.innerText = "সফলভাবে সেভ হয়েছে!"; status.className="status status-success";
-        // Reset fields if needed
+        status.innerText = "সফলভাবে আপডেট করা হয়েছে!";
+        status.className = "status status-success";
     }
-    btn.disabled = false; btn.innerText = "SUBMIT TO SUPABASE";
+    btn.disabled = false;
+    btn.innerText = "UPDATE INFORMATION";
 }
 
-async function doLogout() { await sb.auth.signOut(); location.reload(); }
+async function doLogout() {
+    await sbClient.auth.signOut();
+    location.reload();
+}
+
+// Initialize
+populateCountrySelects();
 </script>
 </body>
 </html>
