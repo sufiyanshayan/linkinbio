@@ -21,20 +21,17 @@ input:focus, select:focus { border-color: #000; box-shadow: 0 0 0 3px rgba(0,0,0
 .password-wrapper { position: relative; display: flex; align-items: center; }
 .eye-btn { position: absolute; right: 15px; cursor: pointer; color: #888; font-size: 1.1rem; z-index: 10; padding: 5px; }
 
-/* স্মার্ট ইনপুট (Prefix Link) */
+/* স্মার্ট ইনপুট */
 .smart-input { display: flex; align-items: center; background: #fff; border: 1px solid #ddd; border-radius: 12px; overflow: hidden; }
 .prefix { padding-left: 12px; font-size: 0.8rem; color: #777; font-family: monospace; white-space: nowrap; pointer-events: none; }
 .smart-input input { border: none; flex: 1; }
 
-/* কান্ট্রি কোড গ্রিড */
 .phone-grid { display: flex; gap: 8px; flex-wrap: wrap; }
 .code-box { display: flex; align-items: center; background: #f8f8f8; border-radius: 12px; width: 85px; border: 1px solid #ddd; }
 .code-box span { padding-left: 10px; font-weight: bold; }
 .code-input { border: none; background: transparent; padding: 10px 5px; width: 100%; }
 
-/* বাটন ডিজাইন */
 .btn { width: 100%; padding: 14px; border: none; border-radius: 12px; background: #000; color: #fff; font-weight: 700; cursor: pointer; font-size: 1rem; margin-top: 10px; transition: 0.3s; font-family: inherit; }
-.btn:hover { background: #222; transform: translateY(-2px); }
 .btn-logout { background: #cc0000; margin-top: 15px; }
 
 .hidden { display: none; }
@@ -47,8 +44,6 @@ input:focus, select:focus { border-color: #000; box-shadow: 0 0 0 3px rgba(0,0,0
 <body>
 
 <div class="container">
-    
-    <!-- লগইন সেকশন -->
     <div class="card" id="loginCard">
       <h2 style="text-align:center; margin-bottom:1.5rem;">🔐 Admin Login</h2>
       <div class="input-group">
@@ -66,179 +61,96 @@ input:focus, select:focus { border-color: #000; box-shadow: 0 0 0 3px rgba(0,0,0
       <div id="logStatus" class="status"></div>
     </div>
 
-    <!-- মেইন ফরম সেকশন (১৩টি এন্ট্রি) -->
     <div class="card hidden form-scroll" id="formCard">
       <h3 style="margin-bottom:1.5rem; border-bottom:2px solid #eee; padding-bottom:10px;">📝 UPDATE INFORMATION</h3>
 
-      <!-- ১. ইমেইল -->
-      <div class="input-group"><label>1. EMAIL *</label><input type="email" id="f1" placeholder="your@email.com"></div>
-      
-      <!-- ২. নাম -->
-      <div class="input-group"><label>2. YOUR NAME *</label><input type="text" id="f2" placeholder="John Doe"></div>
-      
-      <!-- ৩. ছবি -->
-      <div class="input-group"><label>3. PROFILE PICTURE LINK</label><input type="url" id="f3" placeholder="https://..."></div>
+      <div class="input-group"><label>1. EMAIL</label><input type="email" id="f1"></div>
+      <div class="input-group"><label>2. NAME</label><input type="text" id="f2"></div>
+      <div class="input-group"><label>3. PROFILE PIC LINK</label><input type="url" id="f3"></div>
 
-      <!-- ৪. ফেসবুক -->
-      <div class="input-group">
-        <label>4. FACEBOOK</label>
-        <div class="smart-input"><span class="prefix">https://www.facebook.com/</span><input type="text" id="f4"></div>
-      </div>
+      <div class="input-group"><label>4. FACEBOOK</label><div class="smart-input"><span class="prefix">https://www.facebook.com/</span><input type="text" id="f4"></div></div>
+      <div class="input-group"><label>5. FB PAGE LINK</label><div class="smart-input"><span class="prefix">https://www.facebook.com/</span><input type="text" id="f5"></div></div>
+      <div class="input-group"><label>6. INSTAGRAM</label><div class="smart-input"><span class="prefix">https://www.instagram.com/</span><input type="text" id="f6"></div></div>
 
-      <!-- ৫. ফেসবুক পেজ -->
-      <div class="input-group">
-        <label>5. FACEBOOK PAGE LINK</label>
-        <div class="smart-input"><span class="prefix">https://www.facebook.com/</span><input type="text" id="f5"></div>
-      </div>
-
-      <!-- ৬. ইন্সটাগ্রাম -->
-      <div class="input-group">
-        <label>6. INSTAGRAM</label>
-        <div class="smart-input"><span class="prefix">https://www.instagram.com/</span><input type="text" id="f6"></div>
-      </div>
-
-      <!-- ৭. WhatsApp (Country Selector সহ) -->
       <div class="input-group">
         <label>7. WHATSAPP</label>
         <div class="phone-grid">
-          <select id="waSel" onchange="syncCode('wa')"></select>
+          <select id="waSel" onchange="sync('wa')"></select>
           <div class="code-box"><span>+</span><input type="number" id="waCode" class="code-input"></div>
-          <input type="tel" id="f7" style="flex:1.5; border:1px solid #ddd; border-radius:12px; padding-left:12px;" placeholder="Number">
+          <input type="tel" id="f7" style="flex:1.5; border:1px solid #ddd; border-radius:12px; padding-left:12px;">
         </div>
       </div>
 
-      <!-- ৮. টিকটক -->
-      <div class="input-group">
-        <label>8. TIKTOK</label>
-        <div class="smart-input"><span class="prefix">https://www.tiktok.com/@</span><input type="text" id="f8"></div>
-      </div>
+      <div class="input-group"><label>8. TIKTOK</label><div class="smart-input"><span class="prefix">https://www.tiktok.com/@</span><input type="text" id="f8"></div></div>
+      <div class="input-group"><label>9. TELEGRAM</label><div class="smart-input"><span class="prefix">https://t.me/</span><input type="text" id="f9"></div></div>
+      <div class="input-group"><label>10. TWITTER</label><div class="smart-input"><span class="prefix">https://x.com/</span><input type="text" id="f10"></div></div>
 
-      <!-- ৯. টেলিগ্রাম -->
-      <div class="input-group">
-        <label>9. TELEGRAM</label>
-        <div class="smart-input"><span class="prefix">https://t.me/</span><input type="text" id="f9"></div>
-      </div>
-
-      <!-- ১০. টুইটার -->
-      <div class="input-group">
-        <label>10. TWITTER (X)</label>
-        <div class="smart-input"><span class="prefix">https://x.com/</span><input type="text" id="f10"></div>
-      </div>
-
-      <!-- ১১. ফোন (Country Selector সহ) -->
       <div class="input-group">
         <label>11. PHONE</label>
         <div class="phone-grid">
-          <select id="phSel" onchange="syncCode('ph')"></select>
+          <select id="phSel" onchange="sync('ph')"></select>
           <div class="code-box"><span>+</span><input type="number" id="phCode" class="code-input"></div>
-          <input type="tel" id="f11" style="flex:1.5; border:1px solid #ddd; border-radius:12px; padding-left:12px;" placeholder="Number">
+          <input type="tel" id="f11" style="flex:1.5; border:1px solid #ddd; border-radius:12px; padding-left:12px;">
         </div>
       </div>
 
-      <!-- ১২. বায়ো/অ্যাবাউট -->
-      <div class="input-group"><label>12. ABOUT</label><textarea id="f12" rows="3" placeholder="Write your title or bio..."></textarea></div>
-      
-      <!-- ১৩. ওয়েবসাইট -->
-      <div class="input-group"><label>13. WEBSITE</label><input type="url" id="f13" placeholder="https://yourdomain.com"></div>
+      <div class="input-group"><label>12. ABOUT</label><textarea id="f12" rows="3"></textarea></div>
+      <div class="input-group"><label>13. WEBSITE</label><input type="url" id="f13"></div>
 
-      <!-- বাটনসমূহ (লগআউট নিচে) -->
       <button class="btn" onclick="updateData()" id="upBtn">UPDATE INFORMATION</button>
-      <button class="btn btn-logout" onclick="handleLogout()"><i class="fa-solid fa-power-off"></i> LOGOUT</button>
-      
+      <button class="btn btn-logout" onclick="handleLogout()">LOGOUT</button>
       <div id="fStatus" class="status"></div>
     </div>
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script>
-// --- ১. আপনার সুপাবেস কনফিগারেশন ---
 const SUPABASE_PROJECT_URL = "https://gfahimzxyqwspkeqsvlg.supabase.co";
 const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImdmYWhpbXp4eXF3c3BrZXFzdmxnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODA0Njk5NDksImV4cCI6MjA5NjA0NTk0OX0.lkZ7wpWAKknxpMMDCsRG2OiPD2wOvwFejSozzLDe0Dc";
-const sbClient = supabase.createClient(SUPABASE_PROJECT_URL, SUPABASE_ANON_KEY);
+const sb = supabase.createClient(SUPABASE_PROJECT_URL, SUPABASE_ANON_KEY);
 
-// ২. কান্ট্রি কোড ডাটা
-const countries = [
-    { code: "880", name: "Bangladesh" }, { code: "91", name: "India" }, { code: "92", name: "Pakistan" },
-    { code: "1", name: "USA/Canada" }, { code: "44", name: "UK" }, { code: "966", name: "Saudi Arabia" },
-    { code: "971", name: "UAE" }, { code: "60", name: "Malaysia" }, { code: "65", name: "Singapore" }
-];
-
-function initForm() {
-    let html = '<option value="">Select Country</option>';
-    countries.forEach(c => { html += `<option value="${c.code}">${c.name} (+${c.code})</option>`; });
-    document.getElementById('waSel').innerHTML = html;
-    document.getElementById('phSel').innerHTML = html;
+const ct = [{c:"880",n:"Bangladesh"},{c:"91",n:"India"},{c:"92",n:"Pakistan"},{c:"1",n:"USA"},{c:"44",n:"UK"},{c:"966",n:"Saudi"}];
+function init() {
+    let h = '<option value="">Country</option>';
+    ct.forEach(i=>{ h+=`<option value="${i.c}">${i.n}</option>`; });
+    document.getElementById('waSel').innerHTML=h; document.getElementById('phSel').innerHTML=h;
 }
-function syncCode(type) { document.getElementById(type + 'Code').value = document.getElementById(type + 'Sel').value; }
+function sync(t) { document.getElementById(t+'Code').value = document.getElementById(t+'Sel').value; }
 
-// ৩. আই বাটন ফিক্স (Robust Event Listener)
-const eyeIcon = document.getElementById('eyeIcon');
-const passInput = document.getElementById('logPass');
-
+const eyeIcon = document.getElementById('eyeIcon'), passInp = document.getElementById('logPass');
 eyeIcon.addEventListener('click', function() {
-    const isPass = passInput.type === 'password';
-    passInput.type = isPass ? 'text' : 'password';
-    this.classList.toggle('fa-eye');
-    this.classList.toggle('fa-eye-slash');
+    const isPass = passInp.type === 'password';
+    passInp.type = isPass ? 'text' : 'password';
+    this.classList.toggle('fa-eye'); this.classList.toggle('fa-eye-slash');
 });
 
-// ৪. লগইন ফাংশন
 async function handleLogin() {
-    const email = document.getElementById('logEmail').value.trim();
-    const password = document.getElementById('logPass').value.trim();
-    const btn = document.getElementById('logBtn');
-    const status = document.getElementById('logStatus');
-
-    if(!email || !password) return;
-
-    btn.disabled = true; btn.innerText = "Checking...";
-    const { error } = await sbClient.auth.signInWithPassword({ email, password });
-
-    if(error) {
-        status.innerText = error.message; status.className="status status-error";
-        btn.disabled = false; btn.innerText = "LOGIN";
-    } else {
-        document.getElementById('loginCard').classList.add('hidden');
-        document.getElementById('formCard').classList.remove('hidden');
-    }
+    const e=document.getElementById('logEmail').value, p=document.getElementById('logPass').value, st=document.getElementById('logStatus'), b=document.getElementById('logBtn');
+    if(!e || !p) return;
+    b.disabled=true; b.innerText="Checking...";
+    const { error } = await sb.auth.signInWithPassword({ email:e, password:p });
+    if(error) { st.innerText=error.message; st.className="status status-error"; b.disabled=false; b.innerText="LOGIN"; }
+    else { document.getElementById('loginCard').classList.add('hidden'); document.getElementById('formCard').classList.remove('hidden'); }
 }
 
-// ৫. ডাটা আপডেট ফাংশন
 async function updateData() {
-    const btn = document.getElementById('upBtn');
-    const status = document.getElementById('fStatus');
-
+    const btn=document.getElementById('upBtn'), st=document.getElementById('fStatus');
     const data = {
-        email: document.getElementById('f1').value,
-        name: document.getElementById('f2').value,
-        profile_pic: document.getElementById('f3').value,
-        facebook: 'https://www.facebook.com/' + document.getElementById('f4').value,
-        fb_page: 'https://www.facebook.com/' + document.getElementById('f5').value,
-        instagram: 'https://www.instagram.com/' + document.getElementById('f6').value,
-        whatsapp: 'https://wa.me/' + document.getElementById('waCode').value + document.getElementById('f7').value.replace(/\D/g,''),
-        tiktok: 'https://www.tiktok.com/@' + document.getElementById('f8').value,
-        telegram: 'https://t.me/' + document.getElementById('f9').value,
-        twitter: 'https://x.com/' + document.getElementById('f10').value,
-        phone: '+' + document.getElementById('phCode').value + document.getElementById('f11').value.replace(/\D/g,''),
-        about: document.getElementById('f12').value,
-        website: document.getElementById('f13').value
+        email: document.getElementById('f1').value, name: document.getElementById('f2').value, profile_pic: document.getElementById('f3').value,
+        facebook: 'https://www.facebook.com/'+document.getElementById('f4').value, fb_page: 'https://www.facebook.com/'+document.getElementById('f5').value,
+        instagram: 'https://www.instagram.com/'+document.getElementById('f6').value, whatsapp: 'https://wa.me/'+document.getElementById('waCode').value + document.getElementById('f7').value.replace(/\D/g,''),
+        tiktok: 'https://www.tiktok.com/@'+document.getElementById('f8').value, telegram: 'https://t.me/'+document.getElementById('f9').value,
+        twitter: 'https://x.com/'+document.getElementById('f10').value, phone: '+'+document.getElementById('phCode').value + document.getElementById('f11').value.replace(/\D/g,''),
+        about: document.getElementById('f12').value, website: document.getElementById('f13').value
     };
-
-    if(!data.name || !data.email) { alert("Name & Email Required!"); return; }
-
-    btn.disabled = true; btn.innerText = "Processing...";
-    const { error } = await sbClient.from('linkinbio').insert([data]);
-
-    if(error) {
-        status.innerText = "Error: " + error.message; status.className="status status-error";
-    } else {
-        status.innerText = "Success: Information Updated!"; status.className="status status-success";
-    }
-    btn.disabled = false; btn.innerText = "UPDATE INFORMATION";
+    btn.disabled=true; btn.innerText="Updating...";
+    const { error } = await sb.from('linkinbio').insert([data]);
+    if(error) { st.innerText=error.message; st.className="status status-error"; }
+    else { st.innerText="Success: Data Updated!"; st.className="status status-success"; }
+    btn.disabled=false; btn.innerText="UPDATE INFORMATION";
 }
-
-function handleLogout() { sbClient.auth.signOut(); location.reload(); }
-initForm();
+function handleLogout() { sb.auth.signOut(); location.reload(); }
+init();
 </script>
 </body>
 </html>
