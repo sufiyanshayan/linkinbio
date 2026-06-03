@@ -76,6 +76,7 @@ html, body {
   font-weight: 500;
   box-shadow: 0 4px 12px rgba(0,0,0,0.08);
   transition: all 0.2s ease;
+  cursor: pointer;
 }
 
 .btn img {
@@ -83,9 +84,16 @@ html, body {
   height: 16px;
 }
 
-.btn:hover {
+.btn:hover:not(.disabled) {
   transform: translateY(-2px);
   box-shadow: 0 6px 18px rgba(0,0,0,0.12);
+}
+
+.btn.disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  background: #e0e0e0;
+  color: #888;
 }
 
 .footer {
@@ -104,14 +112,14 @@ html, body {
     <div class="profile">
       <img id="profile-pic" src="" alt="Profile Picture">
     </div>
-    <div class="name" id="name"></div>
-    <div class="title" id="title"></div>
+    <div class="name" id="name">Loading...</div>
+    <div class="title" id="title">Loading...</div>
     <div id="buttons-container"></div>
   </div>
   <div class="footer" id="footer">
-    <span id="copyright-text"></span><br>
-    <span id="made-by-name"></span><br>
-    <span id="rights-text"></span>
+    <span id="copyright-text">Loading...</span><br>
+    <span id="made-by-name">Loading...</span><br>
+    <span id="rights-text">Loading...</span>
   </div>
 </div>
 
@@ -126,7 +134,7 @@ html, body {
 
   const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-  // Button list configuration
+  // Button list configuration (সব বাটন সবসময় দেখাবে)
   const buttonsConfig = [
     { col: 'facebook', text: 'Facebook', icon: 'https://cdn.simpleicons.org/facebook/000000', prefix: 'https://facebook.com/' },
     { col: 'facebook_page', text: 'Facebook Page', icon: 'https://cdn.simpleicons.org/facebook/000000', prefix: 'https://facebook.com/' },
@@ -141,30 +149,75 @@ html, body {
   ];
 
   function updateUI(data) {
-    if (!data || data.length === 0) return;
-    const row = data[0];
-
+    let row = null;
+    let hasData = data && data.length > 0;
+    
+    if (hasData) {
+      row = data[0];
+    }
+    
     // Profile picture
-    if (row.profile_pic) document.getElementById('profile-pic').src = row.profile_pic;
+    const profileImg = document.getElementById('profile-pic');
+    if (hasData && row.profile_pic && row.profile_pic.trim() !== '') {
+      profileImg.src = row.profile_pic;
+    } else {
+      profileImg.src = 'https://via.placeholder.com/100?text=No+Image';
+    }
     
     // Name
-    if (row.name) document.getElementById('name').textContent = row.name;
+    const nameEl = document.getElementById('name');
+    if (hasData && row.name && row.name.trim() !== '') {
+      nameEl.textContent = row.name;
+    } else {
+      nameEl.textContent = 'নাম যোগ করুন';
+    }
     
     // Title
-    if (row.title) document.getElementById('title').textContent = row.title;
+    const titleEl = document.getElementById('title');
+    if (hasData && row.title && row.title.trim() !== '') {
+      titleEl.textContent = row.title;
+    } else {
+      titleEl.textContent = 'টাইটেল যোগ করুন';
+    }
     
     // Footer three fields
-    if (row.copyright_text) document.getElementById('copyright-text').textContent = row.copyright_text;
-    if (row.made_by_name) document.getElementById('made-by-name').textContent = row.made_by_name;
-    if (row.rights_text) document.getElementById('rights-text').textContent = row.rights_text;
+    const copyrightEl = document.getElementById('copyright-text');
+    const madeByNameEl = document.getElementById('made-by-name');
+    const rightsEl = document.getElementById('rights-text');
     
-    // Buttons
+    if (hasData && row.copyright_text && row.copyright_text.trim() !== '') {
+      copyrightEl.textContent = row.copyright_text;
+    } else {
+      copyrightEl.textContent = 'Copyright © 2026 MADE BY';
+    }
+    
+    if (hasData && row.made_by_name && row.made_by_name.trim() !== '') {
+      madeByNameEl.textContent = row.made_by_name;
+    } else {
+      madeByNameEl.textContent = 'Your_Name';
+    }
+    
+    if (hasData && row.rights_text && row.rights_text.trim() !== '') {
+      rightsEl.textContent = row.rights_text;
+    } else {
+      rightsEl.textContent = 'All Rights Reserved';
+    }
+    
+    // Buttons - সব বাটন সবসময় দেখাবে, কিন্তু ডাটা থাকলেই ক্লিকযোগ্য হবে
     const buttonsContainer = document.getElementById('buttons-container');
     buttonsContainer.innerHTML = '';
     
     buttonsConfig.forEach(btn => {
-      const value = row[btn.col];
-      if (value && value.trim() !== '') {
+      const a = document.createElement('a');
+      a.className = 'btn';
+      
+      let value = null;
+      if (hasData && row[btn.col]) {
+        value = row[btn.col].trim();
+      }
+      
+      if (value && value !== '') {
+        // ডাটা আছে - বাটন কাজ করবে
         let href = '';
         if (btn.prefix === 'tel:' || btn.prefix === 'https://wa.me/') {
           href = btn.prefix + value.replace(/[^0-9+]/g, '');
@@ -173,21 +226,23 @@ html, body {
         } else {
           href = value;
         }
-        
-        const a = document.createElement('a');
-        a.className = 'btn';
         a.href = href;
         a.target = '_blank';
         a.rel = 'noopener noreferrer';
-        
-        const img = document.createElement('img');
-        img.src = btn.icon;
-        img.alt = btn.text + ' Logo';
-        
-        a.appendChild(img);
-        a.appendChild(document.createTextNode(' ' + btn.text));
-        buttonsContainer.appendChild(a);
+      } else {
+        // ডাটা নেই - বাটন ডিজেবল থাকবে
+        a.classList.add('disabled');
+        a.href = 'javascript:void(0)';
+        a.style.pointerEvents = 'none';
       }
+      
+      const img = document.createElement('img');
+      img.src = btn.icon;
+      img.alt = btn.text + ' Logo';
+      
+      a.appendChild(img);
+      a.appendChild(document.createTextNode(' ' + btn.text));
+      buttonsContainer.appendChild(a);
     });
   }
 
@@ -199,6 +254,7 @@ html, body {
     
     if (error) {
       console.error('Error:', error);
+      updateUI(null); // error থাকলেও UI দেখাবে ডিফল্ট ভ্যালু
       return;
     }
     updateUI(data);
