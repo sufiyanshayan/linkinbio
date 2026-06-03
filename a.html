@@ -3,274 +3,242 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Dynamic Profile - Real Time</title>
-
-<!-- Google Font -->
+<title>Admin Panel | Link-In-Bio</title>
 <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+Bengali:wght@400;700&display=swap" rel="stylesheet">
-
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 <style>
-* {
-  box-sizing: border-box;
-}
+/* মেইন ডিজাইন */
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body { font-family: "Noto Serif Bengali", serif; background: #f4f6f9; padding: 20px; color: #333; }
+.container { width: 100%; max-width: 500px; margin: auto; }
+.card { background: #fff; border-radius: 24px; padding: 2rem; box-shadow: 0 10px 25px rgba(0,0,0,0.05); }
+.input-group { margin-bottom: 1.2rem; text-align: left; }
+label { font-size: 0.75rem; font-weight: 700; display: flex; align-items: center; gap: 6px; margin-bottom: 6px; color: #555; text-transform: uppercase; }
+input, textarea, select { width: 100%; padding: 12px 15px; border-radius: 12px; border: 1px solid #ddd; outline: none; font-size: 0.9rem; font-family: inherit; transition: 0.3s; }
+input:focus, select:focus { border-color: #000; box-shadow: 0 0 0 3px rgba(0,0,0,0.05); }
 
-html, body {
-  margin: 0;
-  padding: 0;
-  height: 100%;
-  font-family: "Noto Serif Bengali", serif;
-  background: #f7f7f7;
-  overflow-x: hidden;
-}
+/* পাসওয়ার্ড এবং আই বাটন ফিক্স */
+.password-wrapper { position: relative; display: flex; align-items: center; }
+.eye-btn { position: absolute; right: 15px; cursor: pointer; color: #888; font-size: 1.1rem; z-index: 10; padding: 5px; }
 
-.wrapper {
-  min-height: 100vh;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  flex-direction: column;
-}
+/* স্মার্ট ইনপুট (Prefix Link) */
+.smart-input { display: flex; align-items: center; background: #fff; border: 1px solid #ddd; border-radius: 12px; overflow: hidden; }
+.prefix { padding-left: 12px; font-size: 0.8rem; color: #777; font-family: monospace; white-space: nowrap; pointer-events: none; }
+.smart-input input { border: none; flex: 1; }
 
-.container {
-  width: 100%;
-  max-width: 400px;
-  padding: 16px;
-  text-align: center;
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-}
+/* কান্ট্রি কোড গ্রিড */
+.phone-grid { display: flex; gap: 8px; flex-wrap: wrap; }
+.code-box { display: flex; align-items: center; background: #f8f8f8; border-radius: 12px; width: 85px; border: 1px solid #ddd; }
+.code-box span { padding-left: 10px; font-weight: bold; }
+.code-input { border: none; background: transparent; padding: 10px 5px; width: 100%; }
 
-.profile img {
-  width: 100px;
-  height: 100px;
-  border-radius: 50%;
-  border: 2px solid #000;
-  object-fit: cover;
-  margin-bottom: 12px;
-  box-shadow: 0 0 0 4px #fff, 0 0 14px rgba(0,0,0,0.35);
-}
+/* বাটন ডিজাইন */
+.btn { width: 100%; padding: 14px; border: none; border-radius: 12px; background: #000; color: #fff; font-weight: 700; cursor: pointer; font-size: 1rem; margin-top: 10px; transition: 0.3s; font-family: inherit; }
+.btn:hover { background: #222; transform: translateY(-2px); }
+.btn-logout { background: #cc0000; margin-top: 15px; }
 
-.name {
-  font-size: 18px;
-  font-weight: 700;
-  margin-bottom: 4px;
-}
-
-.title {
-  font-size: 12px;
-  color: #555;
-  margin-bottom: 14px;
-}
-
-.btn {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 8px;
-  padding: 10px;
-  border-radius: 12px;
-  text-decoration: none;
-  background: #ffffff;
-  color: #000;
-  font-size: 13px;
-  font-weight: 500;
-  box-shadow: 0 4px 12px rgba(0,0,0,0.08);
-  transition: all 0.2s ease;
-  cursor: pointer;
-}
-
-.btn img {
-  width: 16px;
-  height: 16px;
-}
-
-.btn:hover:not(.disabled) {
-  transform: translateY(-2px);
-  box-shadow: 0 6px 18px rgba(0,0,0,0.12);
-}
-
-.btn.disabled {
-  opacity: 0.5;
-  cursor: not-allowed;
-  background: #e0e0e0;
-  color: #888;
-}
-
-.footer {
-  margin-top: 16px;
-  font-size: 12px;
-  color: #555;
-  text-align: center;
-}
+.hidden { display: none; }
+.form-scroll { max-height: 85vh; overflow-y: auto; padding-right: 10px; }
+.status { margin-top: 15px; padding: 12px; border-radius: 12px; font-size: 0.85rem; text-align: center; display: none; }
+.status-error { display: block; background: #fee2e2; color: #b91c1c; border: 1px solid #fecaca; }
+.status-success { display: block; background: #dcfce7; color: #15803d; border: 1px solid #bbf7d0; }
 </style>
 </head>
-
 <body>
 
-<div class="wrapper">
-  <div class="container" id="dynamic-container">
-    <div class="profile">
-      <img id="profile-pic" src="" alt="Profile Picture">
+<div class="container">
+    
+    <!-- লগইন সেকশন -->
+    <div class="card" id="loginCard">
+      <h2 style="text-align:center; margin-bottom:1.5rem;">🔐 Admin Login</h2>
+      <div class="input-group">
+        <label>Email Address</label>
+        <input type="email" id="logEmail" placeholder="admin@example.com">
+      </div>
+      <div class="input-group">
+        <label>Password</label>
+        <div class="password-wrapper">
+          <input type="password" id="logPass" placeholder="••••••••">
+          <i class="fa-regular fa-eye eye-btn" id="eyeIcon"></i>
+        </div>
+      </div>
+      <button class="btn" onclick="handleLogin()" id="logBtn">LOGIN</button>
+      <div id="logStatus" class="status"></div>
     </div>
-    <div class="name" id="name">Loading...</div>
-    <div class="title" id="title">Loading...</div>
-    <div id="buttons-container"></div>
-  </div>
-  <div class="footer" id="footer">
-    <span id="copyright-text">Loading...</span><br>
-    <span id="made-by-name">Loading...</span><br>
-    <span id="rights-text">Loading...</span>
-  </div>
+
+    <!-- মেইন ফরম সেকশন (১৩টি এন্ট্রি) -->
+    <div class="card hidden form-scroll" id="formCard">
+      <h3 style="margin-bottom:1.5rem; border-bottom:2px solid #eee; padding-bottom:10px;">📝 UPDATE INFORMATION</h3>
+
+      <!-- ১. ইমেইল -->
+      <div class="input-group"><label>1. EMAIL *</label><input type="email" id="f1" placeholder="your@email.com"></div>
+      
+      <!-- ২. নাম -->
+      <div class="input-group"><label>2. YOUR NAME *</label><input type="text" id="f2" placeholder="John Doe"></div>
+      
+      <!-- ৩. ছবি -->
+      <div class="input-group"><label>3. PROFILE PICTURE LINK</label><input type="url" id="f3" placeholder="https://..."></div>
+
+      <!-- ৪. ফেসবুক -->
+      <div class="input-group">
+        <label>4. FACEBOOK</label>
+        <div class="smart-input"><span class="prefix">https://www.facebook.com/</span><input type="text" id="f4"></div>
+      </div>
+
+      <!-- ৫. ফেসবুক পেজ -->
+      <div class="input-group">
+        <label>5. FACEBOOK PAGE LINK</label>
+        <div class="smart-input"><span class="prefix">https://www.facebook.com/</span><input type="text" id="f5"></div>
+      </div>
+
+      <!-- ৬. ইন্সটাগ্রাম -->
+      <div class="input-group">
+        <label>6. INSTAGRAM</label>
+        <div class="smart-input"><span class="prefix">https://www.instagram.com/</span><input type="text" id="f6"></div>
+      </div>
+
+      <!-- ৭. WhatsApp (Country Selector সহ) -->
+      <div class="input-group">
+        <label>7. WHATSAPP</label>
+        <div class="phone-grid">
+          <select id="waSel" onchange="syncCode('wa')"></select>
+          <div class="code-box"><span>+</span><input type="number" id="waCode" class="code-input"></div>
+          <input type="tel" id="f7" style="flex:1.5; border:1px solid #ddd; border-radius:12px; padding-left:12px;" placeholder="Number">
+        </div>
+      </div>
+
+      <!-- ৮. টিকটক -->
+      <div class="input-group">
+        <label>8. TIKTOK</label>
+        <div class="smart-input"><span class="prefix">https://www.tiktok.com/@</span><input type="text" id="f8"></div>
+      </div>
+
+      <!-- ৯. টেলিগ্রাম -->
+      <div class="input-group">
+        <label>9. TELEGRAM</label>
+        <div class="smart-input"><span class="prefix">https://t.me/</span><input type="text" id="f9"></div>
+      </div>
+
+      <!-- ১০. টুইটার -->
+      <div class="input-group">
+        <label>10. TWITTER (X)</label>
+        <div class="smart-input"><span class="prefix">https://x.com/</span><input type="text" id="f10"></div>
+      </div>
+
+      <!-- ১১. ফোন (Country Selector সহ) -->
+      <div class="input-group">
+        <label>11. PHONE</label>
+        <div class="phone-grid">
+          <select id="phSel" onchange="syncCode('ph')"></select>
+          <div class="code-box"><span>+</span><input type="number" id="phCode" class="code-input"></div>
+          <input type="tel" id="f11" style="flex:1.5; border:1px solid #ddd; border-radius:12px; padding-left:12px;" placeholder="Number">
+        </div>
+      </div>
+
+      <!-- ১২. বায়ো/অ্যাবাউট -->
+      <div class="input-group"><label>12. ABOUT</label><textarea id="f12" rows="3" placeholder="Write your title or bio..."></textarea></div>
+      
+      <!-- ১৩. ওয়েবসাইট -->
+      <div class="input-group"><label>13. WEBSITE</label><input type="url" id="f13" placeholder="https://yourdomain.com"></div>
+
+      <!-- বাটনসমূহ (লগআউট নিচে) -->
+      <button class="btn" onclick="updateData()" id="upBtn">UPDATE INFORMATION</button>
+      <button class="btn btn-logout" onclick="handleLogout()"><i class="fa-solid fa-power-off"></i> LOGOUT</button>
+      
+      <div id="fStatus" class="status"></div>
+    </div>
 </div>
 
-<!-- Supabase JS SDK -->
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-
 <script>
-  // Supabase configuration
-  const SUPABASE_URL = 'https://gfahimzxyqwspkeqsvlg.supabase.co';
-  const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImdmYWhpbXp4eXF3c3BrZXFzdmxnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODA0Njk5NDksImV4cCI6MjA5NjA0NTk0OX0.lkZ7wpWAKknxpMMDCsRG2OiPD2wOvwFejSozzLDe0Dc';
-  const TABLE_NAME = 'linkinbi0';
+// --- ১. আপনার সুপাবেস কনফিগারেশন ---
+const SUPABASE_PROJECT_URL = "https://gfahimzxyqwspkeqsvlg.supabase.co";
+const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImdmYWhpbXp4eXF3c3BrZXFzdmxnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODA0Njk5NDksImV4cCI6MjA5NjA0NTk0OX0.lkZ7wpWAKknxpMMDCsRG2OiPD2wOvwFejSozzLDe0Dc";
+const sbClient = supabase.createClient(SUPABASE_PROJECT_URL, SUPABASE_ANON_KEY);
 
-  const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+// ২. কান্ট্রি কোড ডাটা
+const countries = [
+    { code: "880", name: "Bangladesh" }, { code: "91", name: "India" }, { code: "92", name: "Pakistan" },
+    { code: "1", name: "USA/Canada" }, { code: "44", name: "UK" }, { code: "966", name: "Saudi Arabia" },
+    { code: "971", name: "UAE" }, { code: "60", name: "Malaysia" }, { code: "65", name: "Singapore" }
+];
 
-  // Button list configuration (সব বাটন সবসময় দেখাবে)
-  const buttonsConfig = [
-    { col: 'facebook', text: 'Facebook', icon: 'https://cdn.simpleicons.org/facebook/000000', prefix: 'https://facebook.com/' },
-    { col: 'facebook_page', text: 'Facebook Page', icon: 'https://cdn.simpleicons.org/facebook/000000', prefix: 'https://facebook.com/' },
-    { col: 'instagram', text: 'Instagram', icon: 'https://cdn.simpleicons.org/instagram/000000', prefix: 'https://instagram.com/' },
-    { col: 'whatsapp', text: 'WhatsApp', icon: 'https://cdn.simpleicons.org/whatsapp/000000', prefix: 'https://wa.me/' },
-    { col: 'tiktok', text: 'TikTok', icon: 'https://cdn.simpleicons.org/tiktok/000000', prefix: 'https://tiktok.com/@' },
-    { col: 'telegram', text: 'Telegram', icon: 'https://cdn.simpleicons.org/telegram/000000', prefix: 'https://t.me/' },
-    { col: 'twitter', text: 'Twitter (X)', icon: 'https://cdn.simpleicons.org/x/000000', prefix: 'https://x.com/' },
-    { col: 'phone', text: 'Call Me', icon: 'https://cdn-icons-png.flaticon.com/512/597/597177.png', prefix: 'tel:' },
-    { col: 'about_link', text: 'About Me', icon: 'https://cdn.simpleicons.org/aboutdotme/000000', prefix: '' },
-    { col: 'website_link', text: 'My Website', icon: 'https://cdn-icons-png.flaticon.com/512/1006/1006771.png', prefix: '' }
-  ];
+function initForm() {
+    let html = '<option value="">Select Country</option>';
+    countries.forEach(c => { html += `<option value="${c.code}">${c.name} (+${c.code})</option>`; });
+    document.getElementById('waSel').innerHTML = html;
+    document.getElementById('phSel').innerHTML = html;
+}
+function syncCode(type) { document.getElementById(type + 'Code').value = document.getElementById(type + 'Sel').value; }
 
-  function updateUI(data) {
-    let row = null;
-    let hasData = data && data.length > 0;
-    
-    if (hasData) {
-      row = data[0];
-    }
-    
-    // Profile picture
-    const profileImg = document.getElementById('profile-pic');
-    if (hasData && row.profile_pic && row.profile_pic.trim() !== '') {
-      profileImg.src = row.profile_pic;
-    } else {
-      profileImg.src = 'https://via.placeholder.com/100?text=No+Image';
-    }
-    
-    // Name
-    const nameEl = document.getElementById('name');
-    if (hasData && row.name && row.name.trim() !== '') {
-      nameEl.textContent = row.name;
-    } else {
-      nameEl.textContent = 'নাম যোগ করুন';
-    }
-    
-    // Title
-    const titleEl = document.getElementById('title');
-    if (hasData && row.title && row.title.trim() !== '') {
-      titleEl.textContent = row.title;
-    } else {
-      titleEl.textContent = 'টাইটেল যোগ করুন';
-    }
-    
-    // Footer three fields
-    const copyrightEl = document.getElementById('copyright-text');
-    const madeByNameEl = document.getElementById('made-by-name');
-    const rightsEl = document.getElementById('rights-text');
-    
-    if (hasData && row.copyright_text && row.copyright_text.trim() !== '') {
-      copyrightEl.textContent = row.copyright_text;
-    } else {
-      copyrightEl.textContent = 'Copyright © 2026 MADE BY';
-    }
-    
-    if (hasData && row.made_by_name && row.made_by_name.trim() !== '') {
-      madeByNameEl.textContent = row.made_by_name;
-    } else {
-      madeByNameEl.textContent = 'Your_Name';
-    }
-    
-    if (hasData && row.rights_text && row.rights_text.trim() !== '') {
-      rightsEl.textContent = row.rights_text;
-    } else {
-      rightsEl.textContent = 'All Rights Reserved';
-    }
-    
-    // Buttons - সব বাটন সবসময় দেখাবে, কিন্তু ডাটা থাকলেই ক্লিকযোগ্য হবে
-    const buttonsContainer = document.getElementById('buttons-container');
-    buttonsContainer.innerHTML = '';
-    
-    buttonsConfig.forEach(btn => {
-      const a = document.createElement('a');
-      a.className = 'btn';
-      
-      let value = null;
-      if (hasData && row[btn.col]) {
-        value = row[btn.col].trim();
-      }
-      
-      if (value && value !== '') {
-        // ডাটা আছে - বাটন কাজ করবে
-        let href = '';
-        if (btn.prefix === 'tel:' || btn.prefix === 'https://wa.me/') {
-          href = btn.prefix + value.replace(/[^0-9+]/g, '');
-        } else if (btn.prefix) {
-          href = btn.prefix + value;
-        } else {
-          href = value;
-        }
-        a.href = href;
-        a.target = '_blank';
-        a.rel = 'noopener noreferrer';
-      } else {
-        // ডাটা নেই - বাটন ডিজেবল থাকবে
-        a.classList.add('disabled');
-        a.href = 'javascript:void(0)';
-        a.style.pointerEvents = 'none';
-      }
-      
-      const img = document.createElement('img');
-      img.src = btn.icon;
-      img.alt = btn.text + ' Logo';
-      
-      a.appendChild(img);
-      a.appendChild(document.createTextNode(' ' + btn.text));
-      buttonsContainer.appendChild(a);
-    });
-  }
+// ৩. আই বাটন ফিক্স (Robust Event Listener)
+const eyeIcon = document.getElementById('eyeIcon');
+const passInput = document.getElementById('logPass');
 
-  async function loadData() {
-    const { data, error } = await supabase
-      .from(TABLE_NAME)
-      .select('*')
-      .limit(1);
-    
-    if (error) {
-      console.error('Error:', error);
-      updateUI(null); // error থাকলেও UI দেখাবে ডিফল্ট ভ্যালু
-      return;
+eyeIcon.addEventListener('click', function() {
+    const isPass = passInput.type === 'password';
+    passInput.type = isPass ? 'text' : 'password';
+    this.classList.toggle('fa-eye');
+    this.classList.toggle('fa-eye-slash');
+});
+
+// ৪. লগইন ফাংশন
+async function handleLogin() {
+    const email = document.getElementById('logEmail').value.trim();
+    const password = document.getElementById('logPass').value.trim();
+    const btn = document.getElementById('logBtn');
+    const status = document.getElementById('logStatus');
+
+    if(!email || !password) return;
+
+    btn.disabled = true; btn.innerText = "Checking...";
+    const { error } = await sbClient.auth.signInWithPassword({ email, password });
+
+    if(error) {
+        status.innerText = error.message; status.className="status status-error";
+        btn.disabled = false; btn.innerText = "LOGIN";
+    } else {
+        document.getElementById('loginCard').classList.add('hidden');
+        document.getElementById('formCard').classList.remove('hidden');
     }
-    updateUI(data);
-  }
+}
 
-  // Real-time subscription
-  supabase
-    .channel('table_changes')
-    .on('postgres_changes', { event: '*', schema: 'public', table: TABLE_NAME }, (payload) => {
-      console.log('Realtime update:', payload);
-      loadData();
-    })
-    .subscribe();
+// ৫. ডাটা আপডেট ফাংশন
+async function updateData() {
+    const btn = document.getElementById('upBtn');
+    const status = document.getElementById('fStatus');
 
-  // Initial load
-  loadData();
+    const data = {
+        email: document.getElementById('f1').value,
+        name: document.getElementById('f2').value,
+        profile_pic: document.getElementById('f3').value,
+        facebook: 'https://www.facebook.com/' + document.getElementById('f4').value,
+        fb_page: 'https://www.facebook.com/' + document.getElementById('f5').value,
+        instagram: 'https://www.instagram.com/' + document.getElementById('f6').value,
+        whatsapp: 'https://wa.me/' + document.getElementById('waCode').value + document.getElementById('f7').value.replace(/\D/g,''),
+        tiktok: 'https://www.tiktok.com/@' + document.getElementById('f8').value,
+        telegram: 'https://t.me/' + document.getElementById('f9').value,
+        twitter: 'https://x.com/' + document.getElementById('f10').value,
+        phone: '+' + document.getElementById('phCode').value + document.getElementById('f11').value.replace(/\D/g,''),
+        about: document.getElementById('f12').value,
+        website: document.getElementById('f13').value
+    };
+
+    if(!data.name || !data.email) { alert("Name & Email Required!"); return; }
+
+    btn.disabled = true; btn.innerText = "Processing...";
+    const { error } = await sbClient.from('linkinbio').insert([data]);
+
+    if(error) {
+        status.innerText = "Error: " + error.message; status.className="status status-error";
+    } else {
+        status.innerText = "Success: Information Updated!"; status.className="status status-success";
+    }
+    btn.disabled = false; btn.innerText = "UPDATE INFORMATION";
+}
+
+function handleLogout() { sbClient.auth.signOut(); location.reload(); }
+initForm();
 </script>
 </body>
 </html>
