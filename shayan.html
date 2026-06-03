@@ -1,218 +1,220 @@
 <!DOCTYPE html>
 <html lang="bn">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Admin Link-In-Bio</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Dynamic Profile - Real Time</title>
 
-    <!-- Google Font -->
-    <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+Bengali:wght@400;700&display=swap" rel="stylesheet">
-    <!-- Supabase SDK -->
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<!-- Google Font -->
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+Bengali:wght@400;700&display=swap" rel="stylesheet">
 
-    <style>
-        * { box-sizing: border-box; }
-        html, body { margin: 0; padding: 0; font-family: "Noto Serif Bengali", serif; background: #f7f7f7; color: #333; }
-        
-        .wrapper { min-height: 100vh; display: flex; flex-direction: column; align-items: center; padding: 40px 20px; }
-        .container { width: 100%; max-width: 400px; text-align: center; display: flex; flex-direction: column; gap: 10px; }
+<style>
+* {
+  box-sizing: border-box;
+}
 
-        /* Profile Section */
-        .profile img { width: 100px; height: 100px; border-radius: 50%; border: 2px solid #000; object-fit: cover; margin-bottom: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.1); }
-        .name { font-size: 18px; font-weight: 700; margin-bottom: 4px; }
-        .title { font-size: 12px; color: #555; margin-bottom: 20px; }
+html, body {
+  margin: 0;
+  padding: 0;
+  height: 100%;
+  font-family: "Noto Serif Bengali", serif;
+  background: #f7f7f7;
+  overflow-x: hidden;
+}
 
-        /* Links List */
-        #links-list { display: flex; flex-direction: column; gap: 10px; width: 100%; }
-        
-        /* Link Buttons & Admin Button Style */
-        .btn { display: flex; align-items: center; justify-content: center; gap: 10px; padding: 12px; border-radius: 12px; text-decoration: none; background: #ffffff; color: #000; font-size: 14px; font-weight: 500; box-shadow: 0 4px 12px rgba(0,0,0,0.08); transition: all 0.2s ease; border: none; cursor: pointer; width: 100%; }
-        .btn:hover { transform: translateY(-2px); box-shadow: 0 6px 18px rgba(0,0,0,0.12); }
-        .btn img { width: 18px; height: 18px; }
+.wrapper {
+  min-height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+}
 
-        /* Admin Specific Styling */
-        .admin-section { margin-top: 30px; width: 100%; max-width: 400px; }
-        .btn-admin { background: #000 !important; color: #fff !important; margin-top: 20px; }
-        
-        #login-form, #admin-panel { display: none; background: #fff; padding: 20px; border-radius: 15px; margin-top: 15px; box-shadow: 0 10px 25px rgba(0,0,0,0.1); text-align: left; }
-        #login-form h4, #admin-panel h4 { margin-top: 0; text-align: center; }
-        
-        input { width: 100%; padding: 10px; margin: 8px 0; border: 1px solid #ddd; border-radius: 8px; font-size: 14px; }
-        .btn-action { width: 100%; padding: 12px; border: none; border-radius: 8px; cursor: pointer; font-weight: bold; margin-top: 10px; font-size: 14px; }
-        .btn-login { background: #007bff; color: #fff; }
-        .btn-add { background: #28a745; color: #fff; }
-        .btn-logout { background: #dc3545; color: #fff; margin-top: 15px; }
-        
-        .link-item { position: relative; width: 100%; }
-        .delete-btn { background: #ff4d4d; color: white; border: none; padding: 5px 10px; border-radius: 5px; cursor: pointer; font-size: 11px; margin-top: 5px; float: right; }
+.container {
+  width: 100%;
+  max-width: 400px;
+  padding: 16px;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
 
-        .footer { margin-top: 40px; font-size: 12px; color: #888; text-align: center; }
-    </style>
+.profile img {
+  width: 100px;
+  height: 100px;
+  border-radius: 50%;
+  border: 2px solid #000;
+  object-fit: cover;
+  margin-bottom: 12px;
+  box-shadow: 0 0 0 4px #fff, 0 0 14px rgba(0,0,0,0.35);
+}
+
+.name {
+  font-size: 18px;
+  font-weight: 700;
+  margin-bottom: 4px;
+}
+
+.title {
+  font-size: 12px;
+  color: #555;
+  margin-bottom: 14px;
+}
+
+.btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 10px;
+  border-radius: 12px;
+  text-decoration: none;
+  background: #ffffff;
+  color: #000;
+  font-size: 13px;
+  font-weight: 500;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+  transition: all 0.2s ease;
+}
+
+.btn img {
+  width: 16px;
+  height: 16px;
+}
+
+.btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 18px rgba(0,0,0,0.12);
+}
+
+.footer {
+  margin-top: 16px;
+  font-size: 12px;
+  color: #555;
+  text-align: center;
+}
+</style>
 </head>
+
 <body>
 
 <div class="wrapper">
-    <div class="container">
-        <!-- Profile -->
-        <div class="profile">
-            <img src="https://via.placeholder.com/100" alt="Profile Picture">
-        </div>
-        <div class="name">আপনার নাম</div>
-        <div class="title">আপনার টাইটেল / বায়ো</div>
-
-        <!-- Links Container -->
-        <div id="links-list">
-            <p>লিঙ্ক লোড হচ্ছে...</p>
-        </div>
-
-        <!-- Admin Area -->
-        <div class="admin-section">
-            <!-- মেইন এডমিন বাটন -->
-            <button id="admin-toggle-btn" class="btn btn-admin" onclick="toggleAdminView()">ADMIN</button>
-
-            <!-- লগইন ফর্ম -->
-            <div id="login-form">
-                <h4>এডমিন লগইন</h4>
-                <input type="email" id="email" placeholder="ইমেইল">
-                <input type="password" id="password" placeholder="পাসওয়ার্ড">
-                <button class="btn-action btn-login" onclick="handleLogin()">লগইন করুন</button>
-            </div>
-
-            <!-- এডমিন কন্ট্রোল প্যানেল -->
-            <div id="admin-panel">
-                <h4>নতুন লিঙ্ক যোগ করুন</h4>
-                <input type="text" id="link-title" placeholder="লিঙ্ক নাম (যেমন: Facebook)">
-                <input type="text" id="link-url" placeholder="URL (https://...)">
-                <input type="text" id="link-icon" placeholder="আইকন নাম (যেমন: facebook, instagram)">
-                <button class="btn-action btn-add" onclick="addNewLink()">সেভ করুন</button>
-                <button class="btn-action btn-logout" onclick="handleLogout()">লগআউট</button>
-            </div>
-        </div>
-
-        <div class="footer">
-            Copyright © 2026 MADE BY YOUR NAME
-        </div>
+  <div class="container" id="dynamic-container">
+    <div class="profile">
+      <img id="profile-pic" src="" alt="Profile Picture">
     </div>
+    <div class="name" id="name"></div>
+    <div class="title" id="title"></div>
+    <div id="buttons-container"></div>
+  </div>
+  <div class="footer" id="footer">
+    <span id="copyright-text"></span><br>
+    <span id="made-by-name"></span><br>
+    <span id="rights-text"></span>
+  </div>
 </div>
 
+<!-- Supabase JS SDK -->
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
 <script>
-    // Supabase Configuration
-    const SB_URL = "https://lsodigwljvsvvspvhjpn.supabase.co";
-    const SB_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imxzb2RpZ3dsanZzdnZzcHZoanBuIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzkxMTk5OTUsImV4cCI6MjA5NDY5NTk5NX0.ysvkIIuOprA-ZtEoY96GpEuSqfHhMeHexpeLoN_XOho";
-    const _supabase = supabase.createClient(SB_URL, SB_KEY);
+  // Supabase configuration
+  const SUPABASE_URL = 'https://gfahimzxyqwspkeqsvlg.supabase.co';
+  const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImdmYWhpbXp4eXF3c3BrZXFzdmxnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODA0Njk5NDksImV4cCI6MjA5NjA0NTk0OX0.lkZ7wpWAKknxpMMDCsRG2OiPD2wOvwFejSozzLDe0Dc';
+  const TABLE_NAME = 'linkinbi0';
 
-    let isLoggedIn = false;
+  const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-    // ১. ডাটাবেস থেকে লিঙ্কগুলো নিয়ে আসা
-    async function fetchLinks() {
-        const { data, error } = await _supabase
-            .from('links')
-            .select('*')
-            .order('created_at', { ascending: true });
+  // Button list configuration
+  const buttonsConfig = [
+    { col: 'facebook', text: 'Facebook', icon: 'https://cdn.simpleicons.org/facebook/000000', prefix: 'https://facebook.com/' },
+    { col: 'facebook_page', text: 'Facebook Page', icon: 'https://cdn.simpleicons.org/facebook/000000', prefix: 'https://facebook.com/' },
+    { col: 'instagram', text: 'Instagram', icon: 'https://cdn.simpleicons.org/instagram/000000', prefix: 'https://instagram.com/' },
+    { col: 'whatsapp', text: 'WhatsApp', icon: 'https://cdn.simpleicons.org/whatsapp/000000', prefix: 'https://wa.me/' },
+    { col: 'tiktok', text: 'TikTok', icon: 'https://cdn.simpleicons.org/tiktok/000000', prefix: 'https://tiktok.com/@' },
+    { col: 'telegram', text: 'Telegram', icon: 'https://cdn.simpleicons.org/telegram/000000', prefix: 'https://t.me/' },
+    { col: 'twitter', text: 'Twitter (X)', icon: 'https://cdn.simpleicons.org/x/000000', prefix: 'https://x.com/' },
+    { col: 'phone', text: 'Call Me', icon: 'https://cdn-icons-png.flaticon.com/512/597/597177.png', prefix: 'tel:' },
+    { col: 'about_link', text: 'About Me', icon: 'https://cdn.simpleicons.org/aboutdotme/000000', prefix: '' },
+    { col: 'website_link', text: 'My Website', icon: 'https://cdn-icons-png.flaticon.com/512/1006/1006771.png', prefix: '' }
+  ];
 
-        if (!error) renderLinks(data);
-    }
+  function updateUI(data) {
+    if (!data || data.length === 0) return;
+    const row = data[0];
 
-    // ২. স্ক্রিনে লিঙ্কগুলো দেখানো
-    function renderLinks(links) {
-        const list = document.getElementById('links-list');
-        list.innerHTML = '';
-        
-        if (links.length === 0) {
-            list.innerHTML = '<p style="color:#888">কোন লিঙ্ক নেই।</p>';
-            return;
-        }
-
-        links.forEach(link => {
-            const div = document.createElement('div');
-            div.className = 'link-item';
-            div.innerHTML = `
-                <a href="${link.url}" target="_blank" class="btn">
-                    <img src="https://cdn.simpleicons.org/${link.icon || 'link'}/000" alt="icon">
-                    ${link.title}
-                </a>
-                ${isLoggedIn ? `<button class="delete-btn" onclick="deleteLink('${link.id}')">Delete</button>` : ''}
-            `;
-            list.appendChild(div);
-        });
-    }
-
-    // ৩. এডমিন লগইন হ্যান্ডেল করা
-    async function handleLogin() {
-        const email = document.getElementById('email').value;
-        const password = document.getElementById('password').value;
-
-        const { data, error } = await _supabase.auth.signInWithPassword({ email, password });
-
-        if (error) {
-            alert("ভুল ইমেইল বা পাসওয়ার্ড দিয়েছেন!");
+    // Profile picture
+    if (row.profile_pic) document.getElementById('profile-pic').src = row.profile_pic;
+    
+    // Name
+    if (row.name) document.getElementById('name').textContent = row.name;
+    
+    // Title
+    if (row.title) document.getElementById('title').textContent = row.title;
+    
+    // Footer three fields
+    if (row.copyright_text) document.getElementById('copyright-text').textContent = row.copyright_text;
+    if (row.made_by_name) document.getElementById('made-by-name').textContent = row.made_by_name;
+    if (row.rights_text) document.getElementById('rights-text').textContent = row.rights_text;
+    
+    // Buttons
+    const buttonsContainer = document.getElementById('buttons-container');
+    buttonsContainer.innerHTML = '';
+    
+    buttonsConfig.forEach(btn => {
+      const value = row[btn.col];
+      if (value && value.trim() !== '') {
+        let href = '';
+        if (btn.prefix === 'tel:' || btn.prefix === 'https://wa.me/') {
+          href = btn.prefix + value.replace(/[^0-9+]/g, '');
+        } else if (btn.prefix) {
+          href = btn.prefix + value;
         } else {
-            alert("লগইন সফল হয়েছে!");
-            location.reload(); // পেজ রিফ্রেশ করে এডমিন প্যানেল দেখাবে
+          href = value;
         }
-    }
-
-    // ৪. লগআউট
-    async function handleLogout() {
-        await _supabase.auth.signOut();
-        location.reload();
-    }
-
-    // ৫. নতুন লিঙ্ক যোগ করা
-    async function addNewLink() {
-        const title = document.getElementById('link-title').value;
-        const url = document.getElementById('link-url').value;
-        const icon = document.getElementById('link-icon').value;
-
-        if (!title || !url) return alert("দয়া করে নাম এবং লিঙ্ক দিন!");
-
-        const { error } = await _supabase.from('links').insert([{ title, url, icon }]);
         
-        if (error) alert("Error: " + error.message);
-        else {
-            document.getElementById('link-title').value = '';
-            document.getElementById('link-url').value = '';
-            document.getElementById('link-icon').value = '';
-            alert("লিঙ্ক যোগ হয়েছে!");
-        }
-    }
-
-    // ৬. লিঙ্ক ডিলিট করা
-    async function deleteLink(id) {
-        if (!confirm("আপনি কি এটি ডিলিট করতে চান?")) return;
-        const { error } = await _supabase.from('links').delete().eq('id', id);
-        if (error) alert(error.message);
-    }
-
-    // ৭. এডমিন সেকশন টগল (ADMIN বাটন চাপলে যা হবে)
-    function toggleAdminView() {
-        const loginForm = document.getElementById('login-form');
-        const adminPanel = document.getElementById('admin-panel');
+        const a = document.createElement('a');
+        a.className = 'btn';
+        a.href = href;
+        a.target = '_blank';
+        a.rel = 'noopener noreferrer';
         
-        if (isLoggedIn) {
-            adminPanel.style.display = adminPanel.style.display === 'block' ? 'none' : 'block';
-        } else {
-            loginForm.style.display = loginForm.style.display === 'block' ? 'none' : 'block';
-        }
+        const img = document.createElement('img');
+        img.src = btn.icon;
+        img.alt = btn.text + ' Logo';
+        
+        a.appendChild(img);
+        a.appendChild(document.createTextNode(' ' + btn.text));
+        buttonsContainer.appendChild(a);
+      }
+    });
+  }
+
+  async function loadData() {
+    const { data, error } = await supabase
+      .from(TABLE_NAME)
+      .select('*')
+      .limit(1);
+    
+    if (error) {
+      console.error('Error:', error);
+      return;
     }
+    updateUI(data);
+  }
 
-    // ৮. চেক করা ইউজার লগইন আছে কি না
-    async function checkUser() {
-        const { data: { session } } = await _supabase.auth.getSession();
-        if (session) {
-            isLoggedIn = true;
-            document.getElementById('admin-toggle-btn').innerText = "ADMIN PANEL";
-        }
-        fetchLinks();
-    }
+  // Real-time subscription
+  supabase
+    .channel('table_changes')
+    .on('postgres_changes', { event: '*', schema: 'public', table: TABLE_NAME }, (payload) => {
+      console.log('Realtime update:', payload);
+      loadData();
+    })
+    .subscribe();
 
-    // রিয়েল টাইম আপডেট লিসেনার
-    _supabase.channel('links-db').on('postgres_changes', { event: '*', schema: 'public', table: 'links' }, () => {
-        fetchLinks();
-    }).subscribe();
-
-    checkUser();
+  // Initial load
+  loadData();
 </script>
-
 </body>
 </html>
