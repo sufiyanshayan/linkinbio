@@ -3,274 +3,141 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Dynamic Profile - Real Time</title>
-
-<!-- Google Font -->
-<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+Bengali:wght@400;700&display=swap" rel="stylesheet">
+<title>Sleek Profile Links</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Noto+Serif+Bengali:wght@400;700&display=swap" rel="stylesheet">
 
 <style>
-* {
-  box-sizing: border-box;
-}
+  /* সাইজ এবং স্পেসিং কমানো হয়েছে */
+  body { margin: 0; background: #f8f9fa; font-family: 'Inter', 'Noto Serif Bengali', sans-serif; display: flex; justify-content: center; min-height: 100vh; color: #333; }
+  
+  .wrapper { 
+    width: 100%; 
+    max-width: 350px; /* কন্টেইনার ছোট করা হয়েছে (আগে ছিল ৪০০) */
+    padding: 30px 20px; 
+    text-align: center; 
+  }
+  
+  .profile-pic { 
+    width: 85px; /* সাইজ কমানো হয়েছে */
+    height: 85px; 
+    border-radius: 50%; 
+    object-fit: cover; 
+    border: 3px solid #fff; 
+    box-shadow: 0 2px 10px rgba(0,0,0,0.1); 
+    margin-bottom: 12px; 
+  }
+  
+  .name { font-size: 18px; font-weight: 700; margin: 0 0 4px 0; } /* ফন্ট ছোট করা হয়েছে */
+  .title { font-size: 12px; color: #666; margin-bottom: 20px; }
 
-html, body {
-  margin: 0;
-  padding: 0;
-  height: 100%;
-  font-family: "Noto Serif Bengali", serif;
-  background: #f7f7f7;
-  overflow-x: hidden;
-}
+  .buttons-container { display: flex; flex-direction: column; gap: 8px; } /* গ্যাপ কমানো হয়েছে */
+  
+  .btn {
+    display: flex; align-items: center; justify-content: center; gap: 10px;
+    padding: 10px 15px; /* প্যাডিং কমানো হয়েছে */
+    border-radius: 10px; 
+    background: #ffffff;
+    color: #333; 
+    text-decoration: none; 
+    font-size: 13.5px; /* ফন্ট সাইজ কমানো হয়েছে */
+    font-weight: 500;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.05); 
+    border: 1px solid #eaeaea;
+    transition: 0.2s ease;
+  }
+  .btn:hover { background: #fdfdfd; transform: translateY(-1px); box-shadow: 0 4px 8px rgba(0,0,0,0.08); }
+  .btn img { width: 18px; height: 18px; }
 
-.wrapper {
-  min-height: 100vh;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  flex-direction: column;
-}
-
-.container {
-  width: 100%;
-  max-width: 400px;
-  padding: 16px;
-  text-align: center;
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-}
-
-.profile img {
-  width: 100px;
-  height: 100px;
-  border-radius: 50%;
-  border: 2px solid #000;
-  object-fit: cover;
-  margin-bottom: 12px;
-  box-shadow: 0 0 0 4px #fff, 0 0 14px rgba(0,0,0,0.35);
-}
-
-.name {
-  font-size: 18px;
-  font-weight: 700;
-  margin-bottom: 4px;
-}
-
-.title {
-  font-size: 12px;
-  color: #555;
-  margin-bottom: 14px;
-}
-
-.btn {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 8px;
-  padding: 10px;
-  border-radius: 12px;
-  text-decoration: none;
-  background: #ffffff;
-  color: #000;
-  font-size: 13px;
-  font-weight: 500;
-  box-shadow: 0 4px 12px rgba(0,0,0,0.08);
-  transition: all 0.2s ease;
-  cursor: pointer;
-}
-
-.btn img {
-  width: 16px;
-  height: 16px;
-}
-
-.btn:hover:not(.disabled) {
-  transform: translateY(-2px);
-  box-shadow: 0 6px 18px rgba(0,0,0,0.12);
-}
-
-.btn.disabled {
-  opacity: 0.5;
-  cursor: not-allowed;
-  background: #e0e0e0;
-  color: #888;
-}
-
-.footer {
-  margin-top: 16px;
-  font-size: 12px;
-  color: #555;
-  text-align: center;
-}
+  .footer { margin-top: 35px; font-size: 11px; color: #999; line-height: 1.5; }
 </style>
 </head>
-
 <body>
 
 <div class="wrapper">
-  <div class="container" id="dynamic-container">
-    <div class="profile">
-      <img id="profile-pic" src="" alt="Profile Picture">
-    </div>
-    <div class="name" id="name">Loading...</div>
-    <div class="title" id="title">Loading...</div>
-    <div id="buttons-container"></div>
+  <!-- প্রোফাইল অংশ -->
+  <img id="profile-pic" class="profile-pic" src="https://via.placeholder.com/85" alt="Profile">
+  <div class="name" id="name">আপনার নাম</div>
+  <div class="title" id="title">আপনার পদবী</div>
+
+  <!-- বাটনগুলো -->
+  <div class="buttons-container">
+    <a id="link-facebook" class="btn" href="#"><img src="https://cdn.simpleicons.org/facebook/000000"> Facebook</a>
+    <a id="link-facebook_page" class="btn" href="#"><img src="https://cdn.simpleicons.org/facebook/000000"> Facebook Page</a>
+    <a id="link-instagram" class="btn" href="#"><img src="https://cdn.simpleicons.org/instagram/000000"> Instagram</a>
+    <a id="link-whatsapp" class="btn" href="#"><img src="https://cdn.simpleicons.org/whatsapp/000000"> WhatsApp</a>
+    <a id="link-tiktok" class="btn" href="#"><img src="https://cdn.simpleicons.org/tiktok/000000"> TikTok</a>
+    <a id="link-telegram" class="btn" href="#"><img src="https://cdn.simpleicons.org/telegram/000000"> Telegram</a>
+    <a id="link-twitter" class="btn" href="#"><img src="https://cdn.simpleicons.org/x/000000"> Twitter (X)</a>
+    <a id="link-phone" class="btn" href="#"><img src="https://cdn-icons-png.flaticon.com/512/597/597177.png"> Call Me</a>
+    <a id="link-about_link" class="btn" href="#"><img src="https://cdn.simpleicons.org/aboutdotme/000000"> About Me</a>
+    <a id="link-website_link" class="btn" href="#"><img src="https://cdn-icons-png.flaticon.com/512/1006/1006771.png"> My Website</a>
   </div>
-  <div class="footer" id="footer">
-    <span id="copyright-text">Loading...</span><br>
-    <span id="made-by-name">Loading...</span><br>
-    <span id="rights-text">Loading...</span>
+
+  <div class="footer">
+    <div id="copyright-text">© 2024 All Rights Reserved</div>
+    <div id="made-by">Made by <span id="made-by-name">Admin</span></div>
+    <div id="rights-text">All Rights Reserved</div>
   </div>
 </div>
 
-<!-- Supabase JS SDK -->
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
 <script>
-  // Supabase configuration
   const SUPABASE_URL = 'https://gfahimzxyqwspkeqsvlg.supabase.co';
   const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImdmYWhpbXp4eXF3c3BrZXFzdmxnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODA0Njk5NDksImV4cCI6MjA5NjA0NTk0OX0.lkZ7wpWAKknxpMMDCsRG2OiPD2wOvwFejSozzLDe0Dc';
-  const TABLE_NAME = 'linkinbi0';
-
+  
   const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-  // Button list configuration (সব বাটন সবসময় দেখাবে)
-  const buttonsConfig = [
-    { col: 'facebook', text: 'Facebook', icon: 'https://cdn.simpleicons.org/facebook/000000', prefix: 'https://facebook.com/' },
-    { col: 'facebook_page', text: 'Facebook Page', icon: 'https://cdn.simpleicons.org/facebook/000000', prefix: 'https://facebook.com/' },
-    { col: 'instagram', text: 'Instagram', icon: 'https://cdn.simpleicons.org/instagram/000000', prefix: 'https://instagram.com/' },
-    { col: 'whatsapp', text: 'WhatsApp', icon: 'https://cdn.simpleicons.org/whatsapp/000000', prefix: 'https://wa.me/' },
-    { col: 'tiktok', text: 'TikTok', icon: 'https://cdn.simpleicons.org/tiktok/000000', prefix: 'https://tiktok.com/@' },
-    { col: 'telegram', text: 'Telegram', icon: 'https://cdn.simpleicons.org/telegram/000000', prefix: 'https://t.me/' },
-    { col: 'twitter', text: 'Twitter (X)', icon: 'https://cdn.simpleicons.org/x/000000', prefix: 'https://x.com/' },
-    { col: 'phone', text: 'Call Me', icon: 'https://cdn-icons-png.flaticon.com/512/597/597177.png', prefix: 'tel:' },
-    { col: 'about_link', text: 'About Me', icon: 'https://cdn.simpleicons.org/aboutdotme/000000', prefix: '' },
-    { col: 'website_link', text: 'My Website', icon: 'https://cdn-icons-png.flaticon.com/512/1006/1006771.png', prefix: '' }
-  ];
+  function updateUI(row) {
+    if (!row) return;
 
-  function updateUI(data) {
-    let row = null;
-    let hasData = data && data.length > 0;
+    document.getElementById('name').innerText = row.name || "আপনার নাম";
+    document.getElementById('title').innerText = row.title || "পদবী";
+    if(row.profile_pic) document.getElementById('profile-pic').src = row.profile_pic;
     
-    if (hasData) {
-      row = data[0];
-    }
-    
-    // Profile picture
-    const profileImg = document.getElementById('profile-pic');
-    if (hasData && row.profile_pic && row.profile_pic.trim() !== '') {
-      profileImg.src = row.profile_pic;
-    } else {
-      profileImg.src = 'https://via.placeholder.com/100?text=No+Image';
-    }
-    
-    // Name
-    const nameEl = document.getElementById('name');
-    if (hasData && row.name && row.name.trim() !== '') {
-      nameEl.textContent = row.name;
-    } else {
-      nameEl.textContent = 'নাম যোগ করুন';
-    }
-    
-    // Title
-    const titleEl = document.getElementById('title');
-    if (hasData && row.title && row.title.trim() !== '') {
-      titleEl.textContent = row.title;
-    } else {
-      titleEl.textContent = 'টাইটেল যোগ করুন';
-    }
-    
-    // Footer three fields
-    const copyrightEl = document.getElementById('copyright-text');
-    const madeByNameEl = document.getElementById('made-by-name');
-    const rightsEl = document.getElementById('rights-text');
-    
-    if (hasData && row.copyright_text && row.copyright_text.trim() !== '') {
-      copyrightEl.textContent = row.copyright_text;
-    } else {
-      copyrightEl.textContent = 'Copyright © 2026 MADE BY';
-    }
-    
-    if (hasData && row.made_by_name && row.made_by_name.trim() !== '') {
-      madeByNameEl.textContent = row.made_by_name;
-    } else {
-      madeByNameEl.textContent = 'Your_Name';
-    }
-    
-    if (hasData && row.rights_text && row.rights_text.trim() !== '') {
-      rightsEl.textContent = row.rights_text;
-    } else {
-      rightsEl.textContent = 'All Rights Reserved';
-    }
-    
-    // Buttons - সব বাটন সবসময় দেখাবে, কিন্তু ডাটা থাকলেই ক্লিকযোগ্য হবে
-    const buttonsContainer = document.getElementById('buttons-container');
-    buttonsContainer.innerHTML = '';
-    
-    buttonsConfig.forEach(btn => {
-      const a = document.createElement('a');
-      a.className = 'btn';
-      
-      let value = null;
-      if (hasData && row[btn.col]) {
-        value = row[btn.col].trim();
-      }
-      
-      if (value && value !== '') {
-        // ডাটা আছে - বাটন কাজ করবে
-        let href = '';
-        if (btn.prefix === 'tel:' || btn.prefix === 'https://wa.me/') {
-          href = btn.prefix + value.replace(/[^0-9+]/g, '');
-        } else if (btn.prefix) {
-          href = btn.prefix + value;
-        } else {
-          href = value;
-        }
-        a.href = href;
-        a.target = '_blank';
-        a.rel = 'noopener noreferrer';
+    document.getElementById('copyright-text').innerText = row.copyright_text || "© 2024";
+    document.getElementById('made-by-name').innerText = row.made_by_name || "Admin";
+    document.getElementById('rights-text').innerText = row.rights_text || "All Rights Reserved";
+
+    const links = [
+      { id: 'link-facebook', col: 'facebook', prefix: '' },
+      { id: 'link-facebook_page', col: 'facebook_page', prefix: '' },
+      { id: 'link-instagram', col: 'instagram', prefix: '' },
+      { id: 'link-whatsapp', col: 'whatsapp', prefix: 'https://wa.me/' },
+      { id: 'link-tiktok', col: 'tiktok', prefix: 'https://tiktok.com/@' },
+      { id: 'link-telegram', col: 'telegram', prefix: 'https://t.me/' },
+      { id: 'link-twitter', col: 'twitter', prefix: '' },
+      { id: 'link-phone', col: 'phone', prefix: 'tel:' },
+      { id: 'link-about_link', col: 'about_link', prefix: '' },
+      { id: 'link-website_link', col: 'website_link', prefix: '' }
+    ];
+
+    links.forEach(item => {
+      const el = document.getElementById(item.id);
+      const val = row[item.col];
+      if (val && val.trim() !== "") {
+        let v = val.trim();
+        el.href = v.startsWith('http') ? v : item.prefix + v;
+        el.target = "_blank";
+        el.style.opacity = "1";
       } else {
-        // ডাটা নেই - বাটন ডিজেবল থাকবে
-        a.classList.add('disabled');
-        a.href = 'javascript:void(0)';
-        a.style.pointerEvents = 'none';
+        el.href = "javascript:void(0)";
+        el.style.opacity = "0.6";
       }
-      
-      const img = document.createElement('img');
-      img.src = btn.icon;
-      img.alt = btn.text + ' Logo';
-      
-      a.appendChild(img);
-      a.appendChild(document.createTextNode(' ' + btn.text));
-      buttonsContainer.appendChild(a);
     });
   }
 
   async function loadData() {
-    const { data, error } = await supabase
-      .from(TABLE_NAME)
-      .select('*')
-      .limit(1);
-    
-    if (error) {
-      console.error('Error:', error);
-      updateUI(null); // error থাকলেও UI দেখাবে ডিফল্ট ভ্যালু
-      return;
-    }
-    updateUI(data);
+    const { data } = await supabase.from('linkinbi0').select('*');
+    if (data && data.length > 0) updateUI(data[0]);
   }
 
-  // Real-time subscription
-  supabase
-    .channel('table_changes')
-    .on('postgres_changes', { event: '*', schema: 'public', table: TABLE_NAME }, (payload) => {
-      console.log('Realtime update:', payload);
-      loadData();
-    })
-    .subscribe();
+  supabase.channel('custom').on('postgres_changes', { event: '*', schema: 'public', table: 'linkinbi0' }, (p) => {
+    updateUI(p.new);
+  }).subscribe();
 
-  // Initial load
   loadData();
 </script>
+
 </body>
 </html>
