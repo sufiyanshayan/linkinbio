@@ -4,7 +4,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
     <title>Sign Up | Hologram Access</title>
-    <link rel="icon" type="image/png" href="YOUR_FAVICON_LINK">
     <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
@@ -14,44 +13,21 @@
         .app{max-width:480px;margin:0 auto;background:#0f0f17;min-height:100vh;position:relative;border-left:1px solid rgba(255,255,255,0.05);border-right:1px solid rgba(255,255,255,0.05);box-shadow:0 0 50px rgba(0,0,0,0.5);}
         .cyber-bg{position:fixed;top:0;left:0;width:100%;height:100%;background:radial-gradient(circle at 20% 50%,rgba(255,50,100,0.15) 0%,transparent 50%),radial-gradient(circle at 80% 80%,rgba(80,200,255,0.15) 0%,transparent 50%),radial-gradient(circle at 40% 20%,rgba(200,100,255,0.15) 0%,transparent 50%),linear-gradient(145deg,#0a0a0f,#1a1a2e);z-index:-2;animation:breathe 10s ease-in-out infinite;}
         @keyframes breathe{0%,100%{opacity:0.8;}50%{opacity:1;}}
-        header{display:flex;justify-content:space-between;align-items:center;padding:1rem 1.5rem;background:#14141e;border-bottom:1px solid rgba(255,100,200,0.2);position:sticky;top:0;z-index:100;}
+        
+        /* Header without menu button */
+        header{display:flex;justify-content:center;align-items:center;padding:1rem 1.5rem;background:#14141e;border-bottom:1px solid rgba(255,100,200,0.2);position:sticky;top:0;z-index:100;}
         .logo{font-weight:700;font-size:1.3rem;background:linear-gradient(135deg,#fff,#a0a0ff,#ffa0ff);-webkit-background-clip:text;-webkit-text-fill-color:transparent;display:flex;align-items:center;gap:8px;}
         .logo i{font-size:1.1rem;color:#ffa0ff;filter:drop-shadow(0 0 8px #ffa0ff);}
-        .hologram-btn{width:48px;height:48px;display:flex;flex-direction:column;justify-content:center;align-items:center;gap:5px;cursor:pointer;border-radius:40px;background:#1e1e2a;border:1px solid rgba(255,255,255,0.1);transition:0.3s;}
-        .hologram-btn:hover{background:#2a2a3a;border-color:rgba(255,200,255,0.3);}
-        .hologram-btn .line{width:22px;height:2px;background:linear-gradient(90deg,#ffa0ff,#a0a0ff);border-radius:4px;}
-        .overlay{position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.7);opacity:0;pointer-events:none;transition:opacity 0.5s;z-index:200;}
-        .overlay.active{opacity:1;pointer-events:all;}
-        .sidebar{position:fixed;right:-360px;top:0;width:300px;height:100%;background:#1a1a26;box-shadow:-25px 0 50px rgba(0,0,0,0.5);transition:right 0.6s cubic-bezier(0.22,1,0.36,1);z-index:300;padding:2rem 1.2rem;border-left:1px solid rgba(255,100,255,0.3);}
-        .sidebar.active{right:0;}
-        .close-btn{text-align:right;margin-bottom:1.5rem;cursor:pointer;}
-        .close-btn i{font-size:1.6rem;color:rgba(255,200,255,0.8);transition:transform 0.3s;}
-        .close-btn:hover i{transform:rotate(180deg) scale(1.1);}
-        .profile{display:flex;align-items:center;gap:1rem;padding-bottom:1.5rem;border-bottom:1px solid rgba(255,100,255,0.2);margin-bottom:1.5rem;}
-        .avatar{width:55px;height:55px;border-radius:50%;background:linear-gradient(135deg,#ff50a0,#a050ff);display:flex;align-items:center;justify-content:center;border:2px solid rgba(255,255,255,0.5);overflow:hidden;}
-        .avatar img{width:100%;height:100%;border-radius:50%;object-fit:cover;}
-        .avatar i{font-size:1.8rem;color:white;}
-        .profile-text h3{font-weight:700;font-size:1.1rem;background:linear-gradient(135deg,#fff,#ffa0ff);-webkit-background-clip:text;-webkit-text-fill-color:transparent;}
-        .profile-text p{font-size:0.7rem;color:rgba(200,200,255,0.7);}
-        .sidebar a{display:flex;align-items:center;gap:1rem;padding:0.9rem 1rem;color:rgba(255,255,255,0.9);text-decoration:none;font-weight:500;font-size:0.9rem;border-radius:16px;margin:0.4rem 0;transition:all 0.3s;background:#252535;border:1px solid rgba(255,100,255,0.2);cursor:pointer;}
-        .sidebar a i{font-size:1.2rem;width:25px;color:#ffa0ff;}
-        .sidebar a:hover{background:#353549;transform:translateX(8px);}
-        .divider{width:100%;height:1px;background:linear-gradient(90deg,transparent,#ffa0ff,transparent);margin:1rem 0;}
-        .loader{position:fixed;top:0;left:0;width:100%;height:100%;background:#0a0a12;display:flex;justify-content:center;align-items:center;opacity:0;pointer-events:none;transition:opacity 0.4s;z-index:400;}
-        .loader.active{opacity:1;pointer-events:all;}
-        .neon-spinner{width:50px;height:50px;border:3px solid rgba(255,100,255,0.2);border-top:3px solid #ffa0ff;border-right:3px solid #a0ffff;border-radius:50%;animation:spin 1s linear infinite;}
-        @keyframes spin{0%{transform:rotate(0deg);}100%{transform:rotate(360deg);}}
+        
         .container{padding:1.5rem;}
         .neon-card{background:rgba(30,30,44,0.85);backdrop-filter:blur(10px);border:1px solid rgba(255,100,255,0.25);border-radius:40px;padding:1.5rem;margin-bottom:1.5rem;position:relative;overflow:hidden;}
         .neon-card::before{content:'';position:absolute;top:-50%;left:-50%;width:200%;height:200%;background:conic-gradient(from 0deg,transparent,rgba(255,100,255,0.06),rgba(100,200,255,0.06),rgba(255,100,200,0.06),transparent 70%);animation:rotate 15s linear infinite;pointer-events:none;}
         @keyframes rotate{from{transform:rotate(0deg);}to{transform:rotate(360deg);}}
         .form-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:1.2rem;padding-bottom:0.6rem;border-bottom:1px solid rgba(255,100,255,0.2);position:relative;z-index:2;}
         .form-header h3{font-weight:700;font-size:1.2rem;background:linear-gradient(135deg,#fff,#ffa0ff,#a0ffff);-webkit-background-clip:text;-webkit-text-fill-color:transparent;}
-        .form-header i{font-size:1.4rem;color:#ffa0ff;}
         .input-group{margin-bottom:1rem;position:relative;z-index:2;}
         label{font-size:0.7rem;font-weight:500;display:flex;align-items:center;gap:8px;margin-bottom:5px;color:rgba(255,255,255,0.75);text-transform:uppercase;}
         label i{font-size:0.8rem;color:#ffa0ff;width:18px;}
-        label .required-star{color:#ff6688;margin-left:4px;}
         input{width:100%;padding:12px 14px;background:rgba(20,20,30,0.8);border:2px solid rgba(255,100,255,0.2);border-radius:24px;color:#fff;font-family:'Space Grotesk',monospace;font-size:0.85rem;transition:all 0.3s ease;}
         input:focus{outline:none;border-color:#ffa0ff;box-shadow:0 0 0 2px rgba(255,160,255,0.2);}
         input.error-border{border-color:#ff6688;background:rgba(255,68,68,0.1);}
@@ -61,27 +37,29 @@
         .field-status.error{color:#ff6688;}
         .password-wrapper{position:relative;}
         .password-wrapper input{padding-right:45px;}
-        .toggle-password{position:absolute;right:16px;top:50%;transform:translateY(-50%);cursor:pointer;color:rgba(255,160,255,0.7);font-size:1rem;}
+        .toggle-password{position:absolute;right:16px;top:50%;transform:translateY(-50%);cursor:pointer;color:rgba(255,160,255,0.7);font-size:1rem;z-index:10;}
+        .toggle-password:hover{color:#ffa0ff;}
         .cyber-btn{width:100%;padding:12px;background:linear-gradient(90deg,#ff50a0,#a050ff);border:none;border-radius:40px;color:white;font-weight:600;font-size:0.85rem;cursor:pointer;margin-top:8px;text-transform:uppercase;transition:all 0.3s ease;}
-        .cyber-btn:not(:disabled):hover{transform:translateY(-2px);box-shadow:0 0 20px rgba(255,100,255,0.4);}
         .cyber-btn:disabled{opacity:0.5;cursor:not-allowed;}
         .status{text-align:center;margin-top:12px;padding:8px 12px;border-radius:24px;font-size:0.75rem;}
         .status-success{background:rgba(0,255,150,0.12);color:#00ffaa;border:1px solid rgba(0,255,150,0.25);}
         .status-error{background:rgba(255,68,68,0.12);color:#ff6688;border:1px solid rgba(255,68,68,0.25);}
-        .mini-logo{display:flex;align-items:center;gap:6px;margin-bottom:0.6rem;}
-        .mini-logo i{font-size:1rem;color:#ffa0ff;}
-        .mini-logo span{font-weight:600;font-size:0.7rem;background:linear-gradient(135deg,#fff,#ffa0ff);-webkit-background-clip:text;-webkit-text-fill-color:transparent;}
         .user-list-card{background:rgba(30,30,44,0.85);backdrop-filter:blur(10px);border:1px solid rgba(255,100,255,0.25);border-radius:40px;padding:1.5rem;margin-top:1rem;}
         .user-list-title{font-size:0.9rem;margin-bottom:1rem;color:#ffa0ff;display:flex;align-items:center;gap:8px;}
         .user-item{background:rgba(20,20,30,0.6);border-radius:30px;padding:10px 15px;margin-bottom:10px;display:flex;justify-content:space-between;align-items:center;border:1px solid rgba(255,100,255,0.2);}
         .user-email{font-size:0.8rem;word-break:break-all;flex:1;}
-        .delete-user-btn{background:rgba(255,68,68,0.2);border:none;color:#ff6688;padding:6px 12px;border-radius:30px;cursor:pointer;font-size:0.7rem;transition:0.3s;}
+        .delete-user-btn{background:rgba(255,68,68,0.2);border:none;color:#ff6688;padding:6px 12px;border-radius:30px;cursor:pointer;font-size:0.7rem;transition:all 0.2s;}
         .delete-user-btn:hover{background:#ff6688;color:white;}
         .no-users{text-align:center;padding:20px;color:rgba(255,255,255,0.5);font-size:0.8rem;}
-        .strength-bar{height:4px;margin-top:8px;border-radius:4px;transition:0.3s;}
+        .strength-bar{height:4px;margin-top:8px;border-radius:4px;transition:0.3s;background:#2a2a3a;}
         .strength-weak{background:#ff6688;width:33%;}
         .strength-medium{background:#ffa500;width:66%;}
         .strength-strong{background:#00ffaa;width:100%;}
+        
+        .loader{position:fixed;top:0;left:0;width:100%;height:100%;background:#0a0a12;display:flex;justify-content:center;align-items:center;opacity:0;pointer-events:none;transition:opacity 0.4s;z-index:400;}
+        .loader.active{opacity:1;pointer-events:all;}
+        .neon-spinner{width:50px;height:50px;border:3px solid rgba(255,100,255,0.2);border-top:3px solid #ffa0ff;border-right:3px solid #a0ffff;border-radius:50%;animation:spin 1s linear infinite;}
+        @keyframes spin{0%{transform:rotate(0deg);}100%{transform:rotate(360deg);}}
     </style>
 </head>
 <body>
@@ -89,153 +67,343 @@
 <div class="app">
     <header>
         <div class="logo"><i class="fa-regular fa-crystal"></i> USER MANAGEMENT</div>
-        <div class="hologram-btn" onclick="openMenu()">
-            <div class="line"></div><div class="line"></div><div class="line"></div>
-        </div>
     </header>
-    <div class="overlay" id="overlay" onclick="closeMenu()"></div>
-    <div class="sidebar" id="sidebar">
-        <div class="close-btn" onclick="closeMenu()"><i class="fa-regular fa-xmark"></i></div>
-        <div class="profile">
-            <div class="avatar">
-                <img src="YOUR_THREE_LINE_PROFILE_PICTURE" alt="profile">
-            </div>
-            <div class="profile-text"><h3>WELCOME</h3><p>MANAGE USERS</p></div>
-        </div>
-        <a onclick="navigateTo('home')"><i class="fa-regular fa-crystal"></i> HOLO HOME</a>
-        <a onclick="navigateTo('signup')"><i class="fa-regular fa-user-plus"></i> SIGN UP</a>
-        <a onclick="navigateTo('login')"><i class="fa-regular fa-arrow-right-to-bracket"></i> LOGIN</a>
-        <a onclick="navigateTo('dashboard')"><i class="fa-regular fa-chart-line"></i> DASHBOARD</a>
-        <div class="divider"></div>
-        <a onclick="navigateTo('about')"><i class="fa-regular fa-atom"></i> QUANTUM</a>
-        <a onclick="navigateTo('settings')"><i class="fa-regular fa-sliders"></i> SETTINGS</a>
-    </div>
+    
     <div class="container">
         <div class="neon-card">
-            <div class="mini-logo"><i class="fa-regular fa-user-plus"></i><span>CREATE NEW USER</span></div>
-            <div class="form-header"><h3><i class="fa-regular fa-fingerprint"></i> CREATE</h3><i class="fa-regular fa-crystal"></i></div>
-            <div class="input-group"><label><i class="fa-regular fa-envelope"></i> EMAIL <span class="required-star">*</span></label><input type="email" id="signupEmail" placeholder="your@email.com"><div id="emailStatus" class="field-status"></div></div>
-            <div class="input-group"><label><i class="fa-solid fa-lock"></i> PASSWORD <span class="required-star">*</span></label><div class="password-wrapper"><input type="password" id="signupPassword" placeholder="********"><i class="fa-regular fa-eye toggle-password" onclick="togglePassword('signupPassword',this)"></i></div><div id="passwordStatus" class="field-status"></div><div id="strengthBar" class="strength-bar"></div></div>
-            <button class="cyber-btn" id="submitBtn" onclick="createUser()"><i class="fa-regular fa-floppy-disk"></i> CREATE</button>
+            <div class="form-header"><h3><i class="fa-regular fa-fingerprint"></i> CREATE USER</h3></div>
+            <div class="input-group">
+                <label><i class="fa-regular fa-envelope"></i> EMAIL *</label>
+                <input type="email" id="signupEmail" placeholder="your@email.com">
+                <div id="emailStatus" class="field-status"></div>
+            </div>
+            <div class="input-group">
+                <label><i class="fa-solid fa-lock"></i> PASSWORD *</label>
+                <div class="password-wrapper">
+                    <input type="password" id="signupPassword" placeholder="********">
+                    <i class="fa-regular fa-eye toggle-password" onclick="window.togglePassword('signupPassword',this)"></i>
+                </div>
+                <div id="passwordStatus" class="field-status"></div>
+                <div id="strengthBar" class="strength-bar"></div>
+            </div>
+            <button class="cyber-btn" id="submitBtn" onclick="window.createUser()"><i class="fa-regular fa-floppy-disk"></i> CREATE</button>
             <div id="signupStatus" class="status"></div>
         </div>
 
         <div class="user-list-card">
             <div class="user-list-title"><i class="fa-regular fa-users"></i> USER LIST (TOTAL: <span id="userCount">0</span>)</div>
-            <div id="userListContainer">
-                <div class="no-users">Loading users from Supabase...</div>
-            </div>
+            <div id="userListContainer"><div class="no-users">No users found. Create one above.</div></div>
         </div>
     </div>
     <div class="loader" id="loader"><div class="neon-spinner"></div></div>
 </div>
 
 <script>
-// Supabase Configuration
-const SUPABASE_URL = 'https://gfahimzxyqwspkeqsvlg.supabase.co';
-const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImdmYWhpbXp4eXF3c3BrZXFzdmxnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODA0Njk5NDksImV4cCI6MjA5NjA0NTk0OX0.lkZ7wpWAKknxpMMDCsRG2OiPD2wOvwFejSozzLDe0Dc';
+(function() {
+    // ========== SUPABASE CONFIG ==========
+    const SUPABASE_URL = 'https://gfahimzxyqwspkeqsvlg.supabase.co';
+    const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImdmYWhpbXp4eXF3c3BrZXFzdmxnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODA0Njk5NDksImV4cCI6MjA5NjA0NTk0OX0.lkZ7wpWAKknxpMMDCsRG2OiPD2wOvwFejSozzLDe0Dc';
 
-const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+    const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+    
+    let users = [];
 
-let users = [];
-
-async function loadUsersFromSupabase() {
-    showLoader();
-    try {
-        const { data, error } = await supabase.from('user').select('*').order('created_at', { ascending: false });
-        if(error) throw error;
-        users = data || [];
-        renderUserList();
-        if(users.length > 0) console.log('Users loaded:', users.length);
-    } catch(err) {
-        console.error('Load error:', err);
-        document.getElementById("userListContainer").innerHTML = `<div class="no-users">Error: ${err.message}</div>`;
-        showStatus('❌ Failed to load users: ' + err.message, 'error');
-    } finally {
-        setTimeout(() => hideLoader(), 500);
+    // ========== UI FUNCTIONS ==========
+    function showLoader() { 
+        const loader = document.getElementById('loader');
+        if (loader) loader.classList.add('active');
     }
-}
+    
+    function hideLoader() { 
+        const loader = document.getElementById('loader');
+        if (loader) loader.classList.remove('active');
+    }
 
-async function deleteUserFromSupabase(id, email, index) {
-    if(confirm(`Delete ${email}?`)) {
+    function showStatus(msg, type) {
+        const div = document.getElementById('signupStatus');
+        if (!div) return;
+        div.innerHTML = `<div class="status-${type}"><i class="fa-regular fa-${type === 'success' ? 'circle-check' : 'circle-exclamation'}"></i> ${msg}</div>`;
+        setTimeout(() => { 
+            if (div.innerHTML.includes(msg)) div.innerHTML = ''; 
+        }, 4000);
+    }
+
+    function escapeHtml(str) {
+        if (!str) return '';
+        return str.replace(/[&<>]/g, function(m) {
+            if (m === '&') return '&amp;';
+            if (m === '<') return '&lt;';
+            if (m === '>') return '&gt;';
+            return m;
+        });
+    }
+
+    // ========== PASSWORD TOGGLE ==========
+    window.togglePassword = function(fieldId, iconElement) {
+        const passwordInput = document.getElementById(fieldId);
+        if (!passwordInput) return;
+        
+        if (passwordInput.type === 'password') {
+            passwordInput.type = 'text';
+            iconElement.classList.remove('fa-eye');
+            iconElement.classList.add('fa-eye-slash');
+        } else {
+            passwordInput.type = 'password';
+            iconElement.classList.remove('fa-eye-slash');
+            iconElement.classList.add('fa-eye');
+        }
+    };
+
+    // ========== VALIDATION ==========
+    function validateEmail() {
+        const email = document.getElementById('signupEmail');
+        const status = document.getElementById('emailStatus');
+        if (!email || !status) return false;
+        
+        const emailValue = email.value.trim();
+        
+        if (!emailValue) {
+            email.classList.remove('error-border', 'success-border');
+            status.innerHTML = '';
+            return false;
+        }
+        const emailRegex = /^[^\s@]+@([^\s@]+\.)+[^\s@]+$/;
+        if (!emailRegex.test(emailValue)) {
+            email.classList.add('error-border');
+            email.classList.remove('success-border');
+            status.innerHTML = '<i class="fa-regular fa-circle-exclamation"></i> Invalid email';
+            status.className = 'field-status error';
+            return false;
+        }
+        email.classList.add('success-border');
+        email.classList.remove('error-border');
+        status.innerHTML = '<i class="fa-regular fa-circle-check"></i> Valid email';
+        status.className = 'field-status success';
+        return true;
+    }
+
+    function checkStrength(p) {
+        if (!p || p.length === 0) return 'none';
+        let s = 0;
+        if (p.length >= 6) s++;
+        if (/[a-z]/.test(p)) s++;
+        if (/[A-Z]/.test(p)) s++;
+        if (/[0-9]/.test(p)) s++;
+        if (/[^a-zA-Z0-9]/.test(p)) s++;
+        if (p.length < 6) return 'weak';
+        if (s >= 5) return 'strong';
+        if (s >= 3) return 'medium';
+        return 'weak';
+    }
+
+    function validatePassword() {
+        const pwd = document.getElementById('signupPassword');
+        const status = document.getElementById('passwordStatus');
+        const bar = document.getElementById('strengthBar');
+        if (!pwd || !status || !bar) return false;
+        
+        const pwdValue = pwd.value;
+        const strength = checkStrength(pwdValue);
+        
+        if (!pwdValue) {
+            pwd.classList.remove('error-border', 'success-border');
+            status.innerHTML = '';
+            bar.className = 'strength-bar';
+            return false;
+        }
+        if (pwdValue.length < 6) {
+            pwd.classList.add('error-border');
+            pwd.classList.remove('success-border');
+            status.innerHTML = '<i class="fa-regular fa-circle-exclamation"></i> Min 6 characters';
+            status.className = 'field-status error';
+            bar.className = 'strength-bar strength-weak';
+            return false;
+        }
+        if (strength === 'weak') {
+            pwd.classList.add('error-border');
+            pwd.classList.remove('success-border');
+            status.innerHTML = '<i class="fa-regular fa-circle-exclamation"></i> WEAK - use letters + numbers + symbols';
+            status.className = 'field-status error';
+            bar.className = 'strength-bar strength-weak';
+            return false;
+        }
+        if (strength === 'medium') {
+            pwd.classList.add('success-border');
+            pwd.classList.remove('error-border');
+            status.innerHTML = '<i class="fa-regular fa-circle-check"></i> MEDIUM (OK)';
+            status.className = 'field-status success';
+            bar.className = 'strength-bar strength-medium';
+            return true;
+        }
+        if (strength === 'strong') {
+            pwd.classList.add('success-border');
+            pwd.classList.remove('error-border');
+            status.innerHTML = '<i class="fa-regular fa-circle-check"></i> STRONG';
+            status.className = 'field-status success';
+            bar.className = 'strength-bar strength-strong';
+            return true;
+        }
+        return false;
+    }
+
+    function checkAll() {
+        const valid = validateEmail() && validatePassword();
+        const btn = document.getElementById('submitBtn');
+        if (btn) btn.disabled = !valid;
+        return valid;
+    }
+
+    // ========== LOAD USERS ==========
+    async function loadUsers() {
+        showLoader();
+        try {
+            const { data, error } = await supabase.from('user').select('*').order('created_at', { ascending: false });
+            if (error) throw error;
+            users = data || [];
+            renderUserList();
+            console.log('✅ Loaded', users.length, 'users');
+        } catch (err) {
+            console.error('❌ Load error:', err);
+            const container = document.getElementById('userListContainer');
+            if (container) container.innerHTML = `<div class="no-users">Error: ${err.message}</div>`;
+            showStatus('Error: ' + err.message, 'error');
+        }
+        hideLoader();
+    }
+
+    // ========== RENDER ==========
+    function renderUserList() {
+        const container = document.getElementById('userListContainer');
+        const countSpan = document.getElementById('userCount');
+        if (!container || !countSpan) return;
+        
+        countSpan.innerText = users.length;
+        
+        if (users.length === 0) {
+            container.innerHTML = '<div class="no-users">✨ No users found. Create one above.</div>';
+            return;
+        }
+        
+        let html = '';
+        users.forEach((user, index) => {
+            html += `
+                <div class="user-item">
+                    <div class="user-email"><i class="fa-regular fa-envelope" style="margin-right:8px;color:#ffa0ff;"></i>${escapeHtml(user.email)}</div>
+                    <button class="delete-user-btn" onclick="window.deleteUser('${user.id}', '${escapeHtml(user.email)}', ${index})"><i class="fa-regular fa-trash-can"></i> DELETE</button>
+                </div>
+            `;
+        });
+        container.innerHTML = html;
+    }
+
+    // ========== CREATE USER ==========
+    async function createUserInSupabase(email, password) {
+        showLoader();
+        try {
+            const { data, error } = await supabase.from('user').insert([{ email, password }]).select();
+            if (error) throw error;
+            
+            await loadUsers();
+            showStatus('✅ User created successfully!', 'success');
+            
+            // Clear form
+            const emailInput = document.getElementById('signupEmail');
+            const passwordInput = document.getElementById('signupPassword');
+            const strengthBar = document.getElementById('strengthBar');
+            if (emailInput) emailInput.value = '';
+            if (passwordInput) passwordInput.value = '';
+            if (strengthBar) strengthBar.className = 'strength-bar';
+            
+            const submitBtn = document.getElementById('submitBtn');
+            if (submitBtn) submitBtn.disabled = true;
+            
+            const statusDivs = document.querySelectorAll('.field-status');
+            statusDivs.forEach(d => d.innerHTML = '');
+            
+            const inputs = document.querySelectorAll('input');
+            inputs.forEach(i => i.classList.remove('success-border', 'error-border'));
+            
+        } catch (err) {
+            console.error('❌ Create error:', err);
+            if (err.message.includes('duplicate') || err.code === '23505') {
+                showStatus('❌ Email already exists!', 'error');
+            } else {
+                showStatus('❌ Create failed: ' + err.message, 'error');
+            }
+            hideLoader();
+        }
+    }
+
+    // ========== DELETE USER ==========
+    window.deleteUser = async function(id, email, index) {
+        if (!confirm(`Delete ${email}?`)) return;
         showLoader();
         try {
             const { error } = await supabase.from('user').delete().eq('id', id);
-            if(error) throw error;
+            if (error) throw error;
             users.splice(index, 1);
             renderUserList();
-            showStatus('✅ User deleted!', 'success');
-        } catch(err) {
-            console.error('Delete error:', err);
+            showStatus('✅ User deleted successfully!', 'success');
+        } catch (err) {
+            console.error('❌ Delete error:', err);
             showStatus('❌ Delete failed: ' + err.message, 'error');
-        } finally {
-            setTimeout(() => hideLoader(), 500);
         }
-    }
-}
+        hideLoader();
+    };
 
-async function createUserInSupabase(email, password) {
-    showLoader();
-    try {
-        const { data, error } = await supabase.from('user').insert([{ email: email, password: password }]).select();
-        if(error) throw error;
+    // ========== CREATE BUTTON HANDLER ==========
+    window.createUser = function() {
+        const emailInput = document.getElementById('signupEmail');
+        const passwordInput = document.getElementById('signupPassword');
         
-        await loadUsersFromSupabase();
-        showStatus('✅ User created successfully!', 'success');
+        if (!emailInput || !passwordInput) return;
         
-        // Clear form
-        document.getElementById("signupEmail").value = "";
-        document.getElementById("signupPassword").value = "";
-        document.getElementById("strengthBar").className = "strength-bar";
-        document.getElementById("submitBtn").disabled = true;
-        document.querySelectorAll('.neon-card input').forEach(i => i.classList.remove('success-border','error-border'));
-        document.querySelectorAll('.neon-card .field-status').forEach(d => d.innerHTML='');
+        const email = emailInput.value.trim();
+        const password = passwordInput.value;
+        const strength = checkStrength(password);
         
-    } catch(err) {
-        console.error('Create error:', err);
-        if(err.message && err.message.includes('duplicate key')) {
-            showStatus('❌ This email already exists!', 'error');
-        } else {
-            showStatus('❌ Create failed: ' + err.message, 'error');
+        if (!email || !validateEmail()) {
+            showStatus('❌ Valid email required!', 'error');
+            return;
         }
-    } finally {
-        setTimeout(() => hideLoader(), 500);
-    }
-}
+        if (!password || password.length < 6) {
+            showStatus('❌ Password must be 6+ characters!', 'error');
+            return;
+        }
+        if (strength === 'weak') {
+            showStatus('❌ Password too weak! Use uppercase, lowercase, numbers, symbols.', 'error');
+            return;
+        }
+        createUserInSupabase(email, password);
+    };
 
-function renderUserList() {
-    let container = document.getElementById("userListContainer");
-    document.getElementById("userCount").innerText = users.length;
-    if(users.length === 0) {
-        container.innerHTML = '<div class="no-users">No users found. Create a user above.</div>';
-        return;
-    }
-    let html = '';
-    users.forEach((user, index) => {
-        html += `<div class="user-item"><div class="user-email"><i class="fa-regular fa-envelope" style="margin-right:8px;color:#ffa0ff;"></i>${escapeHtml(user.email)}</div><button class="delete-user-btn" onclick="deleteUserFromSupabase('${user.id}', '${escapeHtml(user.email)}', ${index})"><i class="fa-regular fa-trash-can"></i> DELETE</button></div>`;
+    // ========== EVENT LISTENERS ==========
+    document.addEventListener('DOMContentLoaded', function() {
+        const emailInput = document.getElementById('signupEmail');
+        const passwordInput = document.getElementById('signupPassword');
+        
+        if (emailInput) {
+            emailInput.addEventListener('input', () => { 
+                validateEmail(); 
+                checkAll(); 
+            });
+        }
+        
+        if (passwordInput) {
+            passwordInput.addEventListener('input', () => { 
+                validatePassword(); 
+                checkAll(); 
+            });
+        }
+        
+        // Initial check
+        checkAll();
     });
-    container.innerHTML = html;
-}
 
-function escapeHtml(str) { if(!str) return ''; return str.replace(/[&<>]/g, function(m) { if(m === '&') return '&amp;'; if(m === '<') return '&lt;'; if(m === '>') return '&gt;'; return m; }); }
-function showStatus(m,t,e="signupStatus"){ let s=document.getElementById(e); s.innerHTML=`<div class="status-${t==='error'?'error':'success'}">${m}</div>`; setTimeout(()=>{ if(s.innerHTML===`<div class="status-${t==='error'?'error':'success'}">${m}</div>`) s.innerHTML=''; },4000); }
-function getBasePath(){ let p=window.location.pathname,l=p.lastIndexOf('/'); return l>0?p.substring(0,l+1):'/'; }
-function showLoader(){ document.getElementById('loader').classList.add('active'); }
-function hideLoader(){ document.getElementById('loader').classList.remove('active'); }
-function openMenu(){ document.getElementById('sidebar').classList.add('active'); document.getElementById('overlay').classList.add('active'); }
-function closeMenu(){ document.getElementById('sidebar').classList.remove('active'); document.getElementById('overlay').classList.remove('active'); }
-function navigateTo(p){ closeMenu();showLoader(); let b=getBasePath(); setTimeout(()=>{ if(p==='home'){ window.location.href = b; } else { window.location.href = b + p; } },300); }
-function togglePassword(f,i){ let x=document.getElementById(f); x.type==='password'?(x.type='text',i.classList.remove('fa-eye'),i.classList.add('fa-eye-slash')):(x.type='password',i.classList.remove('fa-eye-slash'),i.classList.add('fa-eye')); }
-function validateEmail(){ let e=document.getElementById("signupEmail").value.trim(),f=document.getElementById("signupEmail"),s=document.getElementById("emailStatus"); if(e===""){ f.classList.remove("error-border","success-border"); s.innerHTML=""; return false; } if(!e.includes('@')||!e.includes('.')){ f.classList.add("error-border"); f.classList.remove("success-border"); s.innerHTML='<i class="fa-regular fa-circle-exclamation"></i> Invalid email'; s.className="field-status error"; return false; } f.classList.add("success-border"); f.classList.remove("error-border"); s.innerHTML='<i class="fa-regular fa-circle-check"></i> Valid email'; s.className="field-status success"; return true; }
-function checkPasswordStrength(p){ let s=0; if(p.length>=6) s++; if(p.match(/[a-z]/)) s++; if(p.match(/[A-Z]/)) s++; if(p.match(/[0-9]/)) s++; if(p.match(/[^a-zA-Z0-9]/)) s++; if(p.length<6) return 'weak'; if(s>=3 && s<=4) return 'medium'; if(s>=5) return 'strong'; return 'weak'; }
-function validatePassword(){ let p=document.getElementById("signupPassword").value,f=document.getElementById("signupPassword"),s=document.getElementById("passwordStatus"),b=document.getElementById("strengthBar"),strength=checkPasswordStrength(p); if(p===""){ f.classList.remove("error-border","success-border"); s.innerHTML=""; b.className="strength-bar"; return false; } if(p.length<6){ f.classList.add("error-border"); f.classList.remove("success-border"); s.innerHTML='<i class="fa-regular fa-circle-exclamation"></i> Min 6 characters'; s.className="field-status error"; b.className="strength-bar strength-weak"; return false; } if(strength==='weak'){ f.classList.add("error-border"); f.classList.remove("success-border"); s.innerHTML='<i class="fa-regular fa-circle-exclamation"></i> WEAK password'; s.className="field-status error"; b.className="strength-bar strength-weak"; return false; } if(strength==='medium'){ f.classList.add("success-border"); f.classList.remove("error-border"); s.innerHTML='<i class="fa-regular fa-circle-check"></i> MEDIUM'; s.className="field-status success"; b.className="strength-bar strength-medium"; return true; } if(strength==='strong'){ f.classList.add("success-border"); f.classList.remove("error-border"); s.innerHTML='<i class="fa-regular fa-circle-check"></i> STRONG'; s.className="field-status success"; b.className="strength-bar strength-strong"; return true; } return false; }
-function checkAllFields(){ let e=validateEmail(), p=validatePassword(); document.getElementById("submitBtn").disabled=!(e&&p); return e&&p; }
-function createUser(){ let email=document.getElementById("signupEmail").value.trim(), password=document.getElementById("signupPassword").value, strength=checkPasswordStrength(password); if(!email || !email.includes('@')){ showStatus('❌ Valid email required!','error'); return; } if(!password || password.length<6){ showStatus('❌ Password must be 6+ chars!','error'); return; } if(strength==='weak'){ showStatus('❌ Weak password! Use uppercase, lowercase, numbers, symbols.','error'); return; } createUserInSupabase(email, password); }
-document.getElementById("signupEmail").addEventListener("input",()=>{ validateEmail(); checkAllFields(); });
-document.getElementById("signupPassword").addEventListener("input",()=>{ validatePassword(); checkAllFields(); });
-let touchStartX=0; document.addEventListener('touchstart',e=>{ touchStartX=e.changedTouches[0].screenX; },{passive:true}); document.addEventListener('touchend',e=>{ let diff=e.changedTouches[0].screenX-touchStartX; if(diff>50) openMenu(); else if(diff<-50) closeMenu(); },{passive:true}); document.addEventListener('keydown',e=>{ if(e.key==='Escape') closeMenu(); });
-loadUsersFromSupabase();
-console.log("✅ Supabase connected - Table: user (uuid id)");
+    // ========== INIT ==========
+    // ডিফল্ট কোন ইউজার থাকবে না - শুধু loadUsers() কল করলেই সুপাবেজ থেকে আসা ইউজার দেখাবে
+    loadUsers();
+})();
 </script>
 </body>
 </html>
