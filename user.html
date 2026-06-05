@@ -142,13 +142,15 @@ let users = [];
 async function loadUsersFromSupabase() {
     showLoader();
     try {
-        const { data, error } = await supabase.from('users').select('*').order('created_at', { ascending: false });
+        const { data, error } = await supabase.from('user').select('*').order('created_at', { ascending: false });
         if(error) throw error;
         users = data || [];
         renderUserList();
+        if(users.length > 0) console.log('Users loaded:', users.length);
     } catch(err) {
-        console.error(err);
+        console.error('Load error:', err);
         document.getElementById("userListContainer").innerHTML = `<div class="no-users">Error: ${err.message}</div>`;
+        showStatus('❌ Failed to load users: ' + err.message, 'error');
     } finally {
         setTimeout(() => hideLoader(), 500);
     }
@@ -158,12 +160,13 @@ async function deleteUserFromSupabase(id, email, index) {
     if(confirm(`Delete ${email}?`)) {
         showLoader();
         try {
-            const { error } = await supabase.from('users').delete().eq('id', id);
+            const { error } = await supabase.from('user').delete().eq('id', id);
             if(error) throw error;
             users.splice(index, 1);
             renderUserList();
             showStatus('✅ User deleted!', 'success');
         } catch(err) {
+            console.error('Delete error:', err);
             showStatus('❌ Delete failed: ' + err.message, 'error');
         } finally {
             setTimeout(() => hideLoader(), 500);
@@ -174,18 +177,27 @@ async function deleteUserFromSupabase(id, email, index) {
 async function createUserInSupabase(email, password) {
     showLoader();
     try {
-        const { error } = await supabase.from('users').insert([{ email: email, password: password }]);
+        const { data, error } = await supabase.from('user').insert([{ email: email, password: password }]).select();
         if(error) throw error;
+        
         await loadUsersFromSupabase();
-        showStatus('✅ User created!', 'success');
+        showStatus('✅ User created successfully!', 'success');
+        
+        // Clear form
         document.getElementById("signupEmail").value = "";
         document.getElementById("signupPassword").value = "";
         document.getElementById("strengthBar").className = "strength-bar";
         document.getElementById("submitBtn").disabled = true;
         document.querySelectorAll('.neon-card input').forEach(i => i.classList.remove('success-border','error-border'));
         document.querySelectorAll('.neon-card .field-status').forEach(d => d.innerHTML='');
+        
     } catch(err) {
-        showStatus('❌ Create failed: ' + err.message, 'error');
+        console.error('Create error:', err);
+        if(err.message && err.message.includes('duplicate key')) {
+            showStatus('❌ This email already exists!', 'error');
+        } else {
+            showStatus('❌ Create failed: ' + err.message, 'error');
+        }
     } finally {
         setTimeout(() => hideLoader(), 500);
     }
@@ -223,7 +235,7 @@ document.getElementById("signupEmail").addEventListener("input",()=>{ validateEm
 document.getElementById("signupPassword").addEventListener("input",()=>{ validatePassword(); checkAllFields(); });
 let touchStartX=0; document.addEventListener('touchstart',e=>{ touchStartX=e.changedTouches[0].screenX; },{passive:true}); document.addEventListener('touchend',e=>{ let diff=e.changedTouches[0].screenX-touchStartX; if(diff>50) openMenu(); else if(diff<-50) closeMenu(); },{passive:true}); document.addEventListener('keydown',e=>{ if(e.key==='Escape') closeMenu(); });
 loadUsersFromSupabase();
-console.log("✅ Supabase connected");
+console.log("✅ Supabase connected - Table: user (uuid id)");
 </script>
 </body>
 </html>
