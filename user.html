@@ -7,7 +7,6 @@
     <link rel="icon" type="image/png" href="YOUR_FAVICON_LINK">
     <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
-    <!-- Supabase CDN -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <style>
         *{margin:0;padding:0;box-sizing:border-box;}
@@ -133,8 +132,9 @@
 
 <script>
 // Supabase Configuration
-const SUPABASE_URL = 'https://gfahimzxyqwspkeqsvlg.supabase.co/rest/v1/';
+const SUPABASE_URL = 'https://gfahimzxyqwspkeqsvlg.supabase.co';
 const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImdmYWhpbXp4eXF3c3BrZXFzdmxnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODA0Njk5NDksImV4cCI6MjA5NjA0NTk0OX0.lkZ7wpWAKknxpMMDCsRG2OiPD2wOvwFejSozzLDe0Dc';
+
 const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
 let users = [];
@@ -142,42 +142,31 @@ let users = [];
 async function loadUsersFromSupabase() {
     showLoader();
     try {
-        const { data, error } = await supabase
-            .from('users')
-            .select('*')
-            .order('created_at', { ascending: false });
-        
+        const { data, error } = await supabase.from('users').select('*').order('created_at', { ascending: false });
         if(error) throw error;
         users = data || [];
         renderUserList();
     } catch(err) {
-        console.error('Error loading users:', err);
-        showStatus('❌ Failed to load users from database!', 'error');
-        document.getElementById("userListContainer").innerHTML = '<div class="no-users">Error loading users. Check console.</div>';
+        console.error(err);
+        document.getElementById("userListContainer").innerHTML = `<div class="no-users">Error: ${err.message}</div>`;
     } finally {
-        setTimeout(() => hideLoader(), 300);
+        setTimeout(() => hideLoader(), 500);
     }
 }
 
 async function deleteUserFromSupabase(id, email, index) {
-    if(confirm(`Are you sure you want to delete user: ${email}?`)) {
+    if(confirm(`Delete ${email}?`)) {
         showLoader();
         try {
-            const { error } = await supabase
-                .from('users')
-                .delete()
-                .eq('id', id);
-            
+            const { error } = await supabase.from('users').delete().eq('id', id);
             if(error) throw error;
-            
             users.splice(index, 1);
             renderUserList();
-            showStatus(`✅ User deleted successfully!`, 'success');
+            showStatus('✅ User deleted!', 'success');
         } catch(err) {
-            console.error('Error deleting user:', err);
-            showStatus(`❌ Failed to delete user: ${err.message}`, 'error');
+            showStatus('❌ Delete failed: ' + err.message, 'error');
         } finally {
-            setTimeout(() => hideLoader(), 300);
+            setTimeout(() => hideLoader(), 500);
         }
     }
 }
@@ -185,197 +174,56 @@ async function deleteUserFromSupabase(id, email, index) {
 async function createUserInSupabase(email, password) {
     showLoader();
     try {
-        const { data, error } = await supabase
-            .from('users')
-            .insert([
-                { 
-                    email: email, 
-                    password: password,
-                    created_at: new Date().toISOString()
-                }
-            ])
-            .select();
-        
+        const { error } = await supabase.from('users').insert([{ email: email, password: password }]);
         if(error) throw error;
-        
         await loadUsersFromSupabase();
-        showStatus('✅ User created successfully in Supabase!', 'success');
-        
+        showStatus('✅ User created!', 'success');
         document.getElementById("signupEmail").value = "";
         document.getElementById("signupPassword").value = "";
-        document.querySelectorAll('.neon-card input').forEach(i=>i.classList.remove('success-border','error-border'));
-        document.querySelectorAll('.neon-card .field-status').forEach(d=>d.innerHTML='');
         document.getElementById("strengthBar").className = "strength-bar";
         document.getElementById("submitBtn").disabled = true;
-        
+        document.querySelectorAll('.neon-card input').forEach(i => i.classList.remove('success-border','error-border'));
+        document.querySelectorAll('.neon-card .field-status').forEach(d => d.innerHTML='');
     } catch(err) {
-        console.error('Error creating user:', err);
-        if(err.message.includes('duplicate')) {
-            showStatus('❌ User with this email already exists in Supabase!', 'error');
-        } else {
-            showStatus(`❌ Failed to create user: ${err.message}`, 'error');
-        }
+        showStatus('❌ Create failed: ' + err.message, 'error');
     } finally {
-        setTimeout(() => hideLoader(), 300);
+        setTimeout(() => hideLoader(), 500);
     }
 }
 
 function renderUserList() {
     let container = document.getElementById("userListContainer");
-    let countSpan = document.getElementById("userCount");
-    countSpan.innerText = users.length;
-    
+    document.getElementById("userCount").innerText = users.length;
     if(users.length === 0) {
-        container.innerHTML = '<div class="no-users">No users found in Supabase. Create a user above.</div>';
+        container.innerHTML = '<div class="no-users">No users found. Create a user above.</div>';
         return;
     }
-    
     let html = '';
     users.forEach((user, index) => {
-        let displayEmail = user.email || 'No email';
-        let userId = user.id;
-        html += `
-            <div class="user-item">
-                <div class="user-email"><i class="fa-regular fa-envelope" style="margin-right:8px;color:#ffa0ff;"></i>${escapeHtml(displayEmail)}</div>
-                <button class="delete-user-btn" onclick="deleteUserFromSupabase('${userId}', '${escapeHtml(displayEmail)}', ${index})"><i class="fa-regular fa-trash-can"></i> DELETE</button>
-            </div>
-        `;
+        html += `<div class="user-item"><div class="user-email"><i class="fa-regular fa-envelope" style="margin-right:8px;color:#ffa0ff;"></i>${escapeHtml(user.email)}</div><button class="delete-user-btn" onclick="deleteUserFromSupabase('${user.id}', '${escapeHtml(user.email)}', ${index})"><i class="fa-regular fa-trash-can"></i> DELETE</button></div>`;
     });
     container.innerHTML = html;
 }
 
-function escapeHtml(str) {
-    if(!str) return '';
-    return str.replace(/[&<>]/g, function(m) {
-        if(m === '&') return '&amp;';
-        if(m === '<') return '&lt;';
-        if(m === '>') return '&gt;';
-        return m;
-    });
-}
-
-function getTime(){let d=new Date();return `${d.getDate().toString().padStart(2,'0')}/${(d.getMonth()+1).toString().padStart(2,'0')}/${d.getFullYear()} ${(d.getHours()%12||12).toString().padStart(2,'0')}:${d.getMinutes().toString().padStart(2,'0')}:${d.getSeconds().toString().padStart(2,'0')} ${d.getHours()>=12?'PM':'AM'}`;}
-function showStatus(m,t,e="signupStatus"){let s=document.getElementById(e);s.innerHTML=`<div class="status-${t==='error'?'error':'success'}">${m}</div>`;setTimeout(()=>{if(s.innerHTML===`<div class="status-${t==='error'?'error':'success'}">${m}</div>`)s.innerHTML='';},5000);}
-function getBasePath(){let p=window.location.pathname,l=p.lastIndexOf('/');return l>0?p.substring(0,l+1):'/';}
-function showLoader(){let l=document.getElementById('loader');l.classList.add('active');}
-function hideLoader(){let l=document.getElementById('loader');l.classList.remove('active');}
-function openMenu(){document.getElementById('sidebar').classList.add('active');document.getElementById('overlay').classList.add('active');}
-function closeMenu(){document.getElementById('sidebar').classList.remove('active');document.getElementById('overlay').classList.remove('active');}
-function navigateTo(p){
-    closeMenu();showLoader();
-    let b=getBasePath();
-    setTimeout(()=>{
-        if(p==='home'){
-            window.location.href = b;
-        } else {
-            window.location.href = b + p;
-        }
-    },300);
-}
-function togglePassword(f,i){let x=document.getElementById(f);x.type==='password'?(x.type='text',i.classList.remove('fa-eye'),i.classList.add('fa-eye-slash')):(x.type='password',i.classList.remove('fa-eye-slash'),i.classList.add('fa-eye'));}
-function validateEmail(){let e=document.getElementById("signupEmail").value.trim(),f=document.getElementById("signupEmail"),s=document.getElementById("emailStatus");if(e===""){f.classList.remove("error-border","success-border");s.innerHTML="";return false;}if(!e.includes('@')||!e.includes('.')){f.classList.add("error-border");f.classList.remove("success-border");s.innerHTML='<i class="fa-regular fa-circle-exclamation"></i> Invalid email format';s.className="field-status error";return false;}f.classList.add("success-border");f.classList.remove("error-border");s.innerHTML='<i class="fa-regular fa-circle-check"></i> Valid email';s.className="field-status success";return true;}
-
-function checkPasswordStrength(password) {
-    let strength = 0;
-    if(password.length >= 6) strength++;
-    if(password.match(/[a-z]/)) strength++;
-    if(password.match(/[A-Z]/)) strength++;
-    if(password.match(/[0-9]/)) strength++;
-    if(password.match(/[^a-zA-Z0-9]/)) strength++;
-    
-    if(password.length < 6) return 'weak';
-    if(strength >= 3 && strength <= 4) return 'medium';
-    if(strength >= 5) return 'strong';
-    return 'weak';
-}
-
-function validatePassword() {
-    let p = document.getElementById("signupPassword").value;
-    let f = document.getElementById("signupPassword");
-    let s = document.getElementById("passwordStatus");
-    let strengthBar = document.getElementById("strengthBar");
-    let strength = checkPasswordStrength(p);
-    
-    if(p === "") {
-        f.classList.remove("error-border","success-border");
-        s.innerHTML = "";
-        strengthBar.className = "strength-bar";
-        return false;
-    }
-    if(p.length < 6) {
-        f.classList.add("error-border");
-        f.classList.remove("success-border");
-        s.innerHTML = '<i class="fa-regular fa-circle-exclamation"></i> Password must be at least 6 characters';
-        s.className = "field-status error";
-        strengthBar.className = "strength-bar strength-weak";
-        return false;
-    }
-    if(strength === 'weak') {
-        f.classList.add("error-border");
-        f.classList.remove("success-border");
-        s.innerHTML = '<i class="fa-regular fa-circle-exclamation"></i> Password is WEAK! Use uppercase, lowercase, numbers, symbols';
-        s.className = "field-status error";
-        strengthBar.className = "strength-bar strength-weak";
-        return false;
-    }
-    if(strength === 'medium') {
-        f.classList.add("success-border");
-        f.classList.remove("error-border");
-        s.innerHTML = '<i class="fa-regular fa-circle-check"></i> Password is MEDIUM (acceptable)';
-        s.className = "field-status success";
-        strengthBar.className = "strength-bar strength-medium";
-        return true;
-    }
-    if(strength === 'strong') {
-        f.classList.add("success-border");
-        f.classList.remove("error-border");
-        s.innerHTML = '<i class="fa-regular fa-circle-check"></i> Password is STRONG (excellent)';
-        s.className = "field-status success";
-        strengthBar.className = "strength-bar strength-strong";
-        return true;
-    }
-    return false;
-}
-
-function checkAllFields(){
-    let e = validateEmail();
-    let p = validatePassword();
-    let isValid = e && p;
-    document.getElementById("submitBtn").disabled = !isValid;
-    return isValid;
-}
-
-function createUser() {
-    let email = document.getElementById("signupEmail").value.trim();
-    let password = document.getElementById("signupPassword").value;
-    let strength = checkPasswordStrength(password);
-    
-    if(!email || !email.includes('@')) {
-        showStatus('❌ Valid email required!','error');
-        return;
-    }
-    if(!password || password.length < 6) {
-        showStatus('❌ Password must be at least 6 characters!','error');
-        return;
-    }
-    if(strength === 'weak') {
-        showStatus('❌ Password is WEAK! Use uppercase, lowercase, numbers, symbols.','error');
-        return;
-    }
-    
-    createUserInSupabase(email, password);
-}
-
-document.getElementById("signupEmail").addEventListener("input",()=>{validateEmail();checkAllFields();});
-document.getElementById("signupPassword").addEventListener("input",()=>{validatePassword();checkAllFields();});
-
-let touchStartX=0;
-document.addEventListener('touchstart',e=>{touchStartX=e.changedTouches[0].screenX;},{passive:true});
-document.addEventListener('touchend',e=>{let diff=e.changedTouches[0].screenX-touchStartX;if(diff>50)openMenu();else if(diff<-50)closeMenu();},{passive:true});
-document.addEventListener('keydown',e=>{if(e.key==='Escape')closeMenu();});
-
+function escapeHtml(str) { if(!str) return ''; return str.replace(/[&<>]/g, function(m) { if(m === '&') return '&amp;'; if(m === '<') return '&lt;'; if(m === '>') return '&gt;'; return m; }); }
+function showStatus(m,t,e="signupStatus"){ let s=document.getElementById(e); s.innerHTML=`<div class="status-${t==='error'?'error':'success'}">${m}</div>`; setTimeout(()=>{ if(s.innerHTML===`<div class="status-${t==='error'?'error':'success'}">${m}</div>`) s.innerHTML=''; },4000); }
+function getBasePath(){ let p=window.location.pathname,l=p.lastIndexOf('/'); return l>0?p.substring(0,l+1):'/'; }
+function showLoader(){ document.getElementById('loader').classList.add('active'); }
+function hideLoader(){ document.getElementById('loader').classList.remove('active'); }
+function openMenu(){ document.getElementById('sidebar').classList.add('active'); document.getElementById('overlay').classList.add('active'); }
+function closeMenu(){ document.getElementById('sidebar').classList.remove('active'); document.getElementById('overlay').classList.remove('active'); }
+function navigateTo(p){ closeMenu();showLoader(); let b=getBasePath(); setTimeout(()=>{ if(p==='home'){ window.location.href = b; } else { window.location.href = b + p; } },300); }
+function togglePassword(f,i){ let x=document.getElementById(f); x.type==='password'?(x.type='text',i.classList.remove('fa-eye'),i.classList.add('fa-eye-slash')):(x.type='password',i.classList.remove('fa-eye-slash'),i.classList.add('fa-eye')); }
+function validateEmail(){ let e=document.getElementById("signupEmail").value.trim(),f=document.getElementById("signupEmail"),s=document.getElementById("emailStatus"); if(e===""){ f.classList.remove("error-border","success-border"); s.innerHTML=""; return false; } if(!e.includes('@')||!e.includes('.')){ f.classList.add("error-border"); f.classList.remove("success-border"); s.innerHTML='<i class="fa-regular fa-circle-exclamation"></i> Invalid email'; s.className="field-status error"; return false; } f.classList.add("success-border"); f.classList.remove("error-border"); s.innerHTML='<i class="fa-regular fa-circle-check"></i> Valid email'; s.className="field-status success"; return true; }
+function checkPasswordStrength(p){ let s=0; if(p.length>=6) s++; if(p.match(/[a-z]/)) s++; if(p.match(/[A-Z]/)) s++; if(p.match(/[0-9]/)) s++; if(p.match(/[^a-zA-Z0-9]/)) s++; if(p.length<6) return 'weak'; if(s>=3 && s<=4) return 'medium'; if(s>=5) return 'strong'; return 'weak'; }
+function validatePassword(){ let p=document.getElementById("signupPassword").value,f=document.getElementById("signupPassword"),s=document.getElementById("passwordStatus"),b=document.getElementById("strengthBar"),strength=checkPasswordStrength(p); if(p===""){ f.classList.remove("error-border","success-border"); s.innerHTML=""; b.className="strength-bar"; return false; } if(p.length<6){ f.classList.add("error-border"); f.classList.remove("success-border"); s.innerHTML='<i class="fa-regular fa-circle-exclamation"></i> Min 6 characters'; s.className="field-status error"; b.className="strength-bar strength-weak"; return false; } if(strength==='weak'){ f.classList.add("error-border"); f.classList.remove("success-border"); s.innerHTML='<i class="fa-regular fa-circle-exclamation"></i> WEAK password'; s.className="field-status error"; b.className="strength-bar strength-weak"; return false; } if(strength==='medium'){ f.classList.add("success-border"); f.classList.remove("error-border"); s.innerHTML='<i class="fa-regular fa-circle-check"></i> MEDIUM'; s.className="field-status success"; b.className="strength-bar strength-medium"; return true; } if(strength==='strong'){ f.classList.add("success-border"); f.classList.remove("error-border"); s.innerHTML='<i class="fa-regular fa-circle-check"></i> STRONG'; s.className="field-status success"; b.className="strength-bar strength-strong"; return true; } return false; }
+function checkAllFields(){ let e=validateEmail(), p=validatePassword(); document.getElementById("submitBtn").disabled=!(e&&p); return e&&p; }
+function createUser(){ let email=document.getElementById("signupEmail").value.trim(), password=document.getElementById("signupPassword").value, strength=checkPasswordStrength(password); if(!email || !email.includes('@')){ showStatus('❌ Valid email required!','error'); return; } if(!password || password.length<6){ showStatus('❌ Password must be 6+ chars!','error'); return; } if(strength==='weak'){ showStatus('❌ Weak password! Use uppercase, lowercase, numbers, symbols.','error'); return; } createUserInSupabase(email, password); }
+document.getElementById("signupEmail").addEventListener("input",()=>{ validateEmail(); checkAllFields(); });
+document.getElementById("signupPassword").addEventListener("input",()=>{ validatePassword(); checkAllFields(); });
+let touchStartX=0; document.addEventListener('touchstart',e=>{ touchStartX=e.changedTouches[0].screenX; },{passive:true}); document.addEventListener('touchend',e=>{ let diff=e.changedTouches[0].screenX-touchStartX; if(diff>50) openMenu(); else if(diff<-50) closeMenu(); },{passive:true}); document.addEventListener('keydown',e=>{ if(e.key==='Escape') closeMenu(); });
 loadUsersFromSupabase();
-console.log("✅ Ready! Supabase connected. Three line function removed.");
+console.log("✅ Supabase connected");
 </script>
 </body>
 </html>
