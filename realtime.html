@@ -3,12 +3,15 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Your_Name | Link in Bio</title>
+<title>Your_Name</title>
 
 <!-- Google Font -->
 <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+Bengali:wght@400;700&display=swap" rel="stylesheet">
 
-<!-- Supabase JS -->
+<!-- Favicon -->
+<link rel="icon" type="image/png" href="Your_Favicon_Link">
+
+<!-- Supabase JS CDN -->
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
 <style>
@@ -19,9 +22,10 @@
 html, body {
   margin: 0;
   padding: 0;
-  min-height: 100%;
+  height: 100%;
   font-family: "Noto Serif Bengali", serif;
   background: #f7f7f7;
+  overflow-x: hidden;
 }
 
 .wrapper {
@@ -30,7 +34,6 @@ html, body {
   justify-content: center;
   align-items: center;
   flex-direction: column;
-  padding: 20px 0;
 }
 
 .container {
@@ -38,8 +41,12 @@ html, body {
   max-width: 400px;
   padding: 16px;
   text-align: center;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
 }
 
+/* Profile Picture */
 .profile img {
   width: 100px;
   height: 100px;
@@ -50,25 +57,27 @@ html, body {
   box-shadow: 0 0 0 4px #fff, 0 0 14px rgba(0,0,0,0.35);
 }
 
+/* Name */
 .name {
   font-size: 18px;
   font-weight: 700;
   margin-bottom: 4px;
 }
 
+/* Title */
 .title {
   font-size: 12px;
   color: #555;
   margin-bottom: 14px;
 }
 
+/* Buttons */
 .btn {
   display: flex;
   align-items: center;
   justify-content: center;
   gap: 8px;
   padding: 10px;
-  margin: 8px 0;
   border-radius: 12px;
   text-decoration: none;
   background: #ffffff;
@@ -77,9 +86,6 @@ html, body {
   font-weight: 500;
   box-shadow: 0 4px 12px rgba(0,0,0,0.08);
   transition: all 0.2s ease;
-  cursor: pointer;
-  border: none;
-  width: 100%;
 }
 
 .btn img {
@@ -92,14 +98,7 @@ html, body {
   box-shadow: 0 6px 18px rgba(0,0,0,0.12);
 }
 
-.click-count {
-  font-size: 10px;
-  background: #e0e0e0;
-  border-radius: 20px;
-  padding: 2px 8px;
-  margin-left: 8px;
-}
-
+/* Footer */
 .footer {
   margin-top: 16px;
   font-size: 12px;
@@ -113,250 +112,196 @@ html, body {
 
 <div class="wrapper">
   <div class="container">
+
     <div class="profile">
-      <img src="Your_Profile_Picture_Link" alt="Profile Picture" id="profileImg">
+      <img src="Your_Profile_Picture_Link" alt="Profile Picture" id="profileImage">
     </div>
 
-    <div class="name" id="profileName">Your_Name</div>
-    <div class="title" id="profileTitle">Your_Title</div>
+    <div class="name" id="nameText">Your_Name</div>
+    <div class="title" id="titleText">Your_Title</div>
 
-    <!-- All buttons are hardcoded - always visible -->
-    <a class="btn" data-platform="facebook" href="https://www.facebook.com/your_username" target="_blank">
-      <img src="https://cdn.simpleicons.org/facebook/000000" alt="Facebook">
+    <a class="btn" href="https://www.facebook.com/your_username" target="_blank" rel="noopener noreferrer" id="facebookLink">
+      <img src="https://cdn.simpleicons.org/facebook/000000" alt="Facebook Logo">
       Facebook
-      <span class="click-count" id="count-facebook">0</span>
     </a>
 
-    <a class="btn" data-platform="instagram" href="https://www.instagram.com/your_username" target="_blank">
-      <img src="https://cdn.simpleicons.org/instagram/000000" alt="Instagram">
+    <a class="btn" href="https://www.facebook.com/your_username" target="_blank" rel="noopener noreferrer" id="facebookPageLink">
+      <img src="https://cdn.simpleicons.org/facebook/000000" alt="Facebook Logo">
+      Facebook Page
+    </a>
+
+    <a class="btn" href="https://www.instagram.com/your_username" target="_blank" rel="noopener noreferrer" id="instagramLink">
+      <img src="https://cdn.simpleicons.org/instagram/000000" alt="Instagram Logo">
       Instagram
-      <span class="click-count" id="count-instagram">0</span>
     </a>
 
-    <a class="btn" data-platform="whatsapp" href="https://wa.me/8801234567890" target="_blank">
-      <img src="https://cdn.simpleicons.org/whatsapp/000000" alt="WhatsApp">
+    <a class="btn" href="https://wa.me/8801234567890" target="_blank" rel="noopener noreferrer" id="whatsappLink">
+      <img src="https://cdn.simpleicons.org/whatsapp/000000" alt="WhatsApp Logo">
       WhatsApp
-      <span class="click-count" id="count-whatsapp">0</span>
     </a>
 
-    <a class="btn" data-platform="tiktok" href="https://www.tiktok.com/@your_username" target="_blank">
-      <img src="https://cdn.simpleicons.org/tiktok/000000" alt="TikTok">
+    <a class="btn" href="https://www.tiktok.com/@your_username" target="_blank" rel="noopener noreferrer" id="tiktokLink">
+      <img src="https://cdn.simpleicons.org/tiktok/000000" alt="TikTok Logo">
       TikTok
-      <span class="click-count" id="count-tiktok">0</span>
     </a>
 
-    <a class="btn" data-platform="telegram" href="https://t.me/your_username" target="_blank">
-      <img src="https://cdn.simpleicons.org/telegram/000000" alt="Telegram">
+    <a class="btn" href="https://t.me/your_username" target="_blank" rel="noopener noreferrer" id="telegramLink">
+      <img src="https://cdn.simpleicons.org/telegram/000000" alt="Telegram Logo">
       Telegram
-      <span class="click-count" id="count-telegram">0</span>
     </a>
 
-    <a class="btn" data-platform="x" href="https://x.com/your_username" target="_blank">
-      <img src="https://cdn.simpleicons.org/x/000000" alt="Twitter X">
+    <a class="btn" href="https://x.com/your_username" target="_blank" rel="noopener noreferrer" id="twitterLink">
+      <img src="https://cdn.simpleicons.org/x/000000" alt="Twitter (X) Logo">
       Twitter (X)
-      <span class="click-count" id="count-x">0</span>
     </a>
 
-    <a class="btn" data-platform="phone" href="tel:01234567890">
-      <img src="https://cdn-icons-png.flaticon.com/512/597/597177.png" alt="Phone">
+    <a class="btn" href="tel:01234567890" id="phoneLink">
+      <img src="https://cdn-icons-png.flaticon.com/512/597/597177.png" alt="Phone Logo">
       Call Me
-      <span class="click-count" id="count-phone">0</span>
     </a>
 
-    <a class="btn" data-platform="about" href="#">
-      <img src="https://cdn.simpleicons.org/aboutdotme/000000" alt="About">
+    <a class="btn" href="#" target="_blank" rel="noopener noreferrer" id="aboutLink">
+      <img src="https://cdn.simpleicons.org/aboutdotme/000000" alt="About Logo">
       About Me
-      <span class="click-count" id="count-about">0</span>
     </a>
 
-    <a class="btn" data-platform="website" href="#">
-      <img src="https://cdn-icons-png.flaticon.com/512/1006/1006771.png" alt="Website">
+    <a class="btn" href="#" target="_blank" rel="noopener noreferrer" id="websiteLink">
+      <img src="https://cdn-icons-png.flaticon.com/512/1006/1006771.png" alt="Website Logo">
       My Website
-      <span class="click-count" id="count-website">0</span>
     </a>
 
   </div>
 
-  <div class="footer" id="footerText">
+  <div class="footer">
     Copyright © 2026 MADE BY <br> "Your_Name". <br> All Rights Reserved.
   </div>
+
 </div>
 
 <script>
 // Supabase Configuration
-const SUPABASE_URL = 'https://gfahimzxyqwspkeqsvlg.supabase.co';
-const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImdmYWhpbXp4eXF3c3BrZXFzdmxnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODA0Njk5NDksImV4cCI6MjA5NjA0NTk0OX0.lkZ7wpWAKknxpMMDCsRG2OiPD2wOvwFejSozzLDe0Dc';
+const SUPABASE_URL = 'https://gfahimzxyqwspkeqsvlg.supabase.co/';
+const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImdmYWhpbXp4eXF3c3BrZXFzdmxnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODA0Njk5NDksImV4cCI6MjA5NjA0NTk0OX0.lkZ7wpWAKknxpMMDCsRG2OiPD2wOvwFejSozzLDe0Dc';
 
+// Initialize Supabase Client
 const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-// Platform to ID mapping
-const platformToId = {
-  'facebook': 'count-facebook',
-  'instagram': 'count-instagram', 
-  'whatsapp': 'count-whatsapp',
-  'tiktok': 'count-tiktok',
-  'telegram': 'count-telegram',
-  'x': 'count-x',
-  'phone': 'count-phone',
-  'about': 'count-about',
-  'website': 'count-website'
-};
+// Table name - আপনাকে আপনার টেবিলের নাম এখানে দিতে হবে
+// উদাহরণ: 'user_profiles' বা 'links' বা 'settings'
+const TABLE_NAME = 'user_profile';  // <- এই নাম আপনার ডাটাবেস টেবিল অনুযায়ী পরিবর্তন করুন
 
-// Load all click counts from Supabase
-async function loadClickCounts() {
+// Function to update website data from Supabase
+async function loadAndRealtimeUpdate() {
   try {
+    // প্রথমে existing ডাটা লোড করুন
     const { data, error } = await supabase
-      .from('click_counts')
-      .select('*');
+      .from(TABLE_NAME)
+      .select('*')
+      .eq('id', 1)  // আপনি কোন row আপডেট করতে চান সেটার id দিন
+      .single();
     
     if (error) {
-      // Table might not exist, create it
-      if (error.code === '42P01') {
-        await createTable();
-        return;
-      }
-      console.error('Error loading counts:', error);
+      console.error('Error loading data:', error);
       return;
     }
     
     if (data) {
-      data.forEach(item => {
-        const elementId = platformToId[item.platform];
-        if (elementId) {
-          document.getElementById(elementId).innerText = item.click_count || 0;
+      updateUI(data);
+    }
+    
+    // Realtime subscription - যেকোনো পরিবর্তন সাথে সাথে আপডেট হবে
+    supabase
+      .channel('profile_changes')
+      .on(
+        'postgres_changes',
+        {
+          event: '*',  // INSERT, UPDATE, DELETE সব ইভেন্ট ধরবে
+          schema: 'public',
+          table: TABLE_NAME,
+          filter: 'id=eq.1'  // শুধুমাত্র নির্দিষ্ট row এর পরিবর্তন দেখবে
+        },
+        (payload) => {
+          console.log('Realtime update received:', payload);
+          if (payload.new) {
+            updateUI(payload.new);
+          }
         }
-      });
-    }
-  } catch (error) {
-    console.error('Error:', error);
+      )
+      .subscribe();
+      
+  } catch (err) {
+    console.error('Supabase connection error:', err);
   }
 }
 
-// Create table if not exists
-async function createTable() {
-  try {
-    // Create table using Supabase REST API
-    const { error } = await supabase.rpc('exec_sql', {
-      sql: `
-        CREATE TABLE IF NOT EXISTS click_counts (
-          id SERIAL PRIMARY KEY,
-          platform TEXT UNIQUE NOT NULL,
-          click_count INT DEFAULT 0,
-          updated_at TIMESTAMP DEFAULT NOW()
-        );
-        
-        INSERT INTO click_counts (platform, click_count) VALUES
-        ('facebook', 0), ('instagram', 0), ('whatsapp', 0),
-        ('tiktok', 0), ('telegram', 0), ('x', 0),
-        ('phone', 0), ('about', 0), ('website', 0)
-        ON CONFLICT (platform) DO NOTHING;
-        
-        ALTER TABLE click_counts REPLICA IDENTITY FULL;
-      `
-    });
-    
-    if (error) console.error('Create table error:', error);
-    else loadClickCounts();
-    
-  } catch (error) {
-    console.error('Error creating table:', error);
+// Function to update the UI elements
+function updateUI(data) {
+  // Update profile image
+  if (data.profile_image) {
+    document.getElementById('profileImage').src = data.profile_image;
+  }
+  
+  // Update name
+  if (data.name) {
+    document.getElementById('nameText').textContent = data.name;
+  }
+  
+  // Update title
+  if (data.title) {
+    document.getElementById('titleText').textContent = data.title;
+  }
+  
+  // Update social links
+  if (data.facebook_url) {
+    document.getElementById('facebookLink').href = data.facebook_url;
+  }
+  
+  if (data.facebook_page_url) {
+    document.getElementById('facebookPageLink').href = data.facebook_page_url;
+  }
+  
+  if (data.instagram_url) {
+    document.getElementById('instagramLink').href = data.instagram_url;
+  }
+  
+  if (data.whatsapp_number) {
+    document.getElementById('whatsappLink').href = `https://wa.me/${data.whatsapp_number}`;
+  }
+  
+  if (data.tiktok_url) {
+    document.getElementById('tiktokLink').href = data.tiktok_url;
+  }
+  
+  if (data.telegram_url) {
+    document.getElementById('telegramLink').href = data.telegram_url;
+  }
+  
+  if (data.twitter_url) {
+    document.getElementById('twitterLink').href = data.twitter_url;
+  }
+  
+  if (data.phone_number) {
+    document.getElementById('phoneLink').href = `tel:${data.phone_number}`;
+  }
+  
+  if (data.about_url) {
+    document.getElementById('aboutLink').href = data.about_url;
+  }
+  
+  if (data.website_url) {
+    document.getElementById('websiteLink').href = data.website_url;
+  }
+  
+  // Update footer text if needed
+  if (data.footer_text) {
+    document.querySelector('.footer').innerHTML = data.footer_text;
   }
 }
 
-// Update click count when button is clicked
-async function updateClickCount(platform) {
-  try {
-    // First get current count
-    const { data: currentData, error: fetchError } = await supabase
-      .from('click_counts')
-      .select('click_count')
-      .eq('platform', platform)
-      .single();
-    
-    if (fetchError && fetchError.code !== 'PGRST116') {
-      console.error('Error fetching current count:', fetchError);
-      return;
-    }
-    
-    const newCount = (currentData?.click_count || 0) + 1;
-    
-    // Update the count
-    const { error: updateError } = await supabase
-      .from('click_counts')
-      .upsert({ 
-        platform: platform, 
-        click_count: newCount,
-        updated_at: new Date()
-      }, { onConflict: 'platform' });
-    
-    if (updateError) {
-      console.error('Error updating count:', updateError);
-    }
-    
-  } catch (error) {
-    console.error('Error:', error);
-  }
-}
-
-// Setup realtime subscription
-function setupRealtime() {
-  const channel = supabase.channel('click-counts-changes')
-    .on('postgres_changes', 
-      { event: 'UPDATE', schema: 'public', table: 'click_counts' },
-      (payload) => {
-        console.log('Realtime update:', payload);
-        const elementId = platformToId[payload.new.platform];
-        if (elementId) {
-          document.getElementById(elementId).innerText = payload.new.click_count;
-        }
-      }
-    )
-    .subscribe();
-}
-
-// Add click listeners to all buttons
-function setupClickListeners() {
-  document.querySelectorAll('.btn').forEach(btn => {
-    const platform = btn.getAttribute('data-platform');
-    if (platform) {
-      btn.addEventListener('click', () => {
-        updateClickCount(platform);
-      });
-    }
-  });
-}
-
-// Optional: Load profile from database (if you want dynamic profile)
-async function loadProfile() {
-  try {
-    const { data, error } = await supabase
-      .from('profile_settings')
-      .select('*')
-      .limit(1);
-    
-    if (!error && data && data.length > 0) {
-      if (data[0].name) document.getElementById('profileName').innerText = data[0].name;
-      if (data[0].title) document.getElementById('profileTitle').innerText = data[0].title;
-      if (data[0].profile_image_url) document.getElementById('profileImg').src = data[0].profile_image_url;
-      if (data[0].footer_text) {
-        document.getElementById('footerText').innerHTML = `Copyright © 2026 MADE BY <br> "${data[0].name || 'Your_Name'}". <br> ${data[0].footer_text}`;
-      }
-    }
-  } catch (error) {
-    console.error('Profile error:', error);
-  }
-}
-
-// Initialize everything
-async function init() {
-  await loadClickCounts();
-  setupRealtime();
-  setupClickListeners();
-  loadProfile(); // Optional - remove if not needed
-}
-
-// Start
-init();
+// Start the application when page loads
+document.addEventListener('DOMContentLoaded', () => {
+  loadAndRealtimeUpdate();
+});
 </script>
 
 </body>
