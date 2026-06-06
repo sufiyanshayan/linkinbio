@@ -14,7 +14,6 @@
         .cyber-bg{position:fixed;top:0;left:0;width:100%;height:100%;background:radial-gradient(circle at 20% 50%,rgba(255,50,100,0.15) 0%,transparent 50%),radial-gradient(circle at 80% 80%,rgba(80,200,255,0.15) 0%,transparent 50%),radial-gradient(circle at 40% 20%,rgba(200,100,255,0.15) 0%,transparent 50%),linear-gradient(145deg,#0a0a0f,#1a1a2e);z-index:-2;animation:breathe 10s ease-in-out infinite;}
         @keyframes breathe{0%,100%{opacity:0.8;}50%{opacity:1;}}
         
-        /* Header without menu button */
         header{display:flex;justify-content:center;align-items:center;padding:1rem 1.5rem;background:#14141e;border-bottom:1px solid rgba(255,100,200,0.2);position:sticky;top:0;z-index:100;}
         .logo{font-weight:700;font-size:1.3rem;background:linear-gradient(135deg,#fff,#a0a0ff,#ffa0ff);-webkit-background-clip:text;-webkit-text-fill-color:transparent;display:flex;align-items:center;gap:8px;}
         .logo i{font-size:1.1rem;color:#ffa0ff;filter:drop-shadow(0 0 8px #ffa0ff);}
@@ -48,6 +47,7 @@
         .user-list-title{font-size:0.9rem;margin-bottom:1rem;color:#ffa0ff;display:flex;align-items:center;gap:8px;}
         .user-item{background:rgba(20,20,30,0.6);border-radius:30px;padding:10px 15px;margin-bottom:10px;display:flex;justify-content:space-between;align-items:center;border:1px solid rgba(255,100,255,0.2);}
         .user-email{font-size:0.8rem;word-break:break-all;flex:1;}
+        .user-id{font-size:0.65rem;color:#ffa0ff;margin-left:10px;}
         .delete-user-btn{background:rgba(255,68,68,0.2);border:none;color:#ff6688;padding:6px 12px;border-radius:30px;cursor:pointer;font-size:0.7rem;transition:all 0.2s;}
         .delete-user-btn:hover{background:#ff6688;color:white;}
         .no-users{text-align:center;padding:20px;color:rgba(255,255,255,0.5);font-size:0.8rem;}
@@ -60,18 +60,20 @@
         .loader.active{opacity:1;pointer-events:all;}
         .neon-spinner{width:50px;height:50px;border:3px solid rgba(255,100,255,0.2);border-top:3px solid #ffa0ff;border-right:3px solid #a0ffff;border-radius:50%;animation:spin 1s linear infinite;}
         @keyframes spin{0%{transform:rotate(0deg);}100%{transform:rotate(360deg);}}
+        
+        .auth-badge{background:rgba(0,255,150,0.1);border:1px solid #00ffaa;border-radius:20px;padding:5px 12px;font-size:0.7rem;margin-top:10px;text-align:center;}
     </style>
 </head>
 <body>
 <div class="cyber-bg"></div>
 <div class="app">
     <header>
-        <div class="logo"><i class="fa-regular fa-crystal"></i> USER MANAGEMENT</div>
+        <div class="logo"><i class="fa-regular fa-crystal"></i> SECURE AUTH SYSTEM</div>
     </header>
     
     <div class="container">
         <div class="neon-card">
-            <div class="form-header"><h3><i class="fa-regular fa-fingerprint"></i> CREATE USER</h3></div>
+            <div class="form-header"><h3><i class="fa-regular fa-fingerprint"></i> CREATE USER (AUTH + DB)</h3></div>
             <div class="input-group">
                 <label><i class="fa-regular fa-envelope"></i> EMAIL *</label>
                 <input type="email" id="signupEmail" placeholder="your@email.com">
@@ -86,12 +88,15 @@
                 <div id="passwordStatus" class="field-status"></div>
                 <div id="strengthBar" class="strength-bar"></div>
             </div>
-            <button class="cyber-btn" id="submitBtn" onclick="window.createUser()"><i class="fa-regular fa-floppy-disk"></i> CREATE</button>
+            <button class="cyber-btn" id="submitBtn" onclick="window.createUser()"><i class="fa-regular fa-floppy-disk"></i> CREATE & AUTH</button>
             <div id="signupStatus" class="status"></div>
+            <div class="auth-badge">
+                <i class="fa-regular fa-shield-haltered"></i> Auto-authentication enabled | Secure Delete via Edge Function
+            </div>
         </div>
 
         <div class="user-list-card">
-            <div class="user-list-title"><i class="fa-regular fa-users"></i> USER LIST (TOTAL: <span id="userCount">0</span>)</div>
+            <div class="user-list-title"><i class="fa-regular fa-users"></i> REGISTERED USERS (TOTAL: <span id="userCount">0</span>)</div>
             <div id="userListContainer"><div class="no-users">No users found. Create one above.</div></div>
         </div>
     </div>
@@ -103,6 +108,9 @@
     // ========== SUPABASE CONFIG ==========
     const SUPABASE_URL = 'https://gfahimzxyqwspkeqsvlg.supabase.co';
     const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImdmYWhpbXp4eXF3c3BrZXFzdmxnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODA0Njk5NDksImV4cCI6MjA5NjA0NTk0OX0.lkZ7wpWAKknxpMMDCsRG2OiPD2wOvwFejSozzLDe0Dc';
+    
+    // Edge Function URL (আপনার Supabase project URL এর সাথে)
+    const EDGE_FUNCTION_URL = `${SUPABASE_URL}/functions/v1/delete-user`;
 
     const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
     
@@ -125,7 +133,7 @@
         div.innerHTML = `<div class="status-${type}"><i class="fa-regular fa-${type === 'success' ? 'circle-check' : 'circle-exclamation'}"></i> ${msg}</div>`;
         setTimeout(() => { 
             if (div.innerHTML.includes(msg)) div.innerHTML = ''; 
-        }, 4000);
+        }, 5000);
     }
 
     function escapeHtml(str) {
@@ -253,7 +261,7 @@
         return valid;
     }
 
-    // ========== LOAD USERS ==========
+    // ========== LOAD USERS FROM DATABASE ==========
     async function loadUsers() {
         showLoader();
         try {
@@ -261,17 +269,16 @@
             if (error) throw error;
             users = data || [];
             renderUserList();
-            console.log('✅ Loaded', users.length, 'users');
+            console.log('✅ Loaded', users.length, 'users from DB');
         } catch (err) {
             console.error('❌ Load error:', err);
             const container = document.getElementById('userListContainer');
             if (container) container.innerHTML = `<div class="no-users">Error: ${err.message}</div>`;
-            showStatus('Error: ' + err.message, 'error');
         }
         hideLoader();
     }
 
-    // ========== RENDER ==========
+    // ========== RENDER USER LIST ==========
     function renderUserList() {
         const container = document.getElementById('userListContainer');
         const countSpan = document.getElementById('userCount');
@@ -286,25 +293,66 @@
         
         let html = '';
         users.forEach((user, index) => {
+            const shortId = user.auth_id ? user.auth_id.substring(0, 8) : (user.id ? user.id.substring(0, 8) : 'unknown');
             html += `
                 <div class="user-item">
-                    <div class="user-email"><i class="fa-regular fa-envelope" style="margin-right:8px;color:#ffa0ff;"></i>${escapeHtml(user.email)}</div>
-                    <button class="delete-user-btn" onclick="window.deleteUser('${user.id}', '${escapeHtml(user.email)}', ${index})"><i class="fa-regular fa-trash-can"></i> DELETE</button>
+                    <div class="user-email">
+                        <i class="fa-regular fa-envelope" style="margin-right:8px;color:#ffa0ff;"></i>
+                        ${escapeHtml(user.email)}
+                        <span class="user-id">(id:${shortId}...)</span>
+                    </div>
+                    <button class="delete-user-btn" onclick="window.deleteUser('${user.id}', '${escapeHtml(user.email)}', '${user.auth_id || user.id}', ${index})">
+                        <i class="fa-regular fa-trash-can"></i> DELETE (Auth+DB)
+                    </button>
                 </div>
             `;
         });
         container.innerHTML = html;
     }
 
-    // ========== CREATE USER ==========
-    async function createUserInSupabase(email, password) {
+    // ========== CREATE USER WITH AUTHENTICATION ==========
+    async function createUserInAuthAndDB(email, password) {
         showLoader();
         try {
-            const { data, error } = await supabase.from('user').insert([{ email, password }]).select();
-            if (error) throw error;
+            // Step 1: Create user in Supabase Auth
+            console.log('📝 Creating user in Auth...');
+            const { data: authData, error: authError } = await supabase.auth.signUp({
+                email: email,
+                password: password,
+                options: {
+                    data: {
+                        created_via: 'user_management_app'
+                    }
+                }
+            });
             
+            if (authError) throw authError;
+            
+            console.log('✅ Auth user created:', authData.user.id);
+            
+            // Step 2: Insert into our custom 'user' table
+            console.log('💾 Saving to user table...');
+            const { error: dbError } = await supabase
+                .from('user')
+                .insert([{ 
+                    email: email, 
+                    password: password,
+                    auth_id: authData.user.id,
+                    created_at: new Date().toISOString()
+                }]);
+            
+            if (dbError) {
+                console.error('❌ DB insert error:', dbError);
+                showStatus('⚠️ Auth created but DB save failed: ' + dbError.message, 'error');
+                hideLoader();
+                return;
+            }
+            
+            console.log('✅ DB user saved successfully');
+            showStatus('🎉 User created successfully in Auth & Database!', 'success');
+            
+            // Refresh user list
             await loadUsers();
-            showStatus('✅ User created successfully!', 'success');
             
             // Clear form
             const emailInput = document.getElementById('signupEmail');
@@ -325,30 +373,54 @@
             
         } catch (err) {
             console.error('❌ Create error:', err);
-            if (err.message.includes('duplicate') || err.code === '23505') {
-                showStatus('❌ Email already exists!', 'error');
+            if (err.message.includes('User already registered') || err.status === 400) {
+                showStatus('❌ Email already registered in Authentication system!', 'error');
             } else {
                 showStatus('❌ Create failed: ' + err.message, 'error');
             }
+        } finally {
             hideLoader();
         }
     }
 
-    // ========== DELETE USER ==========
-    window.deleteUser = async function(id, email, index) {
-        if (!confirm(`Delete ${email}?`)) return;
+    // ========== DELETE USER (via Edge Function - Auth + DB) ==========
+    window.deleteUser = async function(dbId, email, authId, index) {
+        if (!confirm(`⚠️⚠️⚠️ This will PERMANENTLY DELETE "${email}" from BOTH:\n- Authentication System\n- Database Table\n\nThis action CANNOT be undone! Continue?`)) return;
+        
         showLoader();
+        
         try {
-            const { error } = await supabase.from('user').delete().eq('id', id);
-            if (error) throw error;
+            // Call Edge Function to delete from both Auth and DB
+            const response = await fetch(EDGE_FUNCTION_URL, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${SUPABASE_ANON_KEY}`
+                },
+                body: JSON.stringify({ 
+                    userId: authId,
+                    email: email,
+                    dbId: dbId
+                })
+            });
+            
+            const result = await response.json();
+            
+            if (!response.ok || !result.success) {
+                throw new Error(result.error || 'Delete failed');
+            }
+            
+            // Remove from local array and re-render
             users.splice(index, 1);
             renderUserList();
-            showStatus('✅ User deleted successfully!', 'success');
+            showStatus(`✅ User "${email}" deleted successfully from Auth & Database!`, 'success');
+            
         } catch (err) {
             console.error('❌ Delete error:', err);
             showStatus('❌ Delete failed: ' + err.message, 'error');
+        } finally {
+            hideLoader();
         }
-        hideLoader();
     };
 
     // ========== CREATE BUTTON HANDLER ==========
@@ -374,7 +446,8 @@
             showStatus('❌ Password too weak! Use uppercase, lowercase, numbers, symbols.', 'error');
             return;
         }
-        createUserInSupabase(email, password);
+        
+        createUserInAuthAndDB(email, password);
     };
 
     // ========== EVENT LISTENERS ==========
@@ -396,13 +469,20 @@
             });
         }
         
-        // Initial check
         checkAll();
     });
 
     // ========== INIT ==========
-    // ডিফল্ট কোন ইউজার থাকবে না - শুধু loadUsers() কল করলেই সুপাবেজ থেকে আসা ইউজার দেখাবে
     loadUsers();
+    
+    // Check current auth session
+    supabase.auth.getSession().then(({ data: { session } }) => {
+        if (session) {
+            console.log('✅ User is logged in:', session.user.email);
+        } else {
+            console.log('ℹ️ No active session');
+        }
+    });
 })();
 </script>
 </body>
