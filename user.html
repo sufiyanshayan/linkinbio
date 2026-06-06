@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="bn">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
-    <title>Sign Up | Hologram Access</title>
+    <title>সাইন আপ | ইউজার ম্যানেজমেন্ট</title>
     <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
@@ -38,8 +38,8 @@
         .password-wrapper input{padding-right:45px;}
         .toggle-password{position:absolute;right:16px;top:50%;transform:translateY(-50%);cursor:pointer;color:rgba(255,160,255,0.7);font-size:1rem;z-index:10;}
         .toggle-password:hover{color:#ffa0ff;}
-        .cyber-btn{width:100%;padding:12px;background:linear-gradient(90deg,#ff50a0,#a050ff);border:none;border-radius:40px;color:white;font-weight:600;font-size:0.85rem;cursor:pointer;margin-top:8px;text-transform:uppercase;transition:all 0.3s ease;}
-        .cyber-btn:disabled{opacity:0.5;cursor:not-allowed;}
+        .submit-btn{width:100%;padding:12px;background:linear-gradient(90deg,#ff50a0,#a050ff);border:none;border-radius:40px;color:white;font-weight:600;font-size:0.85rem;cursor:pointer;margin-top:8px;text-transform:uppercase;transition:all 0.3s ease;}
+        .submit-btn:disabled{opacity:0.5;cursor:not-allowed;}
         .status{text-align:center;margin-top:12px;padding:8px 12px;border-radius:24px;font-size:0.75rem;}
         .status-success{background:rgba(0,255,150,0.12);color:#00ffaa;border:1px solid rgba(0,255,150,0.25);}
         .status-error{background:rgba(255,68,68,0.12);color:#ff6688;border:1px solid rgba(255,68,68,0.25);}
@@ -48,8 +48,8 @@
         .user-item{background:rgba(20,20,30,0.6);border-radius:30px;padding:10px 15px;margin-bottom:10px;display:flex;justify-content:space-between;align-items:center;border:1px solid rgba(255,100,255,0.2);}
         .user-email{font-size:0.8rem;word-break:break-all;flex:1;}
         .user-id{font-size:0.65rem;color:#ffa0ff;margin-left:10px;}
-        .delete-user-btn{background:rgba(255,68,68,0.2);border:none;color:#ff6688;padding:6px 12px;border-radius:30px;cursor:pointer;font-size:0.7rem;transition:all 0.2s;}
-        .delete-user-btn:hover{background:#ff6688;color:white;}
+        .delete-btn{background:rgba(255,68,68,0.2);border:none;color:#ff6688;padding:6px 12px;border-radius:30px;cursor:pointer;font-size:0.7rem;transition:all 0.2s;}
+        .delete-btn:hover{background:#ff6688;color:white;}
         .no-users{text-align:center;padding:20px;color:rgba(255,255,255,0.5);font-size:0.8rem;}
         .strength-bar{height:4px;margin-top:8px;border-radius:4px;transition:0.3s;background:#2a2a3a;}
         .strength-weak{background:#ff6688;width:33%;}
@@ -58,432 +58,323 @@
         
         .loader{position:fixed;top:0;left:0;width:100%;height:100%;background:#0a0a12;display:flex;justify-content:center;align-items:center;opacity:0;pointer-events:none;transition:opacity 0.4s;z-index:400;}
         .loader.active{opacity:1;pointer-events:all;}
-        .neon-spinner{width:50px;height:50px;border:3px solid rgba(255,100,255,0.2);border-top:3px solid #ffa0ff;border-right:3px solid #a0ffff;border-radius:50%;animation:spin 1s linear infinite;}
+        .spinner{width:50px;height:50px;border:3px solid rgba(255,100,255,0.2);border-top:3px solid #ffa0ff;border-right:3px solid #a0ffff;border-radius:50%;animation:spin 1s linear infinite;}
         @keyframes spin{0%{transform:rotate(0deg);}100%{transform:rotate(360deg);}}
         
-        .auth-badge{background:rgba(0,255,150,0.1);border:1px solid #00ffaa;border-radius:20px;padding:5px 12px;font-size:0.7rem;margin-top:10px;text-align:center;}
+        .info-badge{background:rgba(0,150,255,0.1);border:1px solid #00aaff;border-radius:20px;padding:5px 12px;font-size:0.7rem;margin-top:10px;text-align:center;}
     </style>
 </head>
 <body>
 <div class="cyber-bg"></div>
 <div class="app">
     <header>
-        <div class="logo"><i class="fa-regular fa-crystal"></i> SECURE AUTH SYSTEM</div>
+        <div class="logo"><i class="fa-regular fa-user-plus"></i> ইউজার ম্যানেজমেন্ট</div>
     </header>
     
     <div class="container">
         <div class="neon-card">
-            <div class="form-header"><h3><i class="fa-regular fa-fingerprint"></i> CREATE USER (AUTH + DB)</h3></div>
+            <div class="form-header"><h3><i class="fa-regular fa-address-card"></i> নিবন্ধন ফর্ম</h3></div>
             <div class="input-group">
-                <label><i class="fa-regular fa-envelope"></i> EMAIL *</label>
+                <label><i class="fa-regular fa-envelope"></i> ইমেইল *</label>
                 <input type="email" id="signupEmail" placeholder="your@email.com">
                 <div id="emailStatus" class="field-status"></div>
             </div>
             <div class="input-group">
-                <label><i class="fa-solid fa-lock"></i> PASSWORD *</label>
+                <label><i class="fa-solid fa-lock"></i> পাসওয়ার্ড *</label>
                 <div class="password-wrapper">
-                    <input type="password" id="signupPassword" placeholder="********">
-                    <i class="fa-regular fa-eye toggle-password" onclick="window.togglePassword('signupPassword',this)"></i>
+                    <input type="password" id="signupPassword" placeholder="পাসওয়ার্ড দিন">
+                    <i class="fa-regular fa-eye toggle-password" onclick="togglePassword('signupPassword',this)"></i>
                 </div>
                 <div id="passwordStatus" class="field-status"></div>
                 <div id="strengthBar" class="strength-bar"></div>
             </div>
-            <button class="cyber-btn" id="submitBtn" onclick="window.createUser()"><i class="fa-regular fa-floppy-disk"></i> CREATE & AUTH</button>
+            <button class="submit-btn" id="submitBtn" onclick="createUser()"><i class="fa-regular fa-floppy-disk"></i> নিবন্ধন করুন</button>
             <div id="signupStatus" class="status"></div>
-            <div class="auth-badge">
-                <i class="fa-regular fa-shield-haltered"></i> Auto-authentication enabled | Secure Delete via Edge Function
+            <div class="info-badge">
+                <i class="fa-regular fa-circle-info"></i> পাসওয়ার্ডে বড় হাতের, ছোট হাতের, সংখ্যা ও চিহ্ন থাকলে ভালো
             </div>
         </div>
 
         <div class="user-list-card">
-            <div class="user-list-title"><i class="fa-regular fa-users"></i> REGISTERED USERS (TOTAL: <span id="userCount">0</span>)</div>
-            <div id="userListContainer"><div class="no-users">No users found. Create one above.</div></div>
+            <div class="user-list-title"><i class="fa-regular fa-users"></i> ইউজার তালিকা (মোট: <span id="userCount">0</span>)</div>
+            <div id="userListContainer"><div class="no-users"><i class="fa-regular fa-spinner fa-pulse"></i> লোড হচ্ছে...</div></div>
         </div>
     </div>
-    <div class="loader" id="loader"><div class="neon-spinner"></div></div>
+    <div class="loader" id="loader"><div class="spinner"></div></div>
 </div>
 
 <script>
-(function() {
-    // ========== SUPABASE CONFIG ==========
-    const SUPABASE_URL = 'https://gfahimzxyqwspkeqsvlg.supabase.co';
-    const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImdmYWhpbXp4eXF3c3BrZXFzdmxnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODA0Njk5NDksImV4cCI6MjA5NjA0NTk0OX0.lkZ7wpWAKknxpMMDCsRG2OiPD2wOvwFejSozzLDe0Dc';
+// Supabase configuration
+const SUPABASE_URL = 'https://gfahimzxyqwspkeqsvlg.supabase.co';
+const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImdmYWhpbXp4eXF3c3BrZXFzdmxnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODA0Njk5NDksImV4cCI6MjA5NjA0NTk0OX0.lkZ7wpWAKknxpMMDCsRG2OiPD2wOvwFejSozzLDe0Dc';
+
+const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+let users = [];
+
+// UI Functions
+function showLoader() { 
+    document.getElementById('loader').classList.add('active');
+}
+function hideLoader() { 
+    document.getElementById('loader').classList.remove('active');
+}
+
+function showMessage(msg, type) {
+    const div = document.getElementById('signupStatus');
+    div.innerHTML = `<div class="status-${type}"><i class="fa-regular fa-${type === 'success' ? 'circle-check' : 'circle-xmark'}"></i> ${msg}</div>`;
+    setTimeout(() => { 
+        if (div.innerHTML.includes(msg)) div.innerHTML = ''; 
+    }, 4000);
+}
+
+function escapeText(str) {
+    if (!str) return '';
+    return str.replace(/[&<>]/g, function(m) {
+        if (m === '&') return '&amp;';
+        if (m === '<') return '&lt;';
+        if (m === '>') return '&gt;';
+        return m;
+    });
+}
+
+// Password Toggle
+window.togglePassword = function(fieldId, icon) {
+    const input = document.getElementById(fieldId);
+    if (input.type === 'password') {
+        input.type = 'text';
+        icon.classList.remove('fa-eye');
+        icon.classList.add('fa-eye-slash');
+    } else {
+        input.type = 'password';
+        icon.classList.remove('fa-eye-slash');
+        icon.classList.add('fa-eye');
+    }
+};
+
+// Validation
+function validateEmail() {
+    const email = document.getElementById('signupEmail');
+    const status = document.getElementById('emailStatus');
+    const value = email.value.trim();
     
-    // Edge Function URL (আপনার Supabase project URL এর সাথে)
-    const EDGE_FUNCTION_URL = `${SUPABASE_URL}/functions/v1/delete-user`;
-
-    const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-    
-    let users = [];
-
-    // ========== UI FUNCTIONS ==========
-    function showLoader() { 
-        const loader = document.getElementById('loader');
-        if (loader) loader.classList.add('active');
-    }
-    
-    function hideLoader() { 
-        const loader = document.getElementById('loader');
-        if (loader) loader.classList.remove('active');
-    }
-
-    function showStatus(msg, type) {
-        const div = document.getElementById('signupStatus');
-        if (!div) return;
-        div.innerHTML = `<div class="status-${type}"><i class="fa-regular fa-${type === 'success' ? 'circle-check' : 'circle-exclamation'}"></i> ${msg}</div>`;
-        setTimeout(() => { 
-            if (div.innerHTML.includes(msg)) div.innerHTML = ''; 
-        }, 5000);
-    }
-
-    function escapeHtml(str) {
-        if (!str) return '';
-        return str.replace(/[&<>]/g, function(m) {
-            if (m === '&') return '&amp;';
-            if (m === '<') return '&lt;';
-            if (m === '>') return '&gt;';
-            return m;
-        });
-    }
-
-    // ========== PASSWORD TOGGLE ==========
-    window.togglePassword = function(fieldId, iconElement) {
-        const passwordInput = document.getElementById(fieldId);
-        if (!passwordInput) return;
-        
-        if (passwordInput.type === 'password') {
-            passwordInput.type = 'text';
-            iconElement.classList.remove('fa-eye');
-            iconElement.classList.add('fa-eye-slash');
-        } else {
-            passwordInput.type = 'password';
-            iconElement.classList.remove('fa-eye-slash');
-            iconElement.classList.add('fa-eye');
-        }
-    };
-
-    // ========== VALIDATION ==========
-    function validateEmail() {
-        const email = document.getElementById('signupEmail');
-        const status = document.getElementById('emailStatus');
-        if (!email || !status) return false;
-        
-        const emailValue = email.value.trim();
-        
-        if (!emailValue) {
-            email.classList.remove('error-border', 'success-border');
-            status.innerHTML = '';
-            return false;
-        }
-        const emailRegex = /^[^\s@]+@([^\s@]+\.)+[^\s@]+$/;
-        if (!emailRegex.test(emailValue)) {
-            email.classList.add('error-border');
-            email.classList.remove('success-border');
-            status.innerHTML = '<i class="fa-regular fa-circle-exclamation"></i> Invalid email';
-            status.className = 'field-status error';
-            return false;
-        }
-        email.classList.add('success-border');
-        email.classList.remove('error-border');
-        status.innerHTML = '<i class="fa-regular fa-circle-check"></i> Valid email';
-        status.className = 'field-status success';
-        return true;
-    }
-
-    function checkStrength(p) {
-        if (!p || p.length === 0) return 'none';
-        let s = 0;
-        if (p.length >= 6) s++;
-        if (/[a-z]/.test(p)) s++;
-        if (/[A-Z]/.test(p)) s++;
-        if (/[0-9]/.test(p)) s++;
-        if (/[^a-zA-Z0-9]/.test(p)) s++;
-        if (p.length < 6) return 'weak';
-        if (s >= 5) return 'strong';
-        if (s >= 3) return 'medium';
-        return 'weak';
-    }
-
-    function validatePassword() {
-        const pwd = document.getElementById('signupPassword');
-        const status = document.getElementById('passwordStatus');
-        const bar = document.getElementById('strengthBar');
-        if (!pwd || !status || !bar) return false;
-        
-        const pwdValue = pwd.value;
-        const strength = checkStrength(pwdValue);
-        
-        if (!pwdValue) {
-            pwd.classList.remove('error-border', 'success-border');
-            status.innerHTML = '';
-            bar.className = 'strength-bar';
-            return false;
-        }
-        if (pwdValue.length < 6) {
-            pwd.classList.add('error-border');
-            pwd.classList.remove('success-border');
-            status.innerHTML = '<i class="fa-regular fa-circle-exclamation"></i> Min 6 characters';
-            status.className = 'field-status error';
-            bar.className = 'strength-bar strength-weak';
-            return false;
-        }
-        if (strength === 'weak') {
-            pwd.classList.add('error-border');
-            pwd.classList.remove('success-border');
-            status.innerHTML = '<i class="fa-regular fa-circle-exclamation"></i> WEAK - use letters + numbers + symbols';
-            status.className = 'field-status error';
-            bar.className = 'strength-bar strength-weak';
-            return false;
-        }
-        if (strength === 'medium') {
-            pwd.classList.add('success-border');
-            pwd.classList.remove('error-border');
-            status.innerHTML = '<i class="fa-regular fa-circle-check"></i> MEDIUM (OK)';
-            status.className = 'field-status success';
-            bar.className = 'strength-bar strength-medium';
-            return true;
-        }
-        if (strength === 'strong') {
-            pwd.classList.add('success-border');
-            pwd.classList.remove('error-border');
-            status.innerHTML = '<i class="fa-regular fa-circle-check"></i> STRONG';
-            status.className = 'field-status success';
-            bar.className = 'strength-bar strength-strong';
-            return true;
-        }
+    if (!value) {
+        email.classList.remove('error-border', 'success-border');
+        status.innerHTML = '';
         return false;
     }
-
-    function checkAll() {
-        const valid = validateEmail() && validatePassword();
-        const btn = document.getElementById('submitBtn');
-        if (btn) btn.disabled = !valid;
-        return valid;
+    if (!value.includes('@') || !value.includes('.')) {
+        email.classList.add('error-border');
+        email.classList.remove('success-border');
+        status.innerHTML = '<i class="fa-regular fa-circle-exclamation"></i> সঠিক ইমেইল দিন';
+        status.className = 'field-status error';
+        return false;
     }
+    email.classList.add('success-border');
+    email.classList.remove('error-border');
+    status.innerHTML = '<i class="fa-regular fa-circle-check"></i> সঠিক ইমেইল';
+    status.className = 'field-status success';
+    return true;
+}
 
-    // ========== LOAD USERS FROM DATABASE ==========
-    async function loadUsers() {
-        showLoader();
-        try {
-            const { data, error } = await supabase.from('user').select('*').order('created_at', { ascending: false });
-            if (error) throw error;
-            users = data || [];
-            renderUserList();
-            console.log('✅ Loaded', users.length, 'users from DB');
-        } catch (err) {
-            console.error('❌ Load error:', err);
-            const container = document.getElementById('userListContainer');
-            if (container) container.innerHTML = `<div class="no-users">Error: ${err.message}</div>`;
-        }
-        hideLoader();
-    }
+function checkPasswordStrength(p) {
+    if (!p) return 'none';
+    let score = 0;
+    if (p.length >= 6) score++;
+    if (/[a-z]/.test(p)) score++;
+    if (/[A-Z]/.test(p)) score++;
+    if (/[0-9]/.test(p)) score++;
+    if (/[^a-zA-Z0-9]/.test(p)) score++;
+    if (p.length < 6) return 'weak';
+    if (score >= 5) return 'strong';
+    if (score >= 3) return 'medium';
+    return 'weak';
+}
 
-    // ========== RENDER USER LIST ==========
-    function renderUserList() {
-        const container = document.getElementById('userListContainer');
-        const countSpan = document.getElementById('userCount');
-        if (!container || !countSpan) return;
-        
-        countSpan.innerText = users.length;
-        
-        if (users.length === 0) {
-            container.innerHTML = '<div class="no-users">✨ No users found. Create one above.</div>';
-            return;
-        }
-        
-        let html = '';
-        users.forEach((user, index) => {
-            const shortId = user.auth_id ? user.auth_id.substring(0, 8) : (user.id ? user.id.substring(0, 8) : 'unknown');
-            html += `
-                <div class="user-item">
-                    <div class="user-email">
-                        <i class="fa-regular fa-envelope" style="margin-right:8px;color:#ffa0ff;"></i>
-                        ${escapeHtml(user.email)}
-                        <span class="user-id">(id:${shortId}...)</span>
-                    </div>
-                    <button class="delete-user-btn" onclick="window.deleteUser('${user.id}', '${escapeHtml(user.email)}', '${user.auth_id || user.id}', ${index})">
-                        <i class="fa-regular fa-trash-can"></i> DELETE (Auth+DB)
-                    </button>
-                </div>
-            `;
-        });
-        container.innerHTML = html;
-    }
-
-    // ========== CREATE USER WITH AUTHENTICATION ==========
-    async function createUserInAuthAndDB(email, password) {
-        showLoader();
-        try {
-            // Step 1: Create user in Supabase Auth
-            console.log('📝 Creating user in Auth...');
-            const { data: authData, error: authError } = await supabase.auth.signUp({
-                email: email,
-                password: password,
-                options: {
-                    data: {
-                        created_via: 'user_management_app'
-                    }
-                }
-            });
-            
-            if (authError) throw authError;
-            
-            console.log('✅ Auth user created:', authData.user.id);
-            
-            // Step 2: Insert into our custom 'user' table
-            console.log('💾 Saving to user table...');
-            const { error: dbError } = await supabase
-                .from('user')
-                .insert([{ 
-                    email: email, 
-                    password: password,
-                    auth_id: authData.user.id,
-                    created_at: new Date().toISOString()
-                }]);
-            
-            if (dbError) {
-                console.error('❌ DB insert error:', dbError);
-                showStatus('⚠️ Auth created but DB save failed: ' + dbError.message, 'error');
-                hideLoader();
-                return;
-            }
-            
-            console.log('✅ DB user saved successfully');
-            showStatus('🎉 User created successfully in Auth & Database!', 'success');
-            
-            // Refresh user list
-            await loadUsers();
-            
-            // Clear form
-            const emailInput = document.getElementById('signupEmail');
-            const passwordInput = document.getElementById('signupPassword');
-            const strengthBar = document.getElementById('strengthBar');
-            if (emailInput) emailInput.value = '';
-            if (passwordInput) passwordInput.value = '';
-            if (strengthBar) strengthBar.className = 'strength-bar';
-            
-            const submitBtn = document.getElementById('submitBtn');
-            if (submitBtn) submitBtn.disabled = true;
-            
-            const statusDivs = document.querySelectorAll('.field-status');
-            statusDivs.forEach(d => d.innerHTML = '');
-            
-            const inputs = document.querySelectorAll('input');
-            inputs.forEach(i => i.classList.remove('success-border', 'error-border'));
-            
-        } catch (err) {
-            console.error('❌ Create error:', err);
-            if (err.message.includes('User already registered') || err.status === 400) {
-                showStatus('❌ Email already registered in Authentication system!', 'error');
-            } else {
-                showStatus('❌ Create failed: ' + err.message, 'error');
-            }
-        } finally {
-            hideLoader();
-        }
-    }
-
-    // ========== DELETE USER (via Edge Function - Auth + DB) ==========
-    window.deleteUser = async function(dbId, email, authId, index) {
-        if (!confirm(`⚠️⚠️⚠️ This will PERMANENTLY DELETE "${email}" from BOTH:\n- Authentication System\n- Database Table\n\nThis action CANNOT be undone! Continue?`)) return;
-        
-        showLoader();
-        
-        try {
-            // Call Edge Function to delete from both Auth and DB
-            const response = await fetch(EDGE_FUNCTION_URL, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${SUPABASE_ANON_KEY}`
-                },
-                body: JSON.stringify({ 
-                    userId: authId,
-                    email: email,
-                    dbId: dbId
-                })
-            });
-            
-            const result = await response.json();
-            
-            if (!response.ok || !result.success) {
-                throw new Error(result.error || 'Delete failed');
-            }
-            
-            // Remove from local array and re-render
-            users.splice(index, 1);
-            renderUserList();
-            showStatus(`✅ User "${email}" deleted successfully from Auth & Database!`, 'success');
-            
-        } catch (err) {
-            console.error('❌ Delete error:', err);
-            showStatus('❌ Delete failed: ' + err.message, 'error');
-        } finally {
-            hideLoader();
-        }
-    };
-
-    // ========== CREATE BUTTON HANDLER ==========
-    window.createUser = function() {
-        const emailInput = document.getElementById('signupEmail');
-        const passwordInput = document.getElementById('signupPassword');
-        
-        if (!emailInput || !passwordInput) return;
-        
-        const email = emailInput.value.trim();
-        const password = passwordInput.value;
-        const strength = checkStrength(password);
-        
-        if (!email || !validateEmail()) {
-            showStatus('❌ Valid email required!', 'error');
-            return;
-        }
-        if (!password || password.length < 6) {
-            showStatus('❌ Password must be 6+ characters!', 'error');
-            return;
-        }
-        if (strength === 'weak') {
-            showStatus('❌ Password too weak! Use uppercase, lowercase, numbers, symbols.', 'error');
-            return;
-        }
-        
-        createUserInAuthAndDB(email, password);
-    };
-
-    // ========== EVENT LISTENERS ==========
-    document.addEventListener('DOMContentLoaded', function() {
-        const emailInput = document.getElementById('signupEmail');
-        const passwordInput = document.getElementById('signupPassword');
-        
-        if (emailInput) {
-            emailInput.addEventListener('input', () => { 
-                validateEmail(); 
-                checkAll(); 
-            });
-        }
-        
-        if (passwordInput) {
-            passwordInput.addEventListener('input', () => { 
-                validatePassword(); 
-                checkAll(); 
-            });
-        }
-        
-        checkAll();
-    });
-
-    // ========== INIT ==========
-    loadUsers();
+function validatePassword() {
+    const pwd = document.getElementById('signupPassword');
+    const status = document.getElementById('passwordStatus');
+    const bar = document.getElementById('strengthBar');
+    const value = pwd.value;
+    const strength = checkPasswordStrength(value);
     
-    // Check current auth session
-    supabase.auth.getSession().then(({ data: { session } }) => {
-        if (session) {
-            console.log('✅ User is logged in:', session.user.email);
-        } else {
-            console.log('ℹ️ No active session');
-        }
+    if (!value) {
+        pwd.classList.remove('error-border', 'success-border');
+        status.innerHTML = '';
+        bar.className = 'strength-bar';
+        return false;
+    }
+    if (value.length < 6) {
+        pwd.classList.add('error-border');
+        pwd.classList.remove('success-border');
+        status.innerHTML = '<i class="fa-regular fa-circle-exclamation"></i> কমপক্ষে ৬ অক্ষর';
+        status.className = 'field-status error';
+        bar.className = 'strength-bar strength-weak';
+        return false;
+    }
+    if (strength === 'weak') {
+        pwd.classList.add('error-border');
+        pwd.classList.remove('success-border');
+        status.innerHTML = '<i class="fa-regular fa-circle-exclamation"></i> দুর্বল - বড় হাতের, সংখ্যা বা চিহ্ন যোগ করুন';
+        status.className = 'field-status error';
+        bar.className = 'strength-bar strength-weak';
+        return false;
+    }
+    if (strength === 'medium') {
+        pwd.classList.add('success-border');
+        pwd.classList.remove('error-border');
+        status.innerHTML = '<i class="fa-regular fa-circle-check"></i> মাঝারি (গ্রহণযোগ্য)';
+        status.className = 'field-status success';
+        bar.className = 'strength-bar strength-medium';
+        return true;
+    }
+    if (strength === 'strong') {
+        pwd.classList.add('success-border');
+        pwd.classList.remove('error-border');
+        status.innerHTML = '<i class="fa-regular fa-circle-check"></i> শক্তিশালী';
+        status.className = 'field-status success';
+        bar.className = 'strength-bar strength-strong';
+        return true;
+    }
+    return false;
+}
+
+function checkForm() {
+    const valid = validateEmail() && validatePassword();
+    document.getElementById('submitBtn').disabled = !valid;
+    return valid;
+}
+
+// Load users from database
+async function loadUsers() {
+    showLoader();
+    try {
+        const { data, error } = await supabase.from('user').select('*').order('created_at', { ascending: false });
+        if (error) throw error;
+        users = data || [];
+        displayUsers();
+    } catch (err) {
+        console.error(err);
+        document.getElementById('userListContainer').innerHTML = `<div class="no-users">ত্রুটি: ${err.message}</div>`;
+    }
+    hideLoader();
+}
+
+// Display users
+function displayUsers() {
+    const container = document.getElementById('userListContainer');
+    const counter = document.getElementById('userCount');
+    counter.innerText = users.length;
+    
+    if (users.length === 0) {
+        container.innerHTML = '<div class="no-users">📭 কোনো ইউজার নেই। উপরে নতুন নিবন্ধন করুন।</div>';
+        return;
+    }
+    
+    let html = '';
+    users.forEach((user, idx) => {
+        html += `
+            <div class="user-item">
+                <div class="user-email">
+                    <i class="fa-regular fa-envelope" style="margin-right:8px;color:#ffa0ff;"></i>
+                    ${escapeText(user.email)}
+                    <span class="user-id">#${idx+1}</span>
+                </div>
+                <button class="delete-btn" onclick="deleteUser('${user.id}', '${escapeText(user.email)}', ${idx})">
+                    <i class="fa-regular fa-trash-can"></i> মুছুন
+                </button>
+            </div>
+        `;
     });
-})();
+    container.innerHTML = html;
+}
+
+// Create user
+async function createUserInDB(email, password) {
+    showLoader();
+    try {
+        // First create in Auth
+        const { data: authData, error: authError } = await supabase.auth.signUp({
+            email: email,
+            password: password
+        });
+        
+        if (authError) throw authError;
+        
+        // Then save to user table
+        const { error: dbError } = await supabase.from('user').insert([{ 
+            email: email, 
+            password: password,
+            auth_id: authData.user?.id || null
+        }]);
+        
+        if (dbError) throw dbError;
+        
+        showMessage('✅ নিবন্ধন সফল হয়েছে!', 'success');
+        await loadUsers();
+        
+        // Clear form
+        document.getElementById('signupEmail').value = '';
+        document.getElementById('signupPassword').value = '';
+        document.getElementById('strengthBar').className = 'strength-bar';
+        document.getElementById('submitBtn').disabled = true;
+        document.querySelectorAll('.field-status').forEach(d => d.innerHTML = '');
+        document.querySelectorAll('input').forEach(i => i.classList.remove('success-border', 'error-border'));
+        
+    } catch (err) {
+        console.error(err);
+        if (err.message.includes('already registered')) {
+            showMessage('❌ এই ইমেইল already নিবন্ধিত আছে!', 'error');
+        } else {
+            showMessage('❌ নিবন্ধন失败: ' + err.message, 'error');
+        }
+    }
+    hideLoader();
+}
+
+// Delete user
+window.deleteUser = async function(id, email, index) {
+    if (!confirm(`"${email}" কি ডিলিট করবেন?`)) return;
+    showLoader();
+    try {
+        const { error } = await supabase.from('user').delete().eq('id', id);
+        if (error) throw error;
+        users.splice(index, 1);
+        displayUsers();
+        showMessage(`✅ "${email}" ডিলিট হয়েছে`, 'success');
+    } catch (err) {
+        showMessage('❌ ডিলিট ব্যর্থ: ' + err.message, 'error');
+    }
+    hideLoader();
+};
+
+// Create user handler
+window.createUser = function() {
+    const email = document.getElementById('signupEmail').value.trim();
+    const password = document.getElementById('signupPassword').value;
+    const strength = checkPasswordStrength(password);
+    
+    if (!email || !validateEmail()) {
+        showMessage('❌ সঠিক ইমেইল দিন', 'error');
+        return;
+    }
+    if (!password || password.length < 6) {
+        showMessage('❌ পাসওয়ার্ড কমপক্ষে ৬ অক্ষরের হতে হবে', 'error');
+        return;
+    }
+    if (strength === 'weak') {
+        showMessage('❌ পাসওয়ার্ড খুব দুর্বল! বড় হাতের, সংখ্যা বা চিহ্ন দিন', 'error');
+        return;
+    }
+    createUserInDB(email, password);
+};
+
+// Event listeners
+document.getElementById('signupEmail').addEventListener('input', () => { validateEmail(); checkForm(); });
+document.getElementById('signupPassword').addEventListener('input', () => { validatePassword(); checkForm(); });
+
+// Initial load
+loadUsers();
 </script>
 </body>
 </html>
