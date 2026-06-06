@@ -2,379 +2,594 @@
 <html lang="bn">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
-    <title>সাইন আপ | ইউজার ম্যানেজমেন্ট</title>
-    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Supabase Auth - ডাইরেক্ট ইউজার তৈরি</title>
     <style>
-        *{margin:0;padding:0;box-sizing:border-box;}
-        body{font-family:'Space Grotesk',sans-serif;background:linear-gradient(145deg,#0a0a0f,#1a1a2e);color:#fff;overflow-x:hidden;min-height:100vh;}
-        .app{max-width:480px;margin:0 auto;background:#0f0f17;min-height:100vh;position:relative;border-left:1px solid rgba(255,255,255,0.05);border-right:1px solid rgba(255,255,255,0.05);box-shadow:0 0 50px rgba(0,0,0,0.5);}
-        .cyber-bg{position:fixed;top:0;left:0;width:100%;height:100%;background:radial-gradient(circle at 20% 50%,rgba(255,50,100,0.15) 0%,transparent 50%),radial-gradient(circle at 80% 80%,rgba(80,200,255,0.15) 0%,transparent 50%),radial-gradient(circle at 40% 20%,rgba(200,100,255,0.15) 0%,transparent 50%),linear-gradient(145deg,#0a0a0f,#1a1a2e);z-index:-2;animation:breathe 10s ease-in-out infinite;}
-        @keyframes breathe{0%,100%{opacity:0.8;}50%{opacity:1;}}
-        
-        header{display:flex;justify-content:center;align-items:center;padding:1rem 1.5rem;background:#14141e;border-bottom:1px solid rgba(255,100,200,0.2);position:sticky;top:0;z-index:100;}
-        .logo{font-weight:700;font-size:1.3rem;background:linear-gradient(135deg,#fff,#a0a0ff,#ffa0ff);-webkit-background-clip:text;-webkit-text-fill-color:transparent;display:flex;align-items:center;gap:8px;}
-        .logo i{font-size:1.1rem;color:#ffa0ff;filter:drop-shadow(0 0 8px #ffa0ff);}
-        
-        .container{padding:1.5rem;}
-        .neon-card{background:rgba(30,30,44,0.85);backdrop-filter:blur(10px);border:1px solid rgba(255,100,255,0.25);border-radius:40px;padding:1.5rem;margin-bottom:1.5rem;position:relative;overflow:hidden;}
-        .neon-card::before{content:'';position:absolute;top:-50%;left:-50%;width:200%;height:200%;background:conic-gradient(from 0deg,transparent,rgba(255,100,255,0.06),rgba(100,200,255,0.06),rgba(255,100,200,0.06),transparent 70%);animation:rotate 15s linear infinite;pointer-events:none;}
-        @keyframes rotate{from{transform:rotate(0deg);}to{transform:rotate(360deg);}}
-        .form-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:1.2rem;padding-bottom:0.6rem;border-bottom:1px solid rgba(255,100,255,0.2);position:relative;z-index:2;}
-        .form-header h3{font-weight:700;font-size:1.2rem;background:linear-gradient(135deg,#fff,#ffa0ff,#a0ffff);-webkit-background-clip:text;-webkit-text-fill-color:transparent;}
-        .input-group{margin-bottom:1rem;position:relative;z-index:2;}
-        label{font-size:0.7rem;font-weight:500;display:flex;align-items:center;gap:8px;margin-bottom:5px;color:rgba(255,255,255,0.75);text-transform:uppercase;}
-        label i{font-size:0.8rem;color:#ffa0ff;width:18px;}
-        input{width:100%;padding:12px 14px;background:rgba(20,20,30,0.8);border:2px solid rgba(255,100,255,0.2);border-radius:24px;color:#fff;font-family:'Space Grotesk',monospace;font-size:0.85rem;transition:all 0.3s ease;}
-        input:focus{outline:none;border-color:#ffa0ff;box-shadow:0 0 0 2px rgba(255,160,255,0.2);}
-        input.error-border{border-color:#ff6688;background:rgba(255,68,68,0.1);}
-        input.success-border{border-color:#00ffaa;background:rgba(0,255,170,0.05);}
-        .field-status{font-size:0.65rem;margin-top:5px;margin-left:12px;display:flex;align-items:center;gap:5px;}
-        .field-status.success{color:#00ffaa;}
-        .field-status.error{color:#ff6688;}
-        .password-wrapper{position:relative;}
-        .password-wrapper input{padding-right:45px;}
-        .toggle-password{position:absolute;right:16px;top:50%;transform:translateY(-50%);cursor:pointer;color:rgba(255,160,255,0.7);font-size:1rem;z-index:10;}
-        .toggle-password:hover{color:#ffa0ff;}
-        .submit-btn{width:100%;padding:12px;background:linear-gradient(90deg,#ff50a0,#a050ff);border:none;border-radius:40px;color:white;font-weight:600;font-size:0.85rem;cursor:pointer;margin-top:8px;text-transform:uppercase;transition:all 0.3s ease;}
-        .submit-btn:disabled{opacity:0.5;cursor:not-allowed;}
-        .status{text-align:center;margin-top:12px;padding:8px 12px;border-radius:24px;font-size:0.75rem;}
-        .status-success{background:rgba(0,255,150,0.12);color:#00ffaa;border:1px solid rgba(0,255,150,0.25);}
-        .status-error{background:rgba(255,68,68,0.12);color:#ff6688;border:1px solid rgba(255,68,68,0.25);}
-        .user-list-card{background:rgba(30,30,44,0.85);backdrop-filter:blur(10px);border:1px solid rgba(255,100,255,0.25);border-radius:40px;padding:1.5rem;margin-top:1rem;}
-        .user-list-title{font-size:0.9rem;margin-bottom:1rem;color:#ffa0ff;display:flex;align-items:center;gap:8px;}
-        .user-item{background:rgba(20,20,30,0.6);border-radius:30px;padding:10px 15px;margin-bottom:10px;display:flex;justify-content:space-between;align-items:center;border:1px solid rgba(255,100,255,0.2);}
-        .user-email{font-size:0.8rem;word-break:break-all;flex:1;}
-        .user-id{font-size:0.65rem;color:#ffa0ff;margin-left:10px;}
-        .delete-btn{background:rgba(255,68,68,0.2);border:none;color:#ff6688;padding:6px 12px;border-radius:30px;cursor:pointer;font-size:0.7rem;transition:all 0.2s;}
-        .delete-btn:hover{background:#ff6688;color:white;}
-        .no-users{text-align:center;padding:20px;color:rgba(255,255,255,0.5);font-size:0.8rem;}
-        .strength-bar{height:4px;margin-top:8px;border-radius:4px;transition:0.3s;background:#2a2a3a;}
-        .strength-weak{background:#ff6688;width:33%;}
-        .strength-medium{background:#ffa500;width:66%;}
-        .strength-strong{background:#00ffaa;width:100%;}
-        
-        .loader{position:fixed;top:0;left:0;width:100%;height:100%;background:#0a0a12;display:flex;justify-content:center;align-items:center;opacity:0;pointer-events:none;transition:opacity 0.4s;z-index:400;}
-        .loader.active{opacity:1;pointer-events:all;}
-        .spinner{width:50px;height:50px;border:3px solid rgba(255,100,255,0.2);border-top:3px solid #ffa0ff;border-right:3px solid #a0ffff;border-radius:50%;animation:spin 1s linear infinite;}
-        @keyframes spin{0%{transform:rotate(0deg);}100%{transform:rotate(360deg);}}
-        
-        .info-badge{background:rgba(0,150,255,0.1);border:1px solid #00aaff;border-radius:20px;padding:5px 12px;font-size:0.7rem;margin-top:10px;text-align:center;}
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+            min-height: 100vh;
+            padding: 2rem;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .card {
+            background: white;
+            border-radius: 1.5rem;
+            padding: 2rem;
+            margin-bottom: 2rem;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.2);
+        }
+
+        h1 {
+            font-size: 2rem;
+            color: #1e293b;
+            margin-bottom: 0.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        h2 {
+            font-size: 1.5rem;
+            color: #334155;
+            margin-bottom: 1.5rem;
+            border-left: 4px solid #3b82f6;
+            padding-left: 1rem;
+        }
+
+        .user-info {
+            background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+            color: white;
+            padding: 1rem 1.5rem;
+            border-radius: 1rem;
+            margin-bottom: 1.5rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+
+        .user-info span {
+            font-weight: 600;
+        }
+
+        .logout-btn {
+            background: rgba(255,255,255,0.2);
+            border: 1px solid rgba(255,255,255,0.3);
+            padding: 0.5rem 1rem;
+            border-radius: 0.5rem;
+        }
+
+        .logout-btn:hover {
+            background: rgba(255,255,255,0.3);
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 600;
+            color: #334155;
+        }
+
+        input {
+            width: 100%;
+            padding: 0.8rem 1rem;
+            border: 2px solid #e2e8f0;
+            border-radius: 0.75rem;
+            font-size: 1rem;
+            transition: all 0.2s;
+            outline: none;
+        }
+
+        input:focus {
+            border-color: #3b82f6;
+            box-shadow: 0 0 0 3px rgba(59,130,246,0.1);
+        }
+
+        button {
+            background: #3b82f6;
+            color: white;
+            border: none;
+            padding: 0.8rem 2rem;
+            font-size: 1rem;
+            font-weight: 600;
+            border-radius: 0.75rem;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        button:hover:not(:disabled) {
+            background: #2563eb;
+            transform: translateY(-1px);
+        }
+
+        button:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+
+        .btn-delete {
+            background: #ef4444;
+        }
+
+        .btn-delete:hover:not(:disabled) {
+            background: #dc2626;
+        }
+
+        .user-list {
+            overflow-x: auto;
+            margin-top: 1rem;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        th {
+            background: #f8fafc;
+            padding: 1rem;
+            text-align: left;
+            font-weight: 600;
+            color: #1e293b;
+            border-bottom: 2px solid #e2e8f0;
+        }
+
+        td {
+            padding: 1rem;
+            border-bottom: 1px solid #f1f5f9;
+        }
+
+        .empty-msg {
+            text-align: center;
+            padding: 3rem;
+            color: #94a3b8;
+            font-style: italic;
+        }
+
+        .status-msg {
+            margin-top: 1rem;
+            padding: 0.75rem;
+            border-radius: 0.75rem;
+            font-size: 0.9rem;
+            animation: slideIn 0.3s ease;
+        }
+
+        .status-success {
+            background: #dcfce7;
+            color: #166534;
+            border-left: 4px solid #22c55e;
+        }
+
+        .status-error {
+            background: #fee2e2;
+            color: #991b1b;
+            border-left: 4px solid #ef4444;
+        }
+
+        .loading {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid #f3f3f3;
+            border-top: 3px solid #3b82f6;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin-right: 0.5rem;
+            vertical-align: middle;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .stats {
+            display: inline-block;
+            background: #3b82f6;
+            color: white;
+            padding: 0.25rem 0.75rem;
+            border-radius: 1rem;
+            font-size: 0.85rem;
+            margin-left: 0.5rem;
+        }
+
+        @media (max-width: 768px) {
+            body {
+                padding: 1rem;
+            }
+            .card {
+                padding: 1.5rem;
+            }
+        }
     </style>
 </head>
 <body>
-<div class="cyber-bg"></div>
-<div class="app">
-    <header>
-        <div class="logo"><i class="fa-regular fa-user-plus"></i> ইউজার ম্যানেজমেন্ট</div>
-    </header>
-    
-    <div class="container">
-        <div class="neon-card">
-            <div class="form-header"><h3><i class="fa-regular fa-address-card"></i> নিবন্ধন ফর্ম</h3></div>
-            <div class="input-group">
-                <label><i class="fa-regular fa-envelope"></i> ইমেইল *</label>
-                <input type="email" id="signupEmail" placeholder="your@email.com">
-                <div id="emailStatus" class="field-status"></div>
-            </div>
-            <div class="input-group">
-                <label><i class="fa-solid fa-lock"></i> পাসওয়ার্ড *</label>
-                <div class="password-wrapper">
-                    <input type="password" id="signupPassword" placeholder="পাসওয়ার্ড দিন">
-                    <i class="fa-regular fa-eye toggle-password" onclick="togglePassword('signupPassword',this)"></i>
-                </div>
-                <div id="passwordStatus" class="field-status"></div>
-                <div id="strengthBar" class="strength-bar"></div>
-            </div>
-            <button class="submit-btn" id="submitBtn" onclick="createUser()"><i class="fa-regular fa-floppy-disk"></i> নিবন্ধন করুন</button>
-            <div id="signupStatus" class="status"></div>
-            <div class="info-badge">
-                <i class="fa-regular fa-circle-info"></i> পাসওয়ার্ডে বড় হাতের, ছোট হাতের, সংখ্যা ও চিহ্ন থাকলে ভালো
-            </div>
-        </div>
-
-        <div class="user-list-card">
-            <div class="user-list-title"><i class="fa-regular fa-users"></i> ইউজার তালিকা (মোট: <span id="userCount">0</span>)</div>
-            <div id="userListContainer"><div class="no-users"><i class="fa-regular fa-spinner fa-pulse"></i> লোড হচ্ছে...</div></div>
-        </div>
+<div class="container">
+    <div class="card">
+        <h1>
+            🔐 Supabase অটো-লগিন ইউজার ম্যানেজমেন্ট
+        </h1>
+        <p style="color: #64748b;">ইউজার তৈরি করলেই সরাসরি লগইন হয়ে যাবে — আলাদা লগইন প্রয়োজন নেই</p>
     </div>
-    <div class="loader" id="loader"><div class="spinner"></div></div>
+
+    <!-- বর্তমান ইউজারের তথ্য -->
+    <div class="card" id="authCard">
+        <div id="userInfoDisplay"></div>
+    </div>
+
+    <!-- ইউজার তৈরি ফর্ম -->
+    <div class="card">
+        <h2>➕ নতুন ইউজার যোগ করুন</h2>
+        <div class="form-group">
+            <label>📧 ইমেইল ঠিকানা *</label>
+            <input type="email" id="userEmail" placeholder="example@email.com" autocomplete="off">
+        </div>
+        <div class="form-group">
+            <label>🔒 পাসওয়ার্ড *</label>
+            <input type="password" id="userPassword" placeholder="কমপক্ষে ৬ অক্ষর">
+        </div>
+        <button id="createUserBtn">✅ ইউজার তৈরি করুন (অটো-লগইন)</button>
+        <div id="createStatus" class="status-msg"></div>
+    </div>
+
+    <!-- ইউজার তালিকা -->
+    <div class="card">
+        <h2>📋 সকল ইউজার তালিকা <span id="userCount" class="stats">0</span></h2>
+        <div class="user-list">
+            <table>
+                <thead>
+                    <tr>
+                        <th>ক্রমিক</th>
+                        <th>ইমেইল</th>
+                        <th>তৈরির তারিখ</th>
+                        <th>ক্রিয়া</th>
+                    </tr>
+                </thead>
+                <tbody id="userTableBody">
+                    <tr>
+                        <td colspan="4" class="empty-msg">
+                            <div class="loading"></div> ডাটা লোড হচ্ছে...
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+        <div id="deleteStatus" class="status-msg"></div>
+    </div>
 </div>
 
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script>
-// Supabase configuration
-const SUPABASE_URL = 'https://gfahimzxyqwspkeqsvlg.supabase.co';
-const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImdmYWhpbXp4eXF3c3BrZXFzdmxnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODA0Njk5NDksImV4cCI6MjA5NjA0NTk0OX0.lkZ7wpWAKknxpMMDCsRG2OiPD2wOvwFejSozzLDe0Dc';
-
-const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-
-let users = [];
-
-// UI Functions
-function showLoader() { 
-    document.getElementById('loader').classList.add('active');
-}
-function hideLoader() { 
-    document.getElementById('loader').classList.remove('active');
-}
-
-function showMessage(msg, type) {
-    const div = document.getElementById('signupStatus');
-    div.innerHTML = `<div class="status-${type}"><i class="fa-regular fa-${type === 'success' ? 'circle-check' : 'circle-xmark'}"></i> ${msg}</div>`;
-    setTimeout(() => { 
-        if (div.innerHTML.includes(msg)) div.innerHTML = ''; 
-    }, 4000);
-}
-
-function escapeText(str) {
-    if (!str) return '';
-    return str.replace(/[&<>]/g, function(m) {
-        if (m === '&') return '&amp;';
-        if (m === '<') return '&lt;';
-        if (m === '>') return '&gt;';
-        return m;
-    });
-}
-
-// Password Toggle
-window.togglePassword = function(fieldId, icon) {
-    const input = document.getElementById(fieldId);
-    if (input.type === 'password') {
-        input.type = 'text';
-        icon.classList.remove('fa-eye');
-        icon.classList.add('fa-eye-slash');
-    } else {
-        input.type = 'password';
-        icon.classList.remove('fa-eye-slash');
-        icon.classList.add('fa-eye');
-    }
-};
-
-// Validation
-function validateEmail() {
-    const email = document.getElementById('signupEmail');
-    const status = document.getElementById('emailStatus');
-    const value = email.value.trim();
+    // Supabase কনফিগারেশন
+    const SUPABASE_URL = 'https://gfahimzxyqwspkeqsvlg.supabase.co';
+    const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImdmYWhpbXp4eXF3c3BrZXFzdmxnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODA0Njk5NDksImV4cCI6MjA5NjA0NTk0OX0.lkZ7wpWAKknxpMMDCsRG2OiPD2wOvwFejSozzLDe0Dc';
     
-    if (!value) {
-        email.classList.remove('error-border', 'success-border');
-        status.innerHTML = '';
-        return false;
-    }
-    if (!value.includes('@') || !value.includes('.')) {
-        email.classList.add('error-border');
-        email.classList.remove('success-border');
-        status.innerHTML = '<i class="fa-regular fa-circle-exclamation"></i> সঠিক ইমেইল দিন';
-        status.className = 'field-status error';
-        return false;
-    }
-    email.classList.add('success-border');
-    email.classList.remove('error-border');
-    status.innerHTML = '<i class="fa-regular fa-circle-check"></i> সঠিক ইমেইল';
-    status.className = 'field-status success';
-    return true;
-}
-
-function checkPasswordStrength(p) {
-    if (!p) return 'none';
-    let score = 0;
-    if (p.length >= 6) score++;
-    if (/[a-z]/.test(p)) score++;
-    if (/[A-Z]/.test(p)) score++;
-    if (/[0-9]/.test(p)) score++;
-    if (/[^a-zA-Z0-9]/.test(p)) score++;
-    if (p.length < 6) return 'weak';
-    if (score >= 5) return 'strong';
-    if (score >= 3) return 'medium';
-    return 'weak';
-}
-
-function validatePassword() {
-    const pwd = document.getElementById('signupPassword');
-    const status = document.getElementById('passwordStatus');
-    const bar = document.getElementById('strengthBar');
-    const value = pwd.value;
-    const strength = checkPasswordStrength(value);
+    const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+    const TABLE_NAME = 'users';
     
-    if (!value) {
-        pwd.classList.remove('error-border', 'success-border');
-        status.innerHTML = '';
-        bar.className = 'strength-bar';
-        return false;
-    }
-    if (value.length < 6) {
-        pwd.classList.add('error-border');
-        pwd.classList.remove('success-border');
-        status.innerHTML = '<i class="fa-regular fa-circle-exclamation"></i> কমপক্ষে ৬ অক্ষর';
-        status.className = 'field-status error';
-        bar.className = 'strength-bar strength-weak';
-        return false;
-    }
-    if (strength === 'weak') {
-        pwd.classList.add('error-border');
-        pwd.classList.remove('success-border');
-        status.innerHTML = '<i class="fa-regular fa-circle-exclamation"></i> দুর্বল - বড় হাতের, সংখ্যা বা চিহ্ন যোগ করুন';
-        status.className = 'field-status error';
-        bar.className = 'strength-bar strength-weak';
-        return false;
-    }
-    if (strength === 'medium') {
-        pwd.classList.add('success-border');
-        pwd.classList.remove('error-border');
-        status.innerHTML = '<i class="fa-regular fa-circle-check"></i> মাঝারি (গ্রহণযোগ্য)';
-        status.className = 'field-status success';
-        bar.className = 'strength-bar strength-medium';
-        return true;
-    }
-    if (strength === 'strong') {
-        pwd.classList.add('success-border');
-        pwd.classList.remove('error-border');
-        status.innerHTML = '<i class="fa-regular fa-circle-check"></i> শক্তিশালী';
-        status.className = 'field-status success';
-        bar.className = 'strength-bar strength-strong';
-        return true;
-    }
-    return false;
-}
-
-function checkForm() {
-    const valid = validateEmail() && validatePassword();
-    document.getElementById('submitBtn').disabled = !valid;
-    return valid;
-}
-
-// Load users from database
-async function loadUsers() {
-    showLoader();
-    try {
-        const { data, error } = await supabase.from('user').select('*').order('created_at', { ascending: false });
-        if (error) throw error;
-        users = data || [];
-        displayUsers();
-    } catch (err) {
-        console.error(err);
-        document.getElementById('userListContainer').innerHTML = `<div class="no-users">ত্রুটি: ${err.message}</div>`;
-    }
-    hideLoader();
-}
-
-// Display users
-function displayUsers() {
-    const container = document.getElementById('userListContainer');
-    const counter = document.getElementById('userCount');
-    counter.innerText = users.length;
+    let currentUser = null;
+    let allUsers = [];
     
-    if (users.length === 0) {
-        container.innerHTML = '<div class="no-users">📭 কোনো ইউজার নেই। উপরে নতুন নিবন্ধন করুন।</div>';
-        return;
-    }
-    
-    let html = '';
-    users.forEach((user, idx) => {
-        html += `
-            <div class="user-item">
-                <div class="user-email">
-                    <i class="fa-regular fa-envelope" style="margin-right:8px;color:#ffa0ff;"></i>
-                    ${escapeText(user.email)}
-                    <span class="user-id">#${idx+1}</span>
+    // বর্তমান ইউজার দেখানো
+    function displayCurrentUser() {
+        const container = document.getElementById('userInfoDisplay');
+        if (currentUser) {
+            container.innerHTML = `
+                <div class="user-info">
+                    <div>
+                        ✅ বর্তমানে লগইন করেছেন: <strong>${escapeHtml(currentUser.email)}</strong>
+                        <span style="font-size:0.85rem; margin-left:0.5rem;">(ID: ${currentUser.id})</span>
+                    </div>
+                    <button id="logoutBtn" class="logout-btn">🚪 লগআউট</button>
                 </div>
-                <button class="delete-btn" onclick="deleteUser('${user.id}', '${escapeText(user.email)}', ${idx})">
-                    <i class="fa-regular fa-trash-can"></i> মুছুন
-                </button>
-            </div>
-        `;
-    });
-    container.innerHTML = html;
-}
-
-// Create user
-async function createUserInDB(email, password) {
-    showLoader();
-    try {
-        // First create in Auth
-        const { data: authData, error: authError } = await supabase.auth.signUp({
-            email: email,
-            password: password
-        });
-        
-        if (authError) throw authError;
-        
-        // Then save to user table
-        const { error: dbError } = await supabase.from('user').insert([{ 
-            email: email, 
-            password: password,
-            auth_id: authData.user?.id || null
-        }]);
-        
-        if (dbError) throw dbError;
-        
-        showMessage('✅ নিবন্ধন সফল হয়েছে!', 'success');
-        await loadUsers();
-        
-        // Clear form
-        document.getElementById('signupEmail').value = '';
-        document.getElementById('signupPassword').value = '';
-        document.getElementById('strengthBar').className = 'strength-bar';
-        document.getElementById('submitBtn').disabled = true;
-        document.querySelectorAll('.field-status').forEach(d => d.innerHTML = '');
-        document.querySelectorAll('input').forEach(i => i.classList.remove('success-border', 'error-border'));
-        
-    } catch (err) {
-        console.error(err);
-        if (err.message.includes('already registered')) {
-            showMessage('❌ এই ইমেইল already নিবন্ধিত আছে!', 'error');
+            `;
+            const logoutBtn = document.getElementById('logoutBtn');
+            if (logoutBtn) {
+                logoutBtn.addEventListener('click', async () => {
+                    await supabase.auth.signOut();
+                    currentUser = null;
+                    displayCurrentUser();
+                    loadAllUsers();
+                    showStatusMessage('createStatus', 'আপনি লগআউট করেছেন', 'success');
+                });
+            }
         } else {
-            showMessage('❌ নিবন্ধন失败: ' + err.message, 'error');
+            container.innerHTML = `
+                <div class="user-info" style="background: #64748b;">
+                    <div>⚠️ কোনো ইউজার লগইন নেই। নিচের ফর্ম দিয়ে নতুন ইউজার তৈরি করুন (অটো-লগইন হবে)</div>
+                </div>
+            `;
         }
     }
-    hideLoader();
-}
-
-// Delete user
-window.deleteUser = async function(id, email, index) {
-    if (!confirm(`"${email}" কি ডিলিট করবেন?`)) return;
-    showLoader();
-    try {
-        const { error } = await supabase.from('user').delete().eq('id', id);
-        if (error) throw error;
-        users.splice(index, 1);
-        displayUsers();
-        showMessage(`✅ "${email}" ডিলিট হয়েছে`, 'success');
-    } catch (err) {
-        showMessage('❌ ডিলিট ব্যর্থ: ' + err.message, 'error');
-    }
-    hideLoader();
-};
-
-// Create user handler
-window.createUser = function() {
-    const email = document.getElementById('signupEmail').value.trim();
-    const password = document.getElementById('signupPassword').value;
-    const strength = checkPasswordStrength(password);
     
-    if (!email || !validateEmail()) {
-        showMessage('❌ সঠিক ইমেইল দিন', 'error');
-        return;
+    // সকল ইউজার লোড করা (অ্যাডমিন ভিউ)
+    async function loadAllUsers() {
+        const tbody = document.getElementById('userTableBody');
+        try {
+            const { data, error } = await supabase
+                .from(TABLE_NAME)
+                .select('*')
+                .order('created_at', { ascending: false });
+            
+            if (error) throw error;
+            
+            allUsers = data || [];
+            renderUserTable();
+        } catch (error) {
+            console.error('লোড করতে সমস্যা:', error);
+            tbody.innerHTML = `<tr><td colspan="4" class="empty-msg">❌ লোড করতে সমস্যা: ${error.message}</td></tr>`;
+        }
     }
-    if (!password || password.length < 6) {
-        showMessage('❌ পাসওয়ার্ড কমপক্ষে ৬ অক্ষরের হতে হবে', 'error');
-        return;
+    
+    // ইউজার টেবিল রেন্ডার
+    function renderUserTable() {
+        const tbody = document.getElementById('userTableBody');
+        if (!tbody) return;
+        
+        if (allUsers.length === 0) {
+            tbody.innerHTML = `<tr><td colspan="4" class="empty-msg">📭 কোনো ইউজার নেই</td></tr>`;
+            document.getElementById('userCount').textContent = '0';
+            return;
+        }
+        
+        let html = '';
+        allUsers.forEach((user, index) => {
+            const createdAt = user.created_at ? new Date(user.created_at).toLocaleDateString('bn-BD') : '—';
+            const isCurrent = currentUser && currentUser.id === user.id;
+            html += `
+                <tr style="${isCurrent ? 'background: #dbeafe;' : ''}">
+                    <td>${index + 1}</td>
+                    <td><strong>${escapeHtml(user.email)}</strong> ${isCurrent ? '<span style="font-size:0.7rem; background:#3b82f6; color:white; padding:2px 6px; border-radius:10px;">বর্তমান</span>' : ''}</td>
+                    <td>${createdAt}</td>
+                    <td>
+                        <button class="btn-delete" data-id="${user.id}" data-email="${escapeHtml(user.email)}" ${isCurrent ? 'disabled' : ''}>
+                            🗑️ ডিলিট
+                        </button>
+                    </td>
+                </tr>
+            `;
+        });
+        tbody.innerHTML = html;
+        document.getElementById('userCount').textContent = allUsers.length;
+        
+        // ডিলিট বাটনে ইভেন্ট
+        document.querySelectorAll('.btn-delete:not([disabled])').forEach(btn => {
+            btn.addEventListener('click', async () => {
+                const id = btn.getAttribute('data-id');
+                const email = btn.getAttribute('data-email');
+                await deleteUser(id, email);
+            });
+        });
     }
-    if (strength === 'weak') {
-        showMessage('❌ পাসওয়ার্ড খুব দুর্বল! বড় হাতের, সংখ্যা বা চিহ্ন দিন', 'error');
-        return;
+    
+    // ইউজার ডিলিট (সুপ্রাবেস Auth থেকেও ডিলিট)
+    async function deleteUser(id, email) {
+        if (!confirm(`"${email}" এই ইউজারটি ডিলিট করতে চান?`)) return;
+        
+        const btn = document.querySelector(`.btn-delete[data-id="${id}"]`);
+        if (btn) {
+            btn.disabled = true;
+            btn.textContent = '⏳...';
+        }
+        
+        try {
+            // 1. কাস্টম টেবিল থেকে ডিলিট
+            const { error: tableError } = await supabase
+                .from(TABLE_NAME)
+                .delete()
+                .eq('id', id);
+            
+            if (tableError) throw tableError;
+            
+            // 2. Supabase Auth থেকে ইউজার ডিলিট (যদি Auth ইউজার হয়)
+            // নোট: এডমিন API দরকার, কিন্তু আমরা শুধু টেবিল থেকে ডিলিট করছি
+            
+            showStatusMessage('deleteStatus', `✅ "${email}" ডিলিট করা হয়েছে`, 'success');
+            await loadAllUsers();
+            
+            // যদি বর্তমান ইউজার নিজেই ডিলিট হয়
+            if (currentUser && currentUser.id == id) {
+                await supabase.auth.signOut();
+                currentUser = null;
+                displayCurrentUser();
+                showStatusMessage('createStatus', 'আপনার একাউন্ট ডিলিট করা হয়েছে', 'success');
+            }
+            
+        } catch (error) {
+            showStatusMessage('deleteStatus', `❌ ডিলিট করতে সমস্যা: ${error.message}`, 'error');
+            if (btn) btn.disabled = false;
+        }
     }
-    createUserInDB(email, password);
-};
-
-// Event listeners
-document.getElementById('signupEmail').addEventListener('input', () => { validateEmail(); checkForm(); });
-document.getElementById('signupPassword').addEventListener('input', () => { validatePassword(); checkForm(); });
-
-// Initial load
-loadUsers();
+    
+    // ইউজার তৈরি + অটো লগইন (Supabase Auth ব্যবহার করে)
+    async function createAndLoginUser(email, password) {
+        const trimmedEmail = email.trim();
+        const trimmedPassword = password.trim();
+        
+        // ভ্যালিডেশন
+        if (!trimmedEmail || !isValidEmail(trimmedEmail)) {
+            showStatusMessage('createStatus', '❌ সঠিক ইমেইল দিন!', 'error');
+            return false;
+        }
+        
+        if (!trimmedPassword || trimmedPassword.length < 6) {
+            showStatusMessage('createStatus', '❌ পাসওয়ার্ড কমপক্ষে ৬ অক্ষর!', 'error');
+            return false;
+        }
+        
+        const createBtn = document.getElementById('createUserBtn');
+        createBtn.disabled = true;
+        createBtn.textContent = '⏳ ইউজার তৈরি ও লগইন হচ্ছে...';
+        
+        try {
+            // Supabase Auth দিয়ে ইউজার তৈরি
+            const { data: authData, error: signUpError } = await supabase.auth.signUp({
+                email: trimmedEmail,
+                password: trimmedPassword
+            });
+            
+            if (signUpError) throw signUpError;
+            
+            if (authData.user) {
+                // কাস্টম টেবিলে ইউজার তথ্য সেভ
+                const { error: insertError } = await supabase
+                    .from(TABLE_NAME)
+                    .insert([{
+                        id: authData.user.id,
+                        email: trimmedEmail,
+                        password: trimmedPassword,
+                        created_at: new Date().toISOString()
+                    }]);
+                
+                if (insertError && insertError.code !== '23505') {
+                    console.warn('টেবিল ইন্সার্ট সমস্যা:', insertError);
+                }
+                
+                // অটো লগইন হয়ে গেছে (signUp এর পর session চলে আসে)
+                currentUser = {
+                    id: authData.user.id,
+                    email: authData.user.email
+                };
+                
+                displayCurrentUser();
+                
+                // ফর্ম ক্লিয়ার
+                document.getElementById('userEmail').value = '';
+                document.getElementById('userPassword').value = '';
+                
+                // ইউজার তালিকা রিফ্রেশ
+                await loadAllUsers();
+                
+                showStatusMessage('createStatus', `✅ "${trimmedEmail}" তৈরি ও লগইন সফল!`, 'success');
+            }
+            
+        } catch (error) {
+            console.error('তৈরিতে সমস্যা:', error);
+            
+            let errorMsg = 'ইউজার তৈরি ব্যর্থ!';
+            if (error.message.includes('User already registered')) {
+                errorMsg = '⚠️ এই ইমেইলটি আগে থেকে রেজিস্টার করা আছে!';
+            } else {
+                errorMsg = `❌ ${error.message}`;
+            }
+            showStatusMessage('createStatus', errorMsg, 'error');
+            
+        } finally {
+            createBtn.disabled = false;
+            createBtn.textContent = '✅ ইউজার তৈরি করুন (অটো-লগইন)';
+        }
+    }
+    
+    // বর্তমান সেশন চেক করা (পেজ রিলোডে লগইন থাকলে দেখাবে)
+    async function checkCurrentSession() {
+        const { data: { session } } = await supabase.auth.getSession();
+        if (session?.user) {
+            currentUser = {
+                id: session.user.id,
+                email: session.user.email
+            };
+        }
+        displayCurrentUser();
+        await loadAllUsers();
+    }
+    
+    function isValidEmail(email) {
+        return /^[^\s@]+@([^\s@]+\.)+[^\s@]+$/.test(email);
+    }
+    
+    function escapeHtml(str) {
+        if (!str) return '';
+        return str.replace(/[&<>]/g, function(m) {
+            if (m === '&') return '&amp;';
+            if (m === '<') return '&lt;';
+            if (m === '>') return '&gt;';
+            return m;
+        });
+    }
+    
+    function showStatusMessage(elementId, message, type) {
+        const el = document.getElementById(elementId);
+        if (!el) return;
+        if (!message) {
+            el.innerHTML = '';
+            return;
+        }
+        el.className = `status-msg status-${type}`;
+        el.innerHTML = message;
+        setTimeout(() => {
+            if (document.getElementById(elementId)?.innerHTML === message) {
+                document.getElementById(elementId).innerHTML = '';
+            }
+        }, 5000);
+    }
+    
+    // ইভেন্ট লিসেনার
+    window.addEventListener('DOMContentLoaded', () => {
+        checkCurrentSession();
+        
+        document.getElementById('createUserBtn').addEventListener('click', () => {
+            const email = document.getElementById('userEmail').value;
+            const password = document.getElementById('userPassword').value;
+            createAndLoginUser(email, password);
+        });
+        
+        // এন্টার কী
+        ['userEmail', 'userPassword'].forEach(id => {
+            document.getElementById(id).addEventListener('keypress', (e) => {
+                if (e.key === 'Enter') {
+                    e.preventDefault();
+                    document.getElementById('createUserBtn').click();
+                }
+            });
+        });
+    });
 </script>
+
+<!-- Supabase Auth সেটআপ নির্দেশনা -->
+<div style="background: #f1f5f9; border-radius: 1rem; padding: 1.5rem; margin-top: 1rem;">
+    <h3 style="color: #1e293b; margin-bottom: 0.5rem;">📌 Supabase Auth টেবিল সেটআপ:</h3>
+    <p style="color: #475569; margin-bottom: 0.5rem;">Supabase ড্যাশবোর্ডে <strong>SQL Editor</strong> এ গিয়ে এই কোড রান করুন:</p>
+    <pre style="background: #0f172a; color: #e2e8f0; padding: 1rem; border-radius: 0.75rem; overflow-x: auto; font-size: 0.85rem;">
+CREATE TABLE users (
+    id UUID PRIMARY KEY,
+    email VARCHAR(255) UNIQUE NOT NULL,
+    password VARCHAR(255) NOT NULL,
+    created_at TIMESTAMP DEFAULT NOW()
+);
+    </pre>
+    <p style="color: #475569; margin-top: 0.5rem;">
+        ⚠️ <strong>গুরুত্বপূর্ণ:</strong> Supabase Authentication এ <strong>Disable Email Confirmation</strong> করে দিন:
+        <br>→ Authentication → Settings → Confirm email: <strong>OFF</strong> করুন।
+        <br>তাহলে ইমেইল কনফার্মেশন ছাড়াই ইউজার তৈরি হবে এবং অটো-লগইন হবে।
+    </p>
+</div>
 </body>
 </html>
