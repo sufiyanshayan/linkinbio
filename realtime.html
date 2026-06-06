@@ -186,18 +186,17 @@ const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBh
 // Initialize Supabase Client
 const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-// Table name - আপনাকে আপনার টেবিলের নাম এখানে দিতে হবে
-// উদাহরণ: 'user_profiles' বা 'links' বা 'settings'
-const TABLE_NAME = 'user_profile';  // <- এই নাম আপনার ডাটাবেস টেবিল অনুযায়ী পরিবর্তন করুন
+// Table name: linkinbi0
+const TABLE_NAME = 'linkinbi0';
 
 // Function to update website data from Supabase
 async function loadAndRealtimeUpdate() {
   try {
-    // প্রথমে existing ডাটা লোড করুন
+    // প্রথমে existing ডাটা লোড করুন (id = 1 ধরে)
     const { data, error } = await supabase
       .from(TABLE_NAME)
       .select('*')
-      .eq('id', 1)  // আপনি কোন row আপডেট করতে চান সেটার id দিন
+      .eq('id', 1)
       .single();
     
     if (error) {
@@ -211,14 +210,14 @@ async function loadAndRealtimeUpdate() {
     
     // Realtime subscription - যেকোনো পরিবর্তন সাথে সাথে আপডেট হবে
     supabase
-      .channel('profile_changes')
+      .channel('linkinbi0_changes')
       .on(
         'postgres_changes',
         {
           event: '*',  // INSERT, UPDATE, DELETE সব ইভেন্ট ধরবে
           schema: 'public',
           table: TABLE_NAME,
-          filter: 'id=eq.1'  // শুধুমাত্র নির্দিষ্ট row এর পরিবর্তন দেখবে
+          filter: 'id=eq.1'  // শুধুমাত্র id=1 এই রো এর পরিবর্তন দেখবে
         },
         (payload) => {
           console.log('Realtime update received:', payload);
