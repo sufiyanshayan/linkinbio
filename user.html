@@ -1,595 +1,452 @@
 <!DOCTYPE html>
 <html lang="bn">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Supabase Auth - ডাইরেক্ট ইউজার তৈরি</title>
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-        }
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ইউজার ম্যানেজমেন্ট সিস্টেম</title>
 
-        body {
-            background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
-            min-height: 100vh;
-            padding: 2rem;
-        }
+<!-- Google Font -->
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+Bengali:wght@400;700&display=swap" rel="stylesheet">
 
-        .container {
-            max-width: 1200px;
-            margin: 0 auto;
-        }
+<style>
+* {
+  box-sizing: border-box;
+}
 
-        .card {
-            background: white;
-            border-radius: 1.5rem;
-            padding: 2rem;
-            margin-bottom: 2rem;
-            box-shadow: 0 20px 40px rgba(0,0,0,0.2);
-        }
+html, body {
+  margin: 0;
+  padding: 0;
+  height: 100%;
+  font-family: "Noto Serif Bengali", serif;
+  background: #f7f7f7;
+  overflow-x: hidden;
+}
 
-        h1 {
-            font-size: 2rem;
-            color: #1e293b;
-            margin-bottom: 0.5rem;
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-        }
+.wrapper {
+  min-height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+}
 
-        h2 {
-            font-size: 1.5rem;
-            color: #334155;
-            margin-bottom: 1.5rem;
-            border-left: 4px solid #3b82f6;
-            padding-left: 1rem;
-        }
+.container {
+  width: 100%;
+  max-width: 450px;
+  padding: 16px;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
 
-        .user-info {
-            background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
-            color: white;
-            padding: 1rem 1.5rem;
-            border-radius: 1rem;
-            margin-bottom: 1.5rem;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            flex-wrap: wrap;
-            gap: 1rem;
-        }
+/* Header */
+.header {
+  margin-bottom: 16px;
+}
 
-        .user-info span {
-            font-weight: 600;
-        }
+.header h1 {
+  font-size: 24px;
+  color: #000;
+  margin-bottom: 4px;
+}
 
-        .logout-btn {
-            background: rgba(255,255,255,0.2);
-            border: 1px solid rgba(255,255,255,0.3);
-            padding: 0.5rem 1rem;
-            border-radius: 0.5rem;
-        }
+.header p {
+  font-size: 12px;
+  color: #555;
+}
 
-        .logout-btn:hover {
-            background: rgba(255,255,255,0.3);
-        }
+/* Form */
+.form-group {
+  margin-bottom: 12px;
+  text-align: left;
+}
 
-        .form-group {
-            margin-bottom: 1.5rem;
-        }
+.form-group label {
+  display: block;
+  font-size: 12px;
+  font-weight: 600;
+  margin-bottom: 4px;
+  color: #333;
+}
 
-        label {
-            display: block;
-            margin-bottom: 0.5rem;
-            font-weight: 600;
-            color: #334155;
-        }
+.form-group input {
+  width: 100%;
+  padding: 10px;
+  border: 1px solid #ddd;
+  border-radius: 12px;
+  font-size: 13px;
+  font-family: inherit;
+  transition: all 0.2s ease;
+}
 
-        input {
-            width: 100%;
-            padding: 0.8rem 1rem;
-            border: 2px solid #e2e8f0;
-            border-radius: 0.75rem;
-            font-size: 1rem;
-            transition: all 0.2s;
-            outline: none;
-        }
+.form-group input:focus {
+  outline: none;
+  border-color: #000;
+  box-shadow: 0 0 0 2px rgba(0,0,0,0.1);
+}
 
-        input:focus {
-            border-color: #3b82f6;
-            box-shadow: 0 0 0 3px rgba(59,130,246,0.1);
-        }
+/* Buttons */
+.btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 10px;
+  border-radius: 12px;
+  text-decoration: none;
+  background: #ffffff;
+  color: #000;
+  font-size: 13px;
+  font-weight: 500;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+  transition: all 0.2s ease;
+  border: none;
+  width: 100%;
+  cursor: pointer;
+  font-family: inherit;
+}
 
-        button {
-            background: #3b82f6;
-            color: white;
-            border: none;
-            padding: 0.8rem 2rem;
-            font-size: 1rem;
-            font-weight: 600;
-            border-radius: 0.75rem;
-            cursor: pointer;
-            transition: all 0.2s;
-        }
+.btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 18px rgba(0,0,0,0.12);
+}
 
-        button:hover:not(:disabled) {
-            background: #2563eb;
-            transform: translateY(-1px);
-        }
+.btn-primary {
+  background: #000;
+  color: white;
+}
 
-        button:disabled {
-            opacity: 0.6;
-            cursor: not-allowed;
-        }
+.btn-primary:hover {
+  background: #333;
+}
 
-        .btn-delete {
-            background: #ef4444;
-        }
+.btn-danger {
+  background: #dc2626;
+  color: white;
+  width: auto;
+  padding: 6px 12px;
+  font-size: 11px;
+}
 
-        .btn-delete:hover:not(:disabled) {
-            background: #dc2626;
-        }
+.btn-danger:hover {
+  background: #b91c1c;
+}
 
-        .user-list {
-            overflow-x: auto;
-            margin-top: 1rem;
-        }
+/* User List */
+.user-list-section {
+  margin-top: 20px;
+  text-align: left;
+  max-height: 400px;
+  overflow-y: auto;
+}
 
-        table {
-            width: 100%;
-            border-collapse: collapse;
-        }
+.user-list-section h3 {
+  font-size: 14px;
+  color: #333;
+  margin-bottom: 8px;
+  border-bottom: 1px solid #eee;
+  padding-bottom: 4px;
+}
 
-        th {
-            background: #f8fafc;
-            padding: 1rem;
-            text-align: left;
-            font-weight: 600;
-            color: #1e293b;
-            border-bottom: 2px solid #e2e8f0;
-        }
+.user-card {
+  background: #ffffff;
+  border-radius: 12px;
+  padding: 12px;
+  margin-bottom: 8px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+  transition: all 0.2s ease;
+}
 
-        td {
-            padding: 1rem;
-            border-bottom: 1px solid #f1f5f9;
-        }
+.user-card:hover {
+  transform: translateX(4px);
+  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+}
 
-        .empty-msg {
-            text-align: center;
-            padding: 3rem;
-            color: #94a3b8;
-            font-style: italic;
-        }
+.user-info h4 {
+  font-size: 13px;
+  font-weight: 700;
+  margin-bottom: 2px;
+  word-break: break-all;
+}
 
-        .status-msg {
-            margin-top: 1rem;
-            padding: 0.75rem;
-            border-radius: 0.75rem;
-            font-size: 0.9rem;
-            animation: slideIn 0.3s ease;
-        }
+.user-info p {
+  font-size: 10px;
+  color: #666;
+}
 
-        .status-success {
-            background: #dcfce7;
-            color: #166534;
-            border-left: 4px solid #22c55e;
-        }
+.empty-state {
+  text-align: center;
+  padding: 24px;
+  color: #999;
+  font-size: 12px;
+  background: white;
+  border-radius: 12px;
+}
 
-        .status-error {
-            background: #fee2e2;
-            color: #991b1b;
-            border-left: 4px solid #ef4444;
-        }
+/* Alert */
+.alert {
+  padding: 10px;
+  border-radius: 12px;
+  font-size: 12px;
+  display: none;
+  margin-bottom: 12px;
+}
 
-        .loading {
-            display: inline-block;
-            width: 20px;
-            height: 20px;
-            border: 3px solid #f3f3f3;
-            border-top: 3px solid #3b82f6;
-            border-radius: 50%;
-            animation: spin 1s linear infinite;
-            margin-right: 0.5rem;
-            vertical-align: middle;
-        }
+.alert.success {
+  background: #d4edda;
+  color: #155724;
+  display: block;
+}
 
-        @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
-        }
+.alert.error {
+  background: #f8d7da;
+  color: #721c24;
+  display: block;
+}
 
-        @keyframes slideIn {
-            from {
-                opacity: 0;
-                transform: translateY(-10px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
+.alert.info {
+  background: #d1ecf1;
+  color: #0c5460;
+  display: block;
+}
 
-        .stats {
-            display: inline-block;
-            background: #3b82f6;
-            color: white;
-            padding: 0.25rem 0.75rem;
-            border-radius: 1rem;
-            font-size: 0.85rem;
-            margin-left: 0.5rem;
-        }
+/* Footer */
+.footer {
+  margin-top: 16px;
+  font-size: 11px;
+  color: #555;
+  text-align: center;
+}
 
-        @media (max-width: 768px) {
-            body {
-                padding: 1rem;
-            }
-            .card {
-                padding: 1.5rem;
-            }
-        }
-    </style>
+.loading-spinner {
+  display: inline-block;
+  width: 12px;
+  height: 12px;
+  border: 2px solid #f3f3f3;
+  border-top: 2px solid #000;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+  margin-right: 8px;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+/* Stats */
+.stats {
+  background: #f0f0f0;
+  border-radius: 12px;
+  padding: 8px;
+  margin-bottom: 16px;
+  font-size: 12px;
+  text-align: center;
+  font-weight: 600;
+}
+</style>
 </head>
+
 <body>
-<div class="container">
-    <div class="card">
-        <h1>
-            🔐 Supabase অটো-লগিন ইউজার ম্যানেজমেন্ট
-        </h1>
-        <p style="color: #64748b;">ইউজার তৈরি করলেই সরাসরি লগইন হয়ে যাবে — আলাদা লগইন প্রয়োজন নেই</p>
+
+<div class="wrapper">
+  <div class="container">
+    <div class="header">
+      <h1>👥 ইউজার ম্যানেজমেন্ট</h1>
+      <p>Supabase - ইউজার তৈরি ও ডিলিট করুন</p>
     </div>
 
-    <!-- বর্তমান ইউজারের তথ্য -->
-    <div class="card" id="authCard">
-        <div id="userInfoDisplay"></div>
+    <div id="alert" class="alert"></div>
+
+    <div class="stats" id="stats">
+      মোট ইউজার: ০
     </div>
 
-    <!-- ইউজার তৈরি ফর্ম -->
-    <div class="card">
-        <h2>➕ নতুন ইউজার যোগ করুন</h2>
-        <div class="form-group">
-            <label>📧 ইমেইল ঠিকানা *</label>
-            <input type="email" id="userEmail" placeholder="example@email.com" autocomplete="off">
-        </div>
-        <div class="form-group">
-            <label>🔒 পাসওয়ার্ড *</label>
-            <input type="password" id="userPassword" placeholder="কমপক্ষে ৬ অক্ষর">
-        </div>
-        <button id="createUserBtn">✅ ইউজার তৈরি করুন (অটো-লগইন)</button>
-        <div id="createStatus" class="status-msg"></div>
+    <div class="form-group">
+      <label>📧 ইমেইল</label>
+      <input type="email" id="userEmail" placeholder="ইমেইল ঠিকানা">
     </div>
+    <div class="form-group">
+      <label>🔒 পাসওয়ার্ড</label>
+      <input type="password" id="userPassword" placeholder="পাসওয়ার্ড (কমপক্ষে ৬ অক্ষর)">
+    </div>
+    <button class="btn btn-primary" onclick="createUser()">➕ ইউজার তৈরি করুন</button>
 
-    <!-- ইউজার তালিকা -->
-    <div class="card">
-        <h2>📋 সকল ইউজার তালিকা <span id="userCount" class="stats">0</span></h2>
-        <div class="user-list">
-            <table>
-                <thead>
-                    <tr>
-                        <th>ক্রমিক</th>
-                        <th>ইমেইল</th>
-                        <th>তৈরির তারিখ</th>
-                        <th>ক্রিয়া</th>
-                    </tr>
-                </thead>
-                <tbody id="userTableBody">
-                    <tr>
-                        <td colspan="4" class="empty-msg">
-                            <div class="loading"></div> ডাটা লোড হচ্ছে...
-                        </td>
-                    </tr>
-                </tbody>
-            </table>
-        </div>
-        <div id="deleteStatus" class="status-msg"></div>
+    <div class="user-list-section">
+      <h3>📋 ইউজার লিস্ট (রিয়েলটাইম)</h3>
+      <div id="userListContainer">
+        <div class="empty-state">লোড হচ্ছে...</div>
+      </div>
     </div>
+  </div>
+
+  <div class="footer">
+    Copyright © 2026 MADE BY YOUR_NAME<br>All Rights Reserved.
+  </div>
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script>
-    // Supabase কনফিগারেশন
-    const SUPABASE_URL = 'https://gfahimzxyqwspkeqsvlg.supabase.co';
-    const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImdmYWhpbXp4eXF3c3BrZXFzdmxnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODA0Njk5NDksImV4cCI6MjA5NjA0NTk0OX0.lkZ7wpWAKknxpMMDCsRG2OiPD2wOvwFejSozzLDe0Dc';
+// Supabase Configuration
+const SUPABASE_URL = "https://gfahimzxyqwspkeqsvlg.supabase.co";
+const SUPABASE_SERVICE_ROLE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImdmYWhpbXp4eXF3c3BrZXFzdmxnIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc4MDQ2OTk0OSwiZXhwIjoyMDk2MDQ1OTQ5fQ.mbBpBl7BULh8dv6HYBAIrb4K_K4Ctx-SawWAc5uRSrg";
+
+// Admin client for user management (create/delete)
+const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY);
+
+let allUsers = [];
+let realtimeChannel = null;
+
+// Alert Functions
+function showAlert(message, type = 'success') {
+  const alertDiv = document.getElementById('alert');
+  alertDiv.textContent = message;
+  alertDiv.className = `alert ${type}`;
+  setTimeout(() => {
+    alertDiv.style.display = 'none';
+    alertDiv.className = 'alert';
+  }, 3000);
+}
+
+// Escape HTML
+function escapeHtml(str) {
+  if (!str) return '';
+  return str.replace(/[&<>]/g, function(m) {
+    if (m === '&') return '&amp;';
+    if (m === '<') return '&lt;';
+    if (m === '>') return '&gt;';
+    return m;
+  });
+}
+
+// Update stats
+function updateStats() {
+  const statsDiv = document.getElementById('stats');
+  statsDiv.innerHTML = `👥 মোট ইউজার: ${allUsers.length}`;
+}
+
+// Render User List
+function renderUsers() {
+  const container = document.getElementById('userListContainer');
+  
+  if (!allUsers || allUsers.length === 0) {
+    container.innerHTML = '<div class="empty-state">😕 কোন ইউজার নেই</div>';
+    updateStats();
+    return;
+  }
+
+  container.innerHTML = allUsers.map(user => `
+    <div class="user-card">
+      <div class="user-info">
+        <h4>${escapeHtml(user.email)}</h4>
+        <p>🆔 ${escapeHtml(user.id.substring(0, 12))}... | 📅 ${new Date(user.created_at).toLocaleDateString('bn-BD')}</p>
+      </div>
+      <button class="btn btn-danger" onclick="deleteUser('${user.id}')">🗑️ ডিলিট</button>
+    </div>
+  `).join('');
+  
+  updateStats();
+}
+
+// Load all users from Supabase Auth
+async function loadAllUsers() {
+  try {
+    const { data, error } = await supabase.auth.admin.listUsers();
     
-    const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-    const TABLE_NAME = 'users';
+    if (error) throw error;
     
-    let currentUser = null;
-    let allUsers = [];
-    
-    // বর্তমান ইউজার দেখানো
-    function displayCurrentUser() {
-        const container = document.getElementById('userInfoDisplay');
-        if (currentUser) {
-            container.innerHTML = `
-                <div class="user-info">
-                    <div>
-                        ✅ বর্তমানে লগইন করেছেন: <strong>${escapeHtml(currentUser.email)}</strong>
-                        <span style="font-size:0.85rem; margin-left:0.5rem;">(ID: ${currentUser.id})</span>
-                    </div>
-                    <button id="logoutBtn" class="logout-btn">🚪 লগআউট</button>
-                </div>
-            `;
-            const logoutBtn = document.getElementById('logoutBtn');
-            if (logoutBtn) {
-                logoutBtn.addEventListener('click', async () => {
-                    await supabase.auth.signOut();
-                    currentUser = null;
-                    displayCurrentUser();
-                    loadAllUsers();
-                    showStatusMessage('createStatus', 'আপনি লগআউট করেছেন', 'success');
-                });
-            }
-        } else {
-            container.innerHTML = `
-                <div class="user-info" style="background: #64748b;">
-                    <div>⚠️ কোনো ইউজার লগইন নেই। নিচের ফর্ম দিয়ে নতুন ইউজার তৈরি করুন (অটো-লগইন হবে)</div>
-                </div>
-            `;
-        }
-    }
-    
-    // সকল ইউজার লোড করা (অ্যাডমিন ভিউ)
-    async function loadAllUsers() {
-        const tbody = document.getElementById('userTableBody');
-        try {
-            const { data, error } = await supabase
-                .from(TABLE_NAME)
-                .select('*')
-                .order('created_at', { ascending: false });
-            
-            if (error) throw error;
-            
-            allUsers = data || [];
-            renderUserTable();
-        } catch (error) {
-            console.error('লোড করতে সমস্যা:', error);
-            tbody.innerHTML = `<tr><td colspan="4" class="empty-msg">❌ লোড করতে সমস্যা: ${error.message}</td></tr>`;
-        }
-    }
-    
-    // ইউজার টেবিল রেন্ডার
-    function renderUserTable() {
-        const tbody = document.getElementById('userTableBody');
-        if (!tbody) return;
-        
-        if (allUsers.length === 0) {
-            tbody.innerHTML = `<tr><td colspan="4" class="empty-msg">📭 কোনো ইউজার নেই</td></tr>`;
-            document.getElementById('userCount').textContent = '0';
-            return;
-        }
-        
-        let html = '';
-        allUsers.forEach((user, index) => {
-            const createdAt = user.created_at ? new Date(user.created_at).toLocaleDateString('bn-BD') : '—';
-            const isCurrent = currentUser && currentUser.id === user.id;
-            html += `
-                <tr style="${isCurrent ? 'background: #dbeafe;' : ''}">
-                    <td>${index + 1}</td>
-                    <td><strong>${escapeHtml(user.email)}</strong> ${isCurrent ? '<span style="font-size:0.7rem; background:#3b82f6; color:white; padding:2px 6px; border-radius:10px;">বর্তমান</span>' : ''}</td>
-                    <td>${createdAt}</td>
-                    <td>
-                        <button class="btn-delete" data-id="${user.id}" data-email="${escapeHtml(user.email)}" ${isCurrent ? 'disabled' : ''}>
-                            🗑️ ডিলিট
-                        </button>
-                    </td>
-                </tr>
-            `;
-        });
-        tbody.innerHTML = html;
-        document.getElementById('userCount').textContent = allUsers.length;
-        
-        // ডিলিট বাটনে ইভেন্ট
-        document.querySelectorAll('.btn-delete:not([disabled])').forEach(btn => {
-            btn.addEventListener('click', async () => {
-                const id = btn.getAttribute('data-id');
-                const email = btn.getAttribute('data-email');
-                await deleteUser(id, email);
-            });
-        });
-    }
-    
-    // ইউজার ডিলিট (সুপ্রাবেস Auth থেকেও ডিলিট)
-    async function deleteUser(id, email) {
-        if (!confirm(`"${email}" এই ইউজারটি ডিলিট করতে চান?`)) return;
-        
-        const btn = document.querySelector(`.btn-delete[data-id="${id}"]`);
-        if (btn) {
-            btn.disabled = true;
-            btn.textContent = '⏳...';
-        }
-        
-        try {
-            // 1. কাস্টম টেবিল থেকে ডিলিট
-            const { error: tableError } = await supabase
-                .from(TABLE_NAME)
-                .delete()
-                .eq('id', id);
-            
-            if (tableError) throw tableError;
-            
-            // 2. Supabase Auth থেকে ইউজার ডিলিট (যদি Auth ইউজার হয়)
-            // নোট: এডমিন API দরকার, কিন্তু আমরা শুধু টেবিল থেকে ডিলিট করছি
-            
-            showStatusMessage('deleteStatus', `✅ "${email}" ডিলিট করা হয়েছে`, 'success');
-            await loadAllUsers();
-            
-            // যদি বর্তমান ইউজার নিজেই ডিলিট হয়
-            if (currentUser && currentUser.id == id) {
-                await supabase.auth.signOut();
-                currentUser = null;
-                displayCurrentUser();
-                showStatusMessage('createStatus', 'আপনার একাউন্ট ডিলিট করা হয়েছে', 'success');
-            }
-            
-        } catch (error) {
-            showStatusMessage('deleteStatus', `❌ ডিলিট করতে সমস্যা: ${error.message}`, 'error');
-            if (btn) btn.disabled = false;
-        }
-    }
-    
-    // ইউজার তৈরি + অটো লগইন (Supabase Auth ব্যবহার করে)
-    async function createAndLoginUser(email, password) {
-        const trimmedEmail = email.trim();
-        const trimmedPassword = password.trim();
-        
-        // ভ্যালিডেশন
-        if (!trimmedEmail || !isValidEmail(trimmedEmail)) {
-            showStatusMessage('createStatus', '❌ সঠিক ইমেইল দিন!', 'error');
-            return false;
-        }
-        
-        if (!trimmedPassword || trimmedPassword.length < 6) {
-            showStatusMessage('createStatus', '❌ পাসওয়ার্ড কমপক্ষে ৬ অক্ষর!', 'error');
-            return false;
-        }
-        
-        const createBtn = document.getElementById('createUserBtn');
-        createBtn.disabled = true;
-        createBtn.textContent = '⏳ ইউজার তৈরি ও লগইন হচ্ছে...';
-        
-        try {
-            // Supabase Auth দিয়ে ইউজার তৈরি
-            const { data: authData, error: signUpError } = await supabase.auth.signUp({
-                email: trimmedEmail,
-                password: trimmedPassword
-            });
-            
-            if (signUpError) throw signUpError;
-            
-            if (authData.user) {
-                // কাস্টম টেবিলে ইউজার তথ্য সেভ
-                const { error: insertError } = await supabase
-                    .from(TABLE_NAME)
-                    .insert([{
-                        id: authData.user.id,
-                        email: trimmedEmail,
-                        password: trimmedPassword,
-                        created_at: new Date().toISOString()
-                    }]);
-                
-                if (insertError && insertError.code !== '23505') {
-                    console.warn('টেবিল ইন্সার্ট সমস্যা:', insertError);
-                }
-                
-                // অটো লগইন হয়ে গেছে (signUp এর পর session চলে আসে)
-                currentUser = {
-                    id: authData.user.id,
-                    email: authData.user.email
-                };
-                
-                displayCurrentUser();
-                
-                // ফর্ম ক্লিয়ার
-                document.getElementById('userEmail').value = '';
-                document.getElementById('userPassword').value = '';
-                
-                // ইউজার তালিকা রিফ্রেশ
-                await loadAllUsers();
-                
-                showStatusMessage('createStatus', `✅ "${trimmedEmail}" তৈরি ও লগইন সফল!`, 'success');
-            }
-            
-        } catch (error) {
-            console.error('তৈরিতে সমস্যা:', error);
-            
-            let errorMsg = 'ইউজার তৈরি ব্যর্থ!';
-            if (error.message.includes('User already registered')) {
-                errorMsg = '⚠️ এই ইমেইলটি আগে থেকে রেজিস্টার করা আছে!';
-            } else {
-                errorMsg = `❌ ${error.message}`;
-            }
-            showStatusMessage('createStatus', errorMsg, 'error');
-            
-        } finally {
-            createBtn.disabled = false;
-            createBtn.textContent = '✅ ইউজার তৈরি করুন (অটো-লগইন)';
-        }
-    }
-    
-    // বর্তমান সেশন চেক করা (পেজ রিলোডে লগইন থাকলে দেখাবে)
-    async function checkCurrentSession() {
-        const { data: { session } } = await supabase.auth.getSession();
-        if (session?.user) {
-            currentUser = {
-                id: session.user.id,
-                email: session.user.email
-            };
-        }
-        displayCurrentUser();
-        await loadAllUsers();
-    }
-    
-    function isValidEmail(email) {
-        return /^[^\s@]+@([^\s@]+\.)+[^\s@]+$/.test(email);
-    }
-    
-    function escapeHtml(str) {
-        if (!str) return '';
-        return str.replace(/[&<>]/g, function(m) {
-            if (m === '&') return '&amp;';
-            if (m === '<') return '&lt;';
-            if (m === '>') return '&gt;';
-            return m;
-        });
-    }
-    
-    function showStatusMessage(elementId, message, type) {
-        const el = document.getElementById(elementId);
-        if (!el) return;
-        if (!message) {
-            el.innerHTML = '';
-            return;
-        }
-        el.className = `status-msg status-${type}`;
-        el.innerHTML = message;
-        setTimeout(() => {
-            if (document.getElementById(elementId)?.innerHTML === message) {
-                document.getElementById(elementId).innerHTML = '';
-            }
-        }, 5000);
-    }
-    
-    // ইভেন্ট লিসেনার
-    window.addEventListener('DOMContentLoaded', () => {
-        checkCurrentSession();
-        
-        document.getElementById('createUserBtn').addEventListener('click', () => {
-            const email = document.getElementById('userEmail').value;
-            const password = document.getElementById('userPassword').value;
-            createAndLoginUser(email, password);
-        });
-        
-        // এন্টার কী
-        ['userEmail', 'userPassword'].forEach(id => {
-            document.getElementById(id).addEventListener('keypress', (e) => {
-                if (e.key === 'Enter') {
-                    e.preventDefault();
-                    document.getElementById('createUserBtn').click();
-                }
-            });
-        });
+    allUsers = data.users || [];
+    renderUsers();
+  } catch (error) {
+    console.error('লোড করতে সমস্যা:', error);
+    showAlert('ইউজার লোড করতে সমস্যা: ' + error.message, 'error');
+    document.getElementById('userListContainer').innerHTML = '<div class="empty-state">❌ লোড করতে ব্যর্থ</div>';
+  }
+}
+
+// Create new user
+async function createUser() {
+  const email = document.getElementById('userEmail').value.trim();
+  const password = document.getElementById('userPassword').value.trim();
+
+  if (!email || !password) {
+    showAlert('ইমেইল এবং পাসওয়ার্ড দিন', 'error');
+    return;
+  }
+
+  if (password.length < 6) {
+    showAlert('পাসওয়ার্ড কমপক্ষে ৬ অক্ষরের হতে হবে', 'error');
+    return;
+  }
+
+  const button = event.target;
+  const originalText = button.innerHTML;
+  button.innerHTML = '<span class="loading-spinner"></span> তৈরি হচ্ছে...';
+  button.disabled = true;
+
+  try {
+    const { data, error } = await supabase.auth.admin.createUser({
+      email: email,
+      password: password,
+      email_confirm: true
     });
+
+    if (error) throw error;
+    
+    showAlert('✅ ইউজার সফলভাবে তৈরি হয়েছে!', 'success');
+    document.getElementById('userEmail').value = '';
+    document.getElementById('userPassword').value = '';
+    
+    await loadAllUsers();
+  } catch (error) {
+    console.error('ক্রিয়েট করতে সমস্যা:', error);
+    showAlert('ইউজার তৈরি করতে সমস্যা: ' + error.message, 'error');
+  } finally {
+    button.innerHTML = originalText;
+    button.disabled = false;
+  }
+}
+
+// Delete user
+async function deleteUser(userId) {
+  if (!confirm('⚠️ আপনি কি নিশ্চিত যে এই ইউজার ডিলিট করতে চান? এটি অপসারণযোগ্য হবে!')) return;
+  
+  showAlert('ডিলিট হচ্ছে...', 'info');
+  
+  try {
+    const { error } = await supabase.auth.admin.deleteUser(userId);
+
+    if (error) throw error;
+    
+    showAlert('🗑️ ইউজার ডিলিট করা হয়েছে!', 'success');
+    await loadAllUsers();
+  } catch (error) {
+    console.error('ডিলিট করতে সমস্যা:', error);
+    showAlert('ইউজার ডিলিট করতে সমস্যা: ' + error.message, 'error');
+  }
+}
+
+// Setup Realtime Subscription for Auth Users
+function setupRealtimeSubscription() {
+  // Listen for auth changes via polling (Supabase doesn't have realtime for auth.users)
+  // Instead, we'll poll every 3 seconds for changes
+  setInterval(async () => {
+    await loadAllUsers();
+  }, 3000);
+  
+  console.log('রিয়েলটাইম আপডেট সক্রিয় (প্রতি ৩ সেকেন্ডে)');
+}
+
+// Initialize
+document.addEventListener('DOMContentLoaded', async () => {
+  await loadAllUsers();
+  setupRealtimeSubscription();
+});
 </script>
 
-<!-- Supabase Auth সেটআপ নির্দেশনা -->
-<div style="background: #f1f5f9; border-radius: 1rem; padding: 1.5rem; margin-top: 1rem;">
-    <h3 style="color: #1e293b; margin-bottom: 0.5rem;">📌 Supabase Auth টেবিল সেটআপ:</h3>
-    <p style="color: #475569; margin-bottom: 0.5rem;">Supabase ড্যাশবোর্ডে <strong>SQL Editor</strong> এ গিয়ে এই কোড রান করুন:</p>
-    <pre style="background: #0f172a; color: #e2e8f0; padding: 1rem; border-radius: 0.75rem; overflow-x: auto; font-size: 0.85rem;">
-CREATE TABLE users (
-    id UUID PRIMARY KEY,
-    email VARCHAR(255) UNIQUE NOT NULL,
-    password VARCHAR(255) NOT NULL,
-    created_at TIMESTAMP DEFAULT NOW()
-);
-    </pre>
-    <p style="color: #475569; margin-top: 0.5rem;">
-        ⚠️ <strong>গুরুত্বপূর্ণ:</strong> Supabase Authentication এ <strong>Disable Email Confirmation</strong> করে দিন:
-        <br>→ Authentication → Settings → Confirm email: <strong>OFF</strong> করুন।
-        <br>তাহলে ইমেইল কনফার্মেশন ছাড়াই ইউজার তৈরি হবে এবং অটো-লগইন হবে।
-    </p>
-</div>
 </body>
 </html>
