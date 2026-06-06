@@ -66,36 +66,38 @@ input:focus, select:focus { border-color: #000; box-shadow: 0 0 0 3px rgba(0,0,0
 
       <div class="input-group"><label>1. EMAIL</label><input type="email" id="f1"></div>
       <div class="input-group"><label>2. NAME</label><input type="text" id="f2"></div>
-      <div class="input-group"><label>3. PROFILE PIC LINK</label><input type="url" id="f3"></div>
+      <div class="input-group"><label>3. TITLE</label><input type="text" id="fTitle" placeholder="e.g., Developer, Creator"></div>
+      <div class="input-group"><label>4. PROFILE IMAGE LINK</label><input type="url" id="fProfileImg"></div>
 
-      <div class="input-group"><label>4. FACEBOOK</label><div class="smart-input"><span class="prefix">https://www.facebook.com/</span><input type="text" id="f4"></div></div>
-      <div class="input-group"><label>5. FB PAGE LINK</label><div class="smart-input"><span class="prefix">https://www.facebook.com/</span><input type="text" id="f5"></div></div>
-      <div class="input-group"><label>6. INSTAGRAM</label><div class="smart-input"><span class="prefix">https://www.instagram.com/</span><input type="text" id="f6"></div></div>
+      <div class="input-group"><label>5. FACEBOOK</label><div class="smart-input"><span class="prefix">https://www.facebook.com/</span><input type="text" id="fFb"></div></div>
+      <div class="input-group"><label>6. FB PAGE LINK</label><div class="smart-input"><span class="prefix">https://www.facebook.com/</span><input type="text" id="fFbPage"></div></div>
+      <div class="input-group"><label>7. INSTAGRAM</label><div class="smart-input"><span class="prefix">https://www.instagram.com/</span><input type="text" id="fIg"></div></div>
 
       <div class="input-group">
-        <label>7. WHATSAPP</label>
+        <label>8. WHATSAPP</label>
         <div class="phone-grid">
           <select id="waSel" onchange="sync('wa')"></select>
           <div class="code-box"><span>+</span><input type="number" id="waCode" class="code-input"></div>
-          <input type="tel" id="f7" style="flex:1.5; border:1px solid #ddd; border-radius:12px; padding-left:12px;">
+          <input type="tel" id="fWa" style="flex:1.5; border:1px solid #ddd; border-radius:12px; padding-left:12px;">
         </div>
       </div>
 
-      <div class="input-group"><label>8. TIKTOK</label><div class="smart-input"><span class="prefix">https://www.tiktok.com/@</span><input type="text" id="f8"></div></div>
-      <div class="input-group"><label>9. TELEGRAM</label><div class="smart-input"><span class="prefix">https://t.me/</span><input type="text" id="f9"></div></div>
-      <div class="input-group"><label>10. TWITTER</label><div class="smart-input"><span class="prefix">https://x.com/</span><input type="text" id="f10"></div></div>
+      <div class="input-group"><label>9. TIKTOK</label><div class="smart-input"><span class="prefix">https://www.tiktok.com/@</span><input type="text" id="fTiktok"></div></div>
+      <div class="input-group"><label>10. TELEGRAM</label><div class="smart-input"><span class="prefix">https://t.me/</span><input type="text" id="fTelegram"></div></div>
+      <div class="input-group"><label>11. TWITTER</label><div class="smart-input"><span class="prefix">https://x.com/</span><input type="text" id="fTwitter"></div></div>
 
       <div class="input-group">
-        <label>11. PHONE</label>
+        <label>12. PHONE</label>
         <div class="phone-grid">
           <select id="phSel" onchange="sync('ph')"></select>
           <div class="code-box"><span>+</span><input type="number" id="phCode" class="code-input"></div>
-          <input type="tel" id="f11" style="flex:1.5; border:1px solid #ddd; border-radius:12px; padding-left:12px;">
+          <input type="tel" id="fPhone" style="flex:1.5; border:1px solid #ddd; border-radius:12px; padding-left:12px;">
         </div>
       </div>
 
-      <div class="input-group"><label>12. ABOUT</label><textarea id="f12" rows="3"></textarea></div>
-      <div class="input-group"><label>13. WEBSITE</label><input type="url" id="f13"></div>
+      <div class="input-group"><label>13. ABOUT URL / BIO LINK</label><input type="url" id="fAbout" placeholder="https://..."></div>
+      <div class="input-group"><label>14. WEBSITE</label><input type="url" id="fWebsite"></div>
+      <div class="input-group"><label>15. FOOTER TEXT</label><input type="text" id="fFooter" placeholder="© 2025 ..."></div>
 
       <button class="btn" onclick="updateData()" id="upBtn">UPDATE INFORMATION</button>
       <button class="btn btn-logout" onclick="handleLogout()">LOGOUT</button>
@@ -130,25 +132,89 @@ async function handleLogin() {
     b.disabled=true; b.innerText="Checking...";
     const { error } = await sb.auth.signInWithPassword({ email:e, password:p });
     if(error) { st.innerText=error.message; st.className="status status-error"; b.disabled=false; b.innerText="LOGIN"; }
-    else { document.getElementById('loginCard').classList.add('hidden'); document.getElementById('formCard').classList.remove('hidden'); }
+    else { 
+        document.getElementById('loginCard').classList.add('hidden'); 
+        document.getElementById('formCard').classList.remove('hidden');
+        loadExistingData(); // লগইন করার পর পুরোনো ডাটা লোড করুন
+    }
+}
+
+// আগের ডাটা লোড করার ফাংশন
+async function loadExistingData() {
+    const { data, error } = await sb.from('linkinbi0').select('*').order('id', { ascending: false }).limit(1);
+    if(!error && data && data.length > 0) {
+        const d = data[0];
+        document.getElementById('f1').value = d.email || '';
+        document.getElementById('f2').value = d.name || '';
+        document.getElementById('fTitle').value = d.title || '';
+        document.getElementById('fProfileImg').value = d.profile_image || '';
+        document.getElementById('fFb').value = (d.facebook_url || '').replace('https://www.facebook.com/', '');
+        document.getElementById('fFbPage').value = (d.facebook_page_url || '').replace('https://www.facebook.com/', '');
+        document.getElementById('fIg').value = (d.instagram_url || '').replace('https://www.instagram.com/', '');
+        // whatsapp_number থেকে কোড ও নাম্বার আলাদা করা
+        let wa = d.whatsapp_number || '';
+        if(wa) { 
+            let match = wa.match(/\+?(\d+)(\d+)/);
+            if(match) { document.getElementById('waCode').value = match[1]; document.getElementById('fWa').value = match[2]; }
+        }
+        document.getElementById('fTiktok').value = (d.tiktok_url || '').replace('https://www.tiktok.com/@', '');
+        document.getElementById('fTelegram').value = (d.telegram_url || '').replace('https://t.me/', '');
+        document.getElementById('fTwitter').value = (d.twitter_url || '').replace('https://x.com/', '');
+        let ph = d.phone_number || '';
+        if(ph) {
+            let match = ph.match(/\+?(\d+)(\d+)/);
+            if(match) { document.getElementById('phCode').value = match[1]; document.getElementById('fPhone').value = match[2]; }
+        }
+        document.getElementById('fAbout').value = d.about_url || '';
+        document.getElementById('fWebsite').value = d.website_url || '';
+        document.getElementById('fFooter').value = d.footer_text || '';
+    }
 }
 
 async function updateData() {
     const btn=document.getElementById('upBtn'), st=document.getElementById('fStatus');
+    
+    // SQL টেবিলের কলাম অনুযায়ী ডাটা তৈরি করুন
     const data = {
-        email: document.getElementById('f1').value, name: document.getElementById('f2').value, profile_pic: document.getElementById('f3').value,
-        facebook: 'https://www.facebook.com/'+document.getElementById('f4').value, fb_page: 'https://www.facebook.com/'+document.getElementById('f5').value,
-        instagram: 'https://www.instagram.com/'+document.getElementById('f6').value, whatsapp: 'https://wa.me/'+document.getElementById('waCode').value + document.getElementById('f7').value.replace(/\D/g,''),
-        tiktok: 'https://www.tiktok.com/@'+document.getElementById('f8').value, telegram: 'https://t.me/'+document.getElementById('f9').value,
-        twitter: 'https://x.com/'+document.getElementById('f10').value, phone: '+'+document.getElementById('phCode').value + document.getElementById('f11').value.replace(/\D/g,''),
-        about: document.getElementById('f12').value, website: document.getElementById('f13').value
+        email: document.getElementById('f1').value,
+        name: document.getElementById('f2').value,
+        title: document.getElementById('fTitle').value,
+        profile_image: document.getElementById('fProfileImg').value,
+        facebook_url: 'https://www.facebook.com/' + document.getElementById('fFb').value,
+        facebook_page_url: 'https://www.facebook.com/' + document.getElementById('fFbPage').value,
+        instagram_url: 'https://www.instagram.com/' + document.getElementById('fIg').value,
+        whatsapp_number: '+' + document.getElementById('waCode').value + document.getElementById('fWa').value.replace(/\D/g,''),
+        tiktok_url: 'https://www.tiktok.com/@' + document.getElementById('fTiktok').value,
+        telegram_url: 'https://t.me/' + document.getElementById('fTelegram').value,
+        twitter_url: 'https://x.com/' + document.getElementById('fTwitter').value,
+        phone_number: '+' + document.getElementById('phCode').value + document.getElementById('fPhone').value.replace(/\D/g,''),
+        about_url: document.getElementById('fAbout').value,
+        website_url: document.getElementById('fWebsite').value,
+        footer_text: document.getElementById('fFooter').value,
+        updated_at: new Date()
     };
+    
     btn.disabled=true; btn.innerText="Updating...";
-    const { error } = await sb.from('linkinbi0').insert([data]);
+    
+    // আগের ডাটা আপডেট করবেন নাকি নতুন ইনসার্ট করবেন?
+    const { data: existing } = await sb.from('linkinbi0').select('id').limit(1);
+    
+    let error;
+    if(existing && existing.length > 0) {
+        // আপডেট করুন
+        const { error: updateError } = await sb.from('linkinbi0').update(data).eq('id', existing[0].id);
+        error = updateError;
+    } else {
+        // নতুন ইনসার্ট করুন
+        const { error: insertError } = await sb.from('linkinbi0').insert([data]);
+        error = insertError;
+    }
+    
     if(error) { st.innerText=error.message; st.className="status status-error"; }
     else { st.innerText="Success: Data Updated!"; st.className="status status-success"; }
     btn.disabled=false; btn.innerText="UPDATE INFORMATION";
 }
+
 function handleLogout() { sb.auth.signOut(); location.reload(); }
 init();
 </script>
