@@ -240,11 +240,12 @@ html, body {
 
 /* Stats */
 .stats {
-  background: #f0f0f0;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
   border-radius: 12px;
-  padding: 8px;
+  padding: 10px;
   margin-bottom: 16px;
-  font-size: 12px;
+  font-size: 13px;
   text-align: center;
   font-weight: 600;
 }
@@ -263,7 +264,7 @@ html, body {
     <div id="alert" class="alert"></div>
 
     <div class="stats" id="stats">
-      মোট ইউজার: ০
+      👥 মোট ইউজার লোড হচ্ছে...
     </div>
 
     <div class="form-group">
@@ -277,7 +278,7 @@ html, body {
     <button class="btn btn-primary" onclick="createUser()">➕ ইউজার তৈরি করুন</button>
 
     <div class="user-list-section">
-      <h3>📋 ইউজার লিস্ট (রিয়েলটাইম)</h3>
+      <h3>📋 ইউজার লিস্ট</h3>
       <div id="userListContainer">
         <div class="empty-state">লোড হচ্ছে...</div>
       </div>
@@ -295,21 +296,26 @@ html, body {
 const SUPABASE_URL = "https://gfahimzxyqwspkeqsvlg.supabase.co";
 const SUPABASE_SERVICE_ROLE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImdmYWhpbXp4eXF3c3BrZXFzdmxnIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc4MDQ2OTk0OSwiZXhwIjoyMDk2MDQ1OTQ5fQ.mbBpBl7BULh8dv6HYBAIrb4K_K4Ctx-SawWAc5uRSrg";
 
-// Admin client for user management (create/delete)
-const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY);
+// Initialize Supabase with Service Role Key
+const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY, {
+  auth: {
+    autoRefreshToken: false,
+    persistSession: false
+  }
+});
 
 let allUsers = [];
-let realtimeChannel = null;
 
 // Alert Functions
 function showAlert(message, type = 'success') {
   const alertDiv = document.getElementById('alert');
   alertDiv.textContent = message;
   alertDiv.className = `alert ${type}`;
+  alertDiv.style.display = 'block';
   setTimeout(() => {
     alertDiv.style.display = 'none';
     alertDiv.className = 'alert';
-  }, 3000);
+  }, 4000);
 }
 
 // Escape HTML
@@ -355,16 +361,27 @@ function renderUsers() {
 // Load all users from Supabase Auth
 async function loadAllUsers() {
   try {
+    console.log('ইউজার লোড করা হচ্ছে...');
     const { data, error } = await supabase.auth.admin.listUsers();
     
-    if (error) throw error;
+    if (error) {
+      console.error('লোড এরর:', error);
+      throw error;
+    }
     
-    allUsers = data.users || [];
+    allUsers = data?.users || [];
+    console.log(`${allUsers.length} জন ইউজার পাওয়া গেছে`);
     renderUsers();
   } catch (error) {
     console.error('লোড করতে সমস্যা:', error);
-    showAlert('ইউজার লোড করতে সমস্যা: ' + error.message, 'error');
-    document.getElementById('userListContainer').innerHTML = '<div class="empty-state">❌ লোড করতে ব্যর্থ</div>';
+    let errorMsg = error.message;
+    if (errorMsg.includes('JWT')) {
+      errorMsg = 'Service Role Key সঠিক নয়। অনুগ্রহ করে চেক করুন।';
+    } else if (errorMsg.includes('fetch')) {
+      errorMsg = 'ইন্টারনেট সংযোগ সমস্যা।';
+    }
+    showAlert('ইউজার লোড করতে সমস্যা: ' + errorMsg, 'error');
+    document.getElementById('userListContainer').innerHTML = '<div class="empty-state">❌ লোড করতে ব্যর্থ: ' + errorMsg + '</div>';
   }
 }
 
@@ -383,28 +400,54 @@ async function createUser() {
     return;
   }
 
+  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  if (!emailRegex.test(email)) {
+    showAlert('সঠিক ইমেইল ফরম্যাট দিন (example@email.com)', 'error');
+    return;
+  }
+
   const button = event.target;
   const originalText = button.innerHTML;
   button.innerHTML = '<span class="loading-spinner"></span> তৈরি হচ্ছে...';
   button.disabled = true;
 
   try {
+    console.log('ইউজার তৈরি হচ্ছে:', email);
+    
     const { data, error } = await supabase.auth.admin.createUser({
       email: email,
       password: password,
-      email_confirm: true
+      email_confirm: true,
+      user_metadata: {
+        created_via: 'admin_panel'
+      }
     });
 
-    if (error) throw error;
+    if (error) {
+      console.error('ক্রিয়েট এরর:', error);
+      throw error;
+    }
     
+    console.log('ইউজার তৈরি সফল:', data);
     showAlert('✅ ইউজার সফলভাবে তৈরি হয়েছে!', 'success');
     document.getElementById('userEmail').value = '';
     document.getElementById('userPassword').value = '';
     
+    // Reload user list
     await loadAllUsers();
   } catch (error) {
     console.error('ক্রিয়েট করতে সমস্যা:', error);
-    showAlert('ইউজার তৈরি করতে সমস্যা: ' + error.message, 'error');
+    let errorMsg = error.message;
+    
+    if (errorMsg.includes('User already registered')) {
+      errorMsg = 'এই ইমেইলে ইতিমধ্যে একটি ইউজার আছে!';
+    } else if (errorMsg.includes('password')) {
+      errorMsg = 'পাসওয়ার্ড খুব সহজ। আরও শক্তিশালী পাসওয়ার্ড দিন।';
+    } else if (errorMsg.includes('JWT')) {
+      errorMsg = 'Service Role Key সঠিক নয়।';
+    }
+    
+    showAlert('ইউজার তৈরি করতে সমস্যা: ' + errorMsg, 'error');
   } finally {
     button.innerHTML = originalText;
     button.disabled = false;
@@ -418,9 +461,13 @@ async function deleteUser(userId) {
   showAlert('ডিলিট হচ্ছে...', 'info');
   
   try {
+    console.log('ইউজার ডিলিট হচ্ছে:', userId);
     const { error } = await supabase.auth.admin.deleteUser(userId);
 
-    if (error) throw error;
+    if (error) {
+      console.error('ডিলিট এরর:', error);
+      throw error;
+    }
     
     showAlert('🗑️ ইউজার ডিলিট করা হয়েছে!', 'success');
     await loadAllUsers();
@@ -430,21 +477,21 @@ async function deleteUser(userId) {
   }
 }
 
-// Setup Realtime Subscription for Auth Users
-function setupRealtimeSubscription() {
-  // Listen for auth changes via polling (Supabase doesn't have realtime for auth.users)
-  // Instead, we'll poll every 3 seconds for changes
-  setInterval(async () => {
-    await loadAllUsers();
-  }, 3000);
-  
-  console.log('রিয়েলটাইম আপডেট সক্রিয় (প্রতি ৩ সেকেন্ডে)');
+// Auto refresh every 5 seconds
+let refreshInterval;
+
+function startAutoRefresh() {
+  if (refreshInterval) clearInterval(refreshInterval);
+  refreshInterval = setInterval(() => {
+    loadAllUsers();
+  }, 5000);
 }
 
 // Initialize
 document.addEventListener('DOMContentLoaded', async () => {
+  console.log('অ্যাপ শুরু হচ্ছে...');
   await loadAllUsers();
-  setupRealtimeSubscription();
+  startAutoRefresh();
 });
 </script>
 
