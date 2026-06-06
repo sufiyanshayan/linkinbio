@@ -31,6 +31,7 @@ input:focus, select:focus { border-color: #000; box-shadow: 0 0 0 3px rgba(0,0,0
 .status { margin-top: 15px; padding: 12px; border-radius: 12px; font-size: 0.85rem; text-align: center; display: none; }
 .status-error { display: block; background: #fee2e2; color: #b91c1c; border: 1px solid #fecaca; }
 .status-success { display: block; background: #dcfce7; color: #15803d; border: 1px solid #bbf7d0; }
+.debug-panel { background: #1e1e1e; color: #0f0; padding: 10px; margin-top: 20px; border-radius: 8px; font-family: monospace; font-size: 11px; max-height: 200px; overflow: auto; display: none; }
 </style>
 </head>
 <body>
@@ -95,52 +96,90 @@ input:focus, select:focus { border-color: #000; box-shadow: 0 0 0 3px rgba(0,0,0
       <button class="btn btn-logout" onclick="handleLogout()">LOGOUT</button>
       <div id="fStatus" class="status"></div>
     </div>
+    
+    <!-- ডিবাগ প্যানেল -->
+    <div class="debug-panel" id="debugPanel">
+      <strong>🔍 Debug Log:</strong><br>
+      <div id="debugLog"></div>
+    </div>
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script>
 const SUPABASE_PROJECT_URL = "https://gfahimzxyqwspkeqsvlg.supabase.co";
-const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImdmYWhpbXp4eXF3c3BrZXFzdmxnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODA0Njk5NDksImV4cCI6MjA5NjA0NTk0OX0.lkZ7wpWAKknxpMMDCsRG2OiPD2wOvwFejSozzLDe0Dc";
+const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImdmYWhpbXp4eXF3c3BrZXFzdmxnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODA0Njk5NDksImV4cCI6MjA5NjA0NTk0OX0.lkZ7wpWAKknxpMMDCsRG2OiPD2wOvwFejSozzLDe0Dc";
 const sb = supabase.createClient(SUPABASE_PROJECT_URL, SUPABASE_ANON_KEY);
+
+// ডিবাগ ফাংশন
+function addDebugLog(msg) {
+    const debugDiv = document.getElementById('debugLog');
+    const time = new Date().toLocaleTimeString();
+    debugDiv.innerHTML += `[${time}] ${msg}<br>`;
+    console.log(msg);
+    document.getElementById('debugPanel').style.display = 'block';
+}
 
 const ct = [{c:"880",n:"Bangladesh"},{c:"91",n:"India"},{c:"92",n:"Pakistan"},{c:"1",n:"USA"},{c:"44",n:"UK"},{c:"966",n:"Saudi"}];
 function init() {
     let h = '<option value="">Country</option>';
     ct.forEach(i=>{ h+=`<option value="${i.c}">${i.n}</option>`; });
     document.getElementById('waSel').innerHTML=h; document.getElementById('phSel').innerHTML=h;
+    addDebugLog("✅ Page initialized");
 }
 function sync(t) { document.getElementById(t+'Code').value = document.getElementById(t+'Sel').value; }
 
 const eyeIcon = document.getElementById('eyeIcon'), passInp = document.getElementById('logPass');
-eyeIcon.addEventListener('click', function() {
-    const isPass = passInp.type === 'password';
-    passInp.type = isPass ? 'text' : 'password';
-    this.classList.toggle('fa-eye'); this.classList.toggle('fa-eye-slash');
-});
+if(eyeIcon) {
+    eyeIcon.addEventListener('click', function() {
+        const isPass = passInp.type === 'password';
+        passInp.type = isPass ? 'text' : 'password';
+        this.classList.toggle('fa-eye'); this.classList.toggle('fa-eye-slash');
+    });
+}
 
 async function handleLogin() {
     const e=document.getElementById('logEmail').value, p=document.getElementById('logPass').value, st=document.getElementById('logStatus'), b=document.getElementById('logBtn');
-    if(!e || !p) return;
+    if(!e || !p) {
+        addDebugLog("❌ Login failed: Email or password empty");
+        return;
+    }
+    addDebugLog(`🔐 Attempting login with: ${e}`);
     b.disabled=true; b.innerText="Checking...";
-    const { error } = await sb.auth.signInWithPassword({ email:e, password:p });
-    if(error) { st.innerText=error.message; st.className="status status-error"; b.disabled=false; b.innerText="LOGIN"; }
+    const { data, error } = await sb.auth.signInWithPassword({ email:e, password:p });
+    if(error) { 
+        addDebugLog(`❌ Login error: ${error.message}`);
+        st.innerText=error.message; 
+        st.className="status status-error"; 
+        b.disabled=false; 
+        b.innerText="LOGIN"; 
+    }
     else { 
+        addDebugLog(`✅ Login successful! User: ${data.user.email}`);
         document.getElementById('loginCard').classList.add('hidden'); 
         document.getElementById('formCard').classList.remove('hidden');
-        loadExistingData(); // লগইন হলে পুরাতন ডাটা লোড করবে
+        loadExistingData();
     }
 }
 
 async function loadExistingData() {
+    addDebugLog("📥 Loading existing data from linkinbi0 table...");
     const { data, error } = await sb.from('linkinbi0').select('*').eq('id', 1).single();
-    if(error) { console.error("Load error:", error); return; }
+    
+    if(error) { 
+        addDebugLog(`⚠️ Load error: ${error.message}`);
+        if(error.message.includes("no rows")) {
+            addDebugLog("ℹ️ No existing data found. You can create new entry.");
+        }
+        return; 
+    }
+    
     if(data) {
+        addDebugLog(`✅ Data loaded successfully! Name: ${data.name || 'empty'}`);
         document.getElementById('f1').value = data.email || '';
         document.getElementById('f2').value = data.name || '';
         document.getElementById('f3').value = data.title || '';
         document.getElementById('f4').value = data.profile_image || '';
         
-        // ফেসবুক ইউজারনাম এক্সট্র্যাক্ট
         let fb = data.facebook_url || '';
         document.getElementById('f5').value = fb.replace('https://www.facebook.com/', '').replace(/\/$/, '');
         
@@ -150,11 +189,13 @@ async function loadExistingData() {
         let ig = data.instagram_url || '';
         document.getElementById('f7').value = ig.replace('https://www.instagram.com/', '').replace(/\/$/, '');
         
-        // হোয়াটসঅ্যাপ নাম্বার পার্স
         let wa = data.whatsapp_number || '';
         if(wa.startsWith('+')) wa = wa.substring(1);
         let waCodeMatch = wa.match(/^(\d+)/);
-        if(waCodeMatch) { document.getElementById('waCode').value = waCodeMatch[1]; document.getElementById('f8').value = wa.substring(waCodeMatch[1].length); }
+        if(waCodeMatch && waCodeMatch[1]) { 
+            document.getElementById('waCode').value = waCodeMatch[1]; 
+            document.getElementById('f8').value = wa.substring(waCodeMatch[1].length);
+        }
         
         let tt = data.tiktok_url || '';
         document.getElementById('f9').value = tt.replace('https://www.tiktok.com/@', '').replace(/\/$/, '');
@@ -168,22 +209,36 @@ async function loadExistingData() {
         let ph = data.phone_number || '';
         if(ph.startsWith('+')) ph = ph.substring(1);
         let phCodeMatch = ph.match(/^(\d+)/);
-        if(phCodeMatch) { document.getElementById('phCode').value = phCodeMatch[1]; document.getElementById('f12').value = ph.substring(phCodeMatch[1].length); }
+        if(phCodeMatch && phCodeMatch[1]) { 
+            document.getElementById('phCode').value = phCodeMatch[1]; 
+            document.getElementById('f12').value = ph.substring(phCodeMatch[1].length);
+        }
         
         document.getElementById('f13').value = data.about_url || '';
         document.getElementById('f14').value = data.website_url || '';
         document.getElementById('f15').value = data.footer_text || '';
+    } else {
+        addDebugLog("⚠️ No data returned from query");
     }
 }
 
 async function updateData() {
     const btn=document.getElementById('upBtn'), st=document.getElementById('fStatus');
+    addDebugLog("🚀 Starting update process...");
     
-    const user = sb.auth.user();
-    if(!user) { st.innerText="Please login again"; st.className="status status-error"; return; }
+    // Check current session
+    const session = await sb.auth.getSession();
+    addDebugLog(`🔑 Session exists: ${!!session.data.session}`);
+    
+    if(!session.data.session) { 
+        addDebugLog("❌ No active session! Please login again.");
+        st.innerText="Please login again"; 
+        st.className="status status-error"; 
+        return; 
+    }
     
     const data = {
-        id: 1, // ফিক্সড আইডি ১
+        id: 1,
         email: document.getElementById('f1').value,
         name: document.getElementById('f2').value,
         title: document.getElementById('f3').value,
@@ -202,27 +257,50 @@ async function updateData() {
         updated_at: new Date()
     };
     
+    addDebugLog(`📦 Data prepared - Name: ${data.name}, Email: ${data.email}`);
+    
     btn.disabled=true; btn.innerText="Updating...";
     
-    // Check if record exists
-    const { data: existing } = await sb.from('linkinbi0').select('id').eq('id', 1).single();
+    // First check if record exists
+    addDebugLog("🔍 Checking if record exists (id=1)...");
+    const { data: existing, error: checkError } = await sb.from('linkinbi0').select('id').eq('id', 1).maybeSingle();
     
-    let error;
-    if(existing) {
-        const { error: updateError } = await sb.from('linkinbi0').update(data).eq('id', 1);
-        error = updateError;
-    } else {
-        const { error: insertError } = await sb.from('linkinbi0').insert([data]);
-        error = insertError;
+    if(checkError) {
+        addDebugLog(`❌ Check error: ${checkError.message}`);
     }
     
-    if(error) { st.innerText=error.message; st.className="status status-error"; }
-    else { st.innerText="✅ Success: Information Updated!"; st.className="status status-success"; }
+    let result;
+    if(existing) {
+        addDebugLog("📝 Record exists, updating...");
+        result = await sb.from('linkinbi0').update(data).eq('id', 1);
+    } else {
+        addDebugLog("📝 Record does not exist, inserting new...");
+        result = await sb.from('linkinbi0').insert([data]);
+    }
+    
+    const { error } = result;
+    
+    if(error) { 
+        addDebugLog(`❌ Update/Insert error: ${error.message}`);
+        st.innerText=`Error: ${error.message}`; 
+        st.className="status status-error"; 
+    }
+    else { 
+        addDebugLog(`✅ Success! Data updated for id=1`);
+        st.innerText="✅ Success: Information Updated!"; 
+        st.className="status status-success"; 
+        // Reload data to confirm
+        setTimeout(() => loadExistingData(), 500);
+    }
     
     btn.disabled=false; btn.innerText="UPDATE INFORMATION";
 }
 
-function handleLogout() { sb.auth.signOut(); location.reload(); }
+function handleLogout() { 
+    addDebugLog("🚪 Logging out...");
+    sb.auth.signOut(); 
+    location.reload(); 
+}
 
 init();
 </script>
