@@ -2,12 +2,9 @@
 <html lang="bn">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-    <title>Link in Bio | Smart Bio Links</title>
-    
-    <!-- Supabase JS -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Link in Bio | Realtime Live</title>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    
     <style>
         * {
             margin: 0;
@@ -16,7 +13,7 @@
         }
 
         body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             min-height: 100vh;
             padding: 20px;
@@ -25,15 +22,8 @@
         .container {
             max-width: 500px;
             margin: 0 auto;
-            animation: fadeIn 0.5s ease;
         }
 
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(20px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-
-        /* Profile Card */
         .profile-card {
             background: white;
             border-radius: 30px;
@@ -56,27 +46,38 @@
             font-size: 24px;
             font-weight: bold;
             color: #333;
-            margin-bottom: 5px;
         }
 
         .title {
             font-size: 14px;
             color: #666;
-            margin-bottom: 15px;
+            margin-top: 5px;
         }
 
-        /* Status Badge */
-        .status-badge {
+        .realtime-status {
             display: inline-block;
-            background: #4CAF50;
-            color: white;
-            padding: 4px 12px;
+            padding: 5px 12px;
             border-radius: 20px;
             font-size: 11px;
+            font-weight: bold;
             margin-top: 10px;
         }
 
-        /* Links Container */
+        .status-connected {
+            background: #4CAF50;
+            color: white;
+        }
+
+        .status-connecting {
+            background: #FF9800;
+            color: white;
+        }
+
+        .status-disconnected {
+            background: #f44336;
+            color: white;
+        }
+
         .links-container {
             background: white;
             border-radius: 30px;
@@ -84,7 +85,6 @@
             box-shadow: 0 20px 40px rgba(0,0,0,0.1);
         }
 
-        /* Button Styles */
         .bio-link {
             display: flex;
             align-items: center;
@@ -102,16 +102,10 @@
         .bio-link:hover {
             transform: translateX(5px);
             background: #667eea;
-            border-color: #667eea;
         }
 
         .bio-link:hover .link-text {
             color: white;
-        }
-
-        .bio-link:hover .click-count {
-            background: white;
-            color: #667eea;
         }
 
         .link-left {
@@ -121,13 +115,12 @@
         }
 
         .link-icon {
-            width: 24px;
-            height: 24px;
-            object-fit: contain;
+            width: 22px;
+            height: 22px;
         }
 
         .link-text {
-            font-size: 15px;
+            font-size: 14px;
             font-weight: 500;
             color: #333;
             transition: color 0.3s ease;
@@ -143,7 +136,6 @@
             transition: all 0.3s ease;
         }
 
-        /* Footer */
         .footer {
             text-align: center;
             margin-top: 20px;
@@ -152,7 +144,6 @@
             opacity: 0.9;
         }
 
-        /* Loading Animation */
         .loading {
             text-align: center;
             padding: 40px;
@@ -173,26 +164,16 @@
             to { transform: rotate(360deg); }
         }
 
-        /* No Data Message */
-        .no-data {
-            text-align: center;
-            padding: 40px;
-            color: #999;
-        }
-
-        /* Responsive */
-        @media (max-width: 480px) {
-            .container {
-                max-width: 100%;
-            }
-            
-            .bio-link {
-                padding: 10px 15px;
-            }
-            
-            .link-text {
-                font-size: 14px;
-            }
+        .debug-panel {
+            background: rgba(0,0,0,0.8);
+            color: #0f0;
+            font-family: monospace;
+            font-size: 10px;
+            padding: 10px;
+            border-radius: 10px;
+            margin-top: 20px;
+            max-height: 150px;
+            overflow-y: auto;
         }
     </style>
 </head>
@@ -201,137 +182,48 @@
 <div class="container" id="app">
     <div class="loading">
         <div class="spinner"></div>
-        <div>Loading your links...</div>
+        <div>Loading...</div>
     </div>
 </div>
 
 <script>
-    // ============================================
-    // YOUR SUPABASE CONFIGURATION
-    // ============================================
+    // Supabase Configuration
     const SUPABASE_URL = 'https://gfahimzxyqwspkeqsvlg.supabase.co';
     const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImdmYWhpbXp4eXF3c3BrZXFzdmxnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODA0Njk5NDksImV4cCI6MjA5NjA0NTk0OX0.lkZ7wpWAKknxpMMDCsRG2OiPD2wOvwFejSozzLDe0Dc';
     
     const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
     
-    // Global variables
     let allLinks = [];
     let profileData = null;
+    let debugLogs = [];
     
-    // ============================================
-    // RENDER PROFILE SECTION
-    // ============================================
-    function renderProfile() {
-        if (!profileData) return;
+    function addDebugLog(message) {
+        const timestamp = new Date().toLocaleTimeString();
+        debugLogs.unshift(`[${timestamp}] ${message}`);
+        if (debugLogs.length > 10) debugLogs.pop();
         
-        return `
-            <div class="profile-card">
-                <img class="profile-img" src="${profileData.profile_image || 'https://randomuser.me/api/portraits/men/1.jpg'}" alt="Profile">
-                <div class="name">${profileData.name || 'Your Name'}</div>
-                <div class="title">${profileData.title || 'Content Creator'}</div>
-                <div class="status-badge" id="realtimeStatus">🟢 Live</div>
-            </div>
-        `;
-    }
-    
-    // ============================================
-    // RENDER LINKS SECTION
-    // ============================================
-    function renderLinks() {
-        if (!allLinks || allLinks.length === 0) {
-            return `
-                <div class="links-container">
-                    <div class="no-data">
-                        📭 No links found.<br>
-                        <small>Add links to click_stats table in Supabase</small>
-                    </div>
-                </div>
-            `;
+        const debugEl = document.getElementById('debugPanel');
+        if (debugEl) {
+            debugEl.innerHTML = debugLogs.map(log => `<div>${log}</div>`).join('');
         }
-        
-        const activeLinks = allLinks.filter(link => link.is_active === true).sort((a, b) => a.order - b.order);
-        
-        let linksHtml = '<div class="links-container">';
-        
-        activeLinks.forEach(link => {
-            linksHtml += `
-                <a href="${link.button_url || '#'}" class="bio-link" target="_blank" data-id="${link.id}" data-platform="${link.platform}">
-                    <div class="link-left">
-                        <img class="link-icon" src="${link.button_icon || 'https://cdn.simpleicons.org/link'}" alt="${link.button_name}" onerror="this.src='https://cdn.simpleicons.org/link'">
-                        <span class="link-text">${link.button_name || link.platform}</span>
-                    </div>
-                    <span class="click-count" id="count-${link.id}">${formatNumber(link.click_count || 0)}</span>
-                </a>
-            `;
-        });
-        
-        linksHtml += '</div>';
-        return linksHtml;
+        console.log(message);
     }
     
-    // Format large numbers
-    function formatNumber(num) {
-        if (num >= 1000000) return (num / 1000000).toFixed(1) + 'M';
-        if (num >= 1000) return (num / 1000).toFixed(1) + 'K';
-        return num.toString();
-    }
-    
-    // ============================================
-    // UPDATE CLICK COUNT
-    // ============================================
-    async function updateClickCount(id) {
-        try {
-            const link = allLinks.find(l => l.id == id);
-            if (!link) return;
-            
-            const newCount = (link.click_count || 0) + 1;
-            
-            // Optimistic UI update
-            const countSpan = document.getElementById(`count-${id}`);
-            if (countSpan) {
-                countSpan.textContent = formatNumber(newCount);
-                countSpan.style.transform = 'scale(1.2)';
-                setTimeout(() => {
-                    if (countSpan) countSpan.style.transform = 'scale(1)';
-                }, 200);
-            }
-            
-            // Update database
-            const { error } = await supabase
-                .from('click_stats')
-                .update({ 
-                    click_count: newCount,
-                    updated_at: new Date()
-                })
-                .eq('id', id);
-            
-            if (error) {
-                console.error('Update error:', error);
-                // Revert on error
-                if (countSpan) countSpan.textContent = formatNumber(link.click_count || 0);
-            } else {
-                link.click_count = newCount;
-            }
-            
-        } catch (error) {
-            console.error('Error updating click:', error);
-        }
-    }
-    
-    // ============================================
-    // LOAD DATA FROM SUPABASE
-    // ============================================
     async function loadData() {
         try {
+            addDebugLog('📥 Loading data from Supabase...');
+            
             // Load profile
             const { data: profile, error: profileError } = await supabase
                 .from('profile_info')
                 .select('*')
-                .limit(1)
                 .single();
             
-            if (!profileError && profile) {
+            if (profileError) {
+                addDebugLog(`❌ Profile error: ${profileError.message}`);
+            } else {
                 profileData = profile;
+                addDebugLog('✅ Profile loaded');
             }
             
             // Load links
@@ -340,89 +232,159 @@
                 .select('*')
                 .order('order', { ascending: true });
             
-            if (linksError) throw linksError;
+            if (linksError) {
+                addDebugLog(`❌ Links error: ${linksError.message}`);
+                throw linksError;
+            }
             
             allLinks = links || [];
+            addDebugLog(`✅ Loaded ${allLinks.length} links`);
             
-            // Render everything
-            const appHtml = `
-                ${renderProfile()}
-                ${renderLinks()}
-                <div class="footer">
-                    ${profileData?.footer_text || '© 2024 All Rights Reserved'}
-                </div>
-            `;
-            
-            document.getElementById('app').innerHTML = appHtml;
-            
-            // Attach click handlers
-            document.querySelectorAll('.bio-link[data-id]').forEach(btn => {
-                btn.addEventListener('click', (e) => {
-                    const id = parseInt(btn.getAttribute('data-id'));
-                    updateClickCount(id);
-                });
-            });
+            renderApp();
             
         } catch (error) {
-            console.error('Error loading data:', error);
-            document.getElementById('app').innerHTML = `
-                <div class="loading">
-                    <div style="color: white;">❌ Error loading data</div>
-                    <small style="color: rgba(255,255,255,0.7);">${error.message}</small>
-                </div>
-            `;
+            addDebugLog(`❌ Error: ${error.message}`);
+            document.getElementById('app').innerHTML = `<div class="loading">❌ Error: ${error.message}</div>`;
         }
     }
     
-    // ============================================
-    // SETUP REALTIME SUBSCRIPTION
-    // ============================================
-    function setupRealtime() {
-        console.log('Setting up realtime subscription...');
+    function renderApp() {
+        const profileHtml = profileData ? `
+            <div class="profile-card">
+                <img class="profile-img" src="${profileData.profile_image || 'https://randomuser.me/api/portraits/men/1.jpg'}" alt="Profile">
+                <div class="name">${profileData.name || 'Your Name'}</div>
+                <div class="title">${profileData.title || 'Content Creator'}</div>
+                <div class="realtime-status" id="realtimeStatus">🔄 Connecting...</div>
+            </div>
+        ` : '<div class="profile-card">Loading profile...</div>';
         
-        // Subscribe to click_stats changes
-        const channel = supabase
-            .channel('click_stats_changes')
-            .on('postgres_changes', {
-                event: 'UPDATE',
-                schema: 'public',
-                table: 'click_stats'
-            }, (payload) => {
-                console.log('🔴 Realtime update received:', payload);
-                
-                const updatedLink = payload.new;
-                const index = allLinks.findIndex(l => l.id === updatedLink.id);
-                
-                if (index !== -1) {
-                    allLinks[index] = updatedLink;
+        let linksHtml = '<div class="links-container">';
+        
+        if (allLinks.length === 0) {
+            linksHtml += '<div style="text-align:center; padding:40px;">No links found. Add data to click_stats table.</div>';
+        } else {
+            allLinks.filter(l => l.is_active !== false).forEach(link => {
+                linksHtml += `
+                    <a href="${link.button_url || '#'}" class="bio-link" target="_blank" data-id="${link.id}" data-platform="${link.platform}">
+                        <div class="link-left">
+                            <img class="link-icon" src="${link.button_icon || 'https://cdn.simpleicons.org/link'}" alt="${link.button_name}" onerror="this.src='https://cdn.simpleicons.org/link'">
+                            <span class="link-text">${link.button_name || link.platform}</span>
+                        </div>
+                        <span class="click-count" id="count-${link.id}">${link.click_count || 0}</span>
+                    </a>
+                `;
+            });
+        }
+        
+        linksHtml += '</div>';
+        
+        const footerHtml = `<div class="footer">${profileData?.footer_text || '© 2024 All Rights Reserved'}</div>`;
+        const debugHtml = `<div class="debug-panel" id="debugPanel"></div>`;
+        
+        document.getElementById('app').innerHTML = profileHtml + linksHtml + footerHtml + debugHtml;
+        
+        // Add debug logs to panel
+        const debugEl = document.getElementById('debugPanel');
+        if (debugEl) {
+            debugEl.innerHTML = debugLogs.map(log => `<div>${log}</div>`).join('');
+        }
+        
+        // Attach click handlers
+        document.querySelectorAll('.bio-link[data-id]').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                const id = parseInt(btn.getAttribute('data-id'));
+                updateClickCount(id);
+            });
+        });
+    }
+    
+    async function updateClickCount(id) {
+        try {
+            const link = allLinks.find(l => l.id == id);
+            if (!link) return;
+            
+            const newCount = (link.click_count || 0) + 1;
+            addDebugLog(`🖱️ Click on ${link.button_name}: ${link.click_count} → ${newCount}`);
+            
+            // Optimistic update
+            const countSpan = document.getElementById(`count-${id}`);
+            if (countSpan) countSpan.textContent = newCount;
+            
+            const { error } = await supabase
+                .from('click_stats')
+                .update({ click_count: newCount, updated_at: new Date() })
+                .eq('id', id);
+            
+            if (error) {
+                addDebugLog(`❌ Update failed: ${error.message}`);
+                if (countSpan) countSpan.textContent = link.click_count;
+            } else {
+                link.click_count = newCount;
+                addDebugLog(`✅ Click recorded in database`);
+            }
+            
+        } catch (error) {
+            addDebugLog(`❌ Error: ${error.message}`);
+        }
+    }
+    
+    // Realtime setup - FIXED VERSION
+    function setupRealtime() {
+        addDebugLog('🔌 Setting up realtime subscription...');
+        
+        // Method 1: Using channel with all events
+        const channel = supabase.channel('db-changes')
+            .on(
+                'postgres_changes',
+                {
+                    event: '*',
+                    schema: 'public',
+                    table: 'click_stats'
+                },
+                (payload) => {
+                    addDebugLog(`🔴 REALTIME EVENT: ${payload.eventType} on ${payload.table}`);
+                    addDebugLog(`   Data: ${JSON.stringify(payload.new).substring(0, 100)}`);
                     
-                    // Update UI
-                    const countSpan = document.getElementById(`count-${updatedLink.id}`);
-                    if (countSpan) {
-                        countSpan.textContent = formatNumber(updatedLink.click_count || 0);
-                        countSpan.style.animation = 'none';
-                        countSpan.offsetHeight; // Trigger reflow
-                        countSpan.style.backgroundColor = '#4CAF50';
-                        countSpan.style.color = 'white';
-                        setTimeout(() => {
+                    if (payload.eventType === 'UPDATE') {
+                        const updatedLink = payload.new;
+                        const index = allLinks.findIndex(l => l.id === updatedLink.id);
+                        
+                        if (index !== -1) {
+                            allLinks[index] = updatedLink;
+                            const countSpan = document.getElementById(`count-${updatedLink.id}`);
                             if (countSpan) {
-                                countSpan.style.backgroundColor = '';
-                                countSpan.style.color = '';
+                                const oldValue = countSpan.textContent;
+                                countSpan.textContent = updatedLink.click_count;
+                                addDebugLog(`📊 Count updated: ${oldValue} → ${updatedLink.click_count}`);
+                                
+                                // Visual feedback
+                                countSpan.style.transform = 'scale(1.2)';
+                                countSpan.style.backgroundColor = '#4CAF50';
+                                countSpan.style.color = 'white';
+                                setTimeout(() => {
+                                    countSpan.style.transform = 'scale(1)';
+                                    countSpan.style.backgroundColor = '';
+                                    countSpan.style.color = '';
+                                }, 500);
                             }
-                        }, 500);
+                        }
                     }
                 }
-            })
+            )
             .subscribe((status) => {
-                console.log('Realtime subscription status:', status);
+                addDebugLog(`📡 Realtime status: ${status}`);
                 const statusEl = document.getElementById('realtimeStatus');
                 if (statusEl) {
                     if (status === 'SUBSCRIBED') {
-                        statusEl.textContent = '🟢 Live';
-                        statusEl.style.backgroundColor = '#4CAF50';
+                        statusEl.textContent = '✅ Live';
+                        statusEl.className = 'realtime-status status-connected';
+                        addDebugLog('✅ Realtime is ACTIVE! Try clicking from another device/browser.');
+                    } else if (status === 'CONNECTING') {
+                        statusEl.textContent = '🔄 Connecting...';
+                        statusEl.className = 'realtime-status status-connecting';
                     } else {
-                        statusEl.textContent = '🟡 Connecting...';
-                        statusEl.style.backgroundColor = '#FF9800';
+                        statusEl.textContent = '❌ Disconnected';
+                        statusEl.className = 'realtime-status status-disconnected';
                     }
                 }
             });
@@ -430,17 +392,30 @@
         return channel;
     }
     
-    // ============================================
-    // INITIALIZE APP
-    // ============================================
+    // Test realtime manually
+    window.testRealtime = async function() {
+        addDebugLog('🧪 Testing realtime - updating Facebook count...');
+        const { data, error } = await supabase
+            .from('click_stats')
+            .update({ click_count: Math.floor(Math.random() * 100) })
+            .eq('platform', 'facebook')
+            .select();
+        
+        if (error) {
+            addDebugLog(`❌ Test failed: ${error.message}`);
+        } else {
+            addDebugLog(`✅ Test update sent! Check if realtime event appears above.`);
+        }
+    };
+    
     async function init() {
         await loadData();
         setupRealtime();
+        addDebugLog('🎉 App initialized. Type "testRealtime()" in console to test.');
     }
     
-    // Start the app
     init();
 </script>
 
 </body>
-</html> 
+</html>
