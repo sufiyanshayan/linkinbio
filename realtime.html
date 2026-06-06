@@ -1,363 +1,446 @@
 <!DOCTYPE html>
 <html lang="bn">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Your_Name | Link in Bio</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <title>Link in Bio | Smart Bio Links</title>
+    
+    <!-- Supabase JS -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
 
-<!-- Google Font -->
-<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+Bengali:wght@400;700&display=swap" rel="stylesheet">
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
 
-<!-- Supabase JS -->
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+        .container {
+            max-width: 500px;
+            margin: 0 auto;
+            animation: fadeIn 0.5s ease;
+        }
 
-<style>
-* {
-  box-sizing: border-box;
-}
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
 
-html, body {
-  margin: 0;
-  padding: 0;
-  min-height: 100%;
-  font-family: "Noto Serif Bengali", serif;
-  background: #f7f7f7;
-}
+        /* Profile Card */
+        .profile-card {
+            background: white;
+            border-radius: 30px;
+            padding: 30px 20px;
+            text-align: center;
+            margin-bottom: 20px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+        }
 
-.wrapper {
-  min-height: 100vh;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  flex-direction: column;
-  padding: 20px 0;
-}
+        .profile-img {
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 4px solid #667eea;
+            margin-bottom: 15px;
+        }
 
-.container {
-  width: 100%;
-  max-width: 400px;
-  padding: 16px;
-  text-align: center;
-}
+        .name {
+            font-size: 24px;
+            font-weight: bold;
+            color: #333;
+            margin-bottom: 5px;
+        }
 
-.profile img {
-  width: 100px;
-  height: 100px;
-  border-radius: 50%;
-  border: 2px solid #000;
-  object-fit: cover;
-  margin-bottom: 12px;
-  box-shadow: 0 0 0 4px #fff, 0 0 14px rgba(0,0,0,0.35);
-}
+        .title {
+            font-size: 14px;
+            color: #666;
+            margin-bottom: 15px;
+        }
 
-.name {
-  font-size: 18px;
-  font-weight: 700;
-  margin-bottom: 4px;
-}
+        /* Status Badge */
+        .status-badge {
+            display: inline-block;
+            background: #4CAF50;
+            color: white;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 11px;
+            margin-top: 10px;
+        }
 
-.title {
-  font-size: 12px;
-  color: #555;
-  margin-bottom: 14px;
-}
+        /* Links Container */
+        .links-container {
+            background: white;
+            border-radius: 30px;
+            padding: 20px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+        }
 
-.btn {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 8px;
-  padding: 10px;
-  margin: 8px 0;
-  border-radius: 12px;
-  text-decoration: none;
-  background: #ffffff;
-  color: #000;
-  font-size: 13px;
-  font-weight: 500;
-  box-shadow: 0 4px 12px rgba(0,0,0,0.08);
-  transition: all 0.2s ease;
-  cursor: pointer;
-  border: none;
-  width: 100%;
-}
+        /* Button Styles */
+        .bio-link {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            background: #f8f9fa;
+            padding: 12px 20px;
+            margin: 10px 0;
+            border-radius: 15px;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            border: 1px solid #e9ecef;
+        }
 
-.btn img {
-  width: 16px;
-  height: 16px;
-}
+        .bio-link:hover {
+            transform: translateX(5px);
+            background: #667eea;
+            border-color: #667eea;
+        }
 
-.btn:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 6px 18px rgba(0,0,0,0.12);
-}
+        .bio-link:hover .link-text {
+            color: white;
+        }
 
-.click-count {
-  font-size: 10px;
-  background: #e0e0e0;
-  border-radius: 20px;
-  padding: 2px 8px;
-  margin-left: 8px;
-}
+        .bio-link:hover .click-count {
+            background: white;
+            color: #667eea;
+        }
 
-.footer {
-  margin-top: 16px;
-  font-size: 12px;
-  color: #555;
-  text-align: center;
-}
-</style>
+        .link-left {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .link-icon {
+            width: 24px;
+            height: 24px;
+            object-fit: contain;
+        }
+
+        .link-text {
+            font-size: 15px;
+            font-weight: 500;
+            color: #333;
+            transition: color 0.3s ease;
+        }
+
+        .click-count {
+            background: #e9ecef;
+            padding: 4px 10px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+            color: #667eea;
+            transition: all 0.3s ease;
+        }
+
+        /* Footer */
+        .footer {
+            text-align: center;
+            margin-top: 20px;
+            color: white;
+            font-size: 12px;
+            opacity: 0.9;
+        }
+
+        /* Loading Animation */
+        .loading {
+            text-align: center;
+            padding: 40px;
+            color: white;
+        }
+
+        .spinner {
+            width: 40px;
+            height: 40px;
+            border: 3px solid rgba(255,255,255,0.3);
+            border-top-color: white;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 15px;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        /* No Data Message */
+        .no-data {
+            text-align: center;
+            padding: 40px;
+            color: #999;
+        }
+
+        /* Responsive */
+        @media (max-width: 480px) {
+            .container {
+                max-width: 100%;
+            }
+            
+            .bio-link {
+                padding: 10px 15px;
+            }
+            
+            .link-text {
+                font-size: 14px;
+            }
+        }
+    </style>
 </head>
-
 <body>
 
-<div class="wrapper">
-  <div class="container">
-    <div class="profile">
-      <img src="Your_Profile_Picture_Link" alt="Profile Picture" id="profileImg">
+<div class="container" id="app">
+    <div class="loading">
+        <div class="spinner"></div>
+        <div>Loading your links...</div>
     </div>
-
-    <div class="name" id="profileName">Your_Name</div>
-    <div class="title" id="profileTitle">Your_Title</div>
-
-    <!-- All buttons are hardcoded - always visible -->
-    <a class="btn" data-platform="facebook" href="https://www.facebook.com/your_username" target="_blank">
-      <img src="https://cdn.simpleicons.org/facebook/000000" alt="Facebook">
-      Facebook
-      <span class="click-count" id="count-facebook">0</span>
-    </a>
-
-    <a class="btn" data-platform="instagram" href="https://www.instagram.com/your_username" target="_blank">
-      <img src="https://cdn.simpleicons.org/instagram/000000" alt="Instagram">
-      Instagram
-      <span class="click-count" id="count-instagram">0</span>
-    </a>
-
-    <a class="btn" data-platform="whatsapp" href="https://wa.me/8801234567890" target="_blank">
-      <img src="https://cdn.simpleicons.org/whatsapp/000000" alt="WhatsApp">
-      WhatsApp
-      <span class="click-count" id="count-whatsapp">0</span>
-    </a>
-
-    <a class="btn" data-platform="tiktok" href="https://www.tiktok.com/@your_username" target="_blank">
-      <img src="https://cdn.simpleicons.org/tiktok/000000" alt="TikTok">
-      TikTok
-      <span class="click-count" id="count-tiktok">0</span>
-    </a>
-
-    <a class="btn" data-platform="telegram" href="https://t.me/your_username" target="_blank">
-      <img src="https://cdn.simpleicons.org/telegram/000000" alt="Telegram">
-      Telegram
-      <span class="click-count" id="count-telegram">0</span>
-    </a>
-
-    <a class="btn" data-platform="x" href="https://x.com/your_username" target="_blank">
-      <img src="https://cdn.simpleicons.org/x/000000" alt="Twitter X">
-      Twitter (X)
-      <span class="click-count" id="count-x">0</span>
-    </a>
-
-    <a class="btn" data-platform="phone" href="tel:01234567890">
-      <img src="https://cdn-icons-png.flaticon.com/512/597/597177.png" alt="Phone">
-      Call Me
-      <span class="click-count" id="count-phone">0</span>
-    </a>
-
-    <a class="btn" data-platform="about" href="#">
-      <img src="https://cdn.simpleicons.org/aboutdotme/000000" alt="About">
-      About Me
-      <span class="click-count" id="count-about">0</span>
-    </a>
-
-    <a class="btn" data-platform="website" href="#">
-      <img src="https://cdn-icons-png.flaticon.com/512/1006/1006771.png" alt="Website">
-      My Website
-      <span class="click-count" id="count-website">0</span>
-    </a>
-
-  </div>
-
-  <div class="footer" id="footerText">
-    Copyright © 2026 MADE BY <br> "Your_Name". <br> All Rights Reserved.
-  </div>
 </div>
 
 <script>
-// Supabase Configuration
-const SUPABASE_URL = 'https://gfahimzxyqwspkeqsvlg.supabase.co';
-const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImdmYWhpbXp4eXF3c3BrZXFzdmxnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODA0Njk5NDksImV4cCI6MjA5NjA0NTk0OX0.lkZ7wpWAKknxpMMDCsRG2OiPD2wOvwFejSozzLDe0Dc';
-
-const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-
-// Platform to ID mapping
-const platformToId = {
-  'facebook': 'count-facebook',
-  'instagram': 'count-instagram', 
-  'whatsapp': 'count-whatsapp',
-  'tiktok': 'count-tiktok',
-  'telegram': 'count-telegram',
-  'x': 'count-x',
-  'phone': 'count-phone',
-  'about': 'count-about',
-  'website': 'count-website'
-};
-
-// Load all click counts from Supabase
-async function loadClickCounts() {
-  try {
-    const { data, error } = await supabase
-      .from('click_counts')
-      .select('*');
+    // ============================================
+    // YOUR SUPABASE CONFIGURATION
+    // ============================================
+    const SUPABASE_URL = 'https://gfahimzxyqwspkeqsvlg.supabase.co';
+    const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImdmYWhpbXp4eXF3c3BrZXFzdmxnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODA0Njk5NDksImV4cCI6MjA5NjA0NTk0OX0.lkZ7wpWAKknxpMMDCsRG2OiPD2wOvwFejSozzLDe0Dc';
     
-    if (error) {
-      // Table might not exist, create it
-      if (error.code === '42P01') {
-        await createTable();
-        return;
-      }
-      console.error('Error loading counts:', error);
-      return;
-    }
+    const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
     
-    if (data) {
-      data.forEach(item => {
-        const elementId = platformToId[item.platform];
-        if (elementId) {
-          document.getElementById(elementId).innerText = item.click_count || 0;
-        }
-      });
-    }
-  } catch (error) {
-    console.error('Error:', error);
-  }
-}
-
-// Create table if not exists
-async function createTable() {
-  try {
-    // Create table using Supabase REST API
-    const { error } = await supabase.rpc('exec_sql', {
-      sql: `
-        CREATE TABLE IF NOT EXISTS click_counts (
-          id SERIAL PRIMARY KEY,
-          platform TEXT UNIQUE NOT NULL,
-          click_count INT DEFAULT 0,
-          updated_at TIMESTAMP DEFAULT NOW()
-        );
+    // Global variables
+    let allLinks = [];
+    let profileData = null;
+    
+    // ============================================
+    // RENDER PROFILE SECTION
+    // ============================================
+    function renderProfile() {
+        if (!profileData) return;
         
-        INSERT INTO click_counts (platform, click_count) VALUES
-        ('facebook', 0), ('instagram', 0), ('whatsapp', 0),
-        ('tiktok', 0), ('telegram', 0), ('x', 0),
-        ('phone', 0), ('about', 0), ('website', 0)
-        ON CONFLICT (platform) DO NOTHING;
-        
-        ALTER TABLE click_counts REPLICA IDENTITY FULL;
-      `
-    });
-    
-    if (error) console.error('Create table error:', error);
-    else loadClickCounts();
-    
-  } catch (error) {
-    console.error('Error creating table:', error);
-  }
-}
-
-// Update click count when button is clicked
-async function updateClickCount(platform) {
-  try {
-    // First get current count
-    const { data: currentData, error: fetchError } = await supabase
-      .from('click_counts')
-      .select('click_count')
-      .eq('platform', platform)
-      .single();
-    
-    if (fetchError && fetchError.code !== 'PGRST116') {
-      console.error('Error fetching current count:', fetchError);
-      return;
+        return `
+            <div class="profile-card">
+                <img class="profile-img" src="${profileData.profile_image || 'https://randomuser.me/api/portraits/men/1.jpg'}" alt="Profile">
+                <div class="name">${profileData.name || 'Your Name'}</div>
+                <div class="title">${profileData.title || 'Content Creator'}</div>
+                <div class="status-badge" id="realtimeStatus">🟢 Live</div>
+            </div>
+        `;
     }
     
-    const newCount = (currentData?.click_count || 0) + 1;
-    
-    // Update the count
-    const { error: updateError } = await supabase
-      .from('click_counts')
-      .upsert({ 
-        platform: platform, 
-        click_count: newCount,
-        updated_at: new Date()
-      }, { onConflict: 'platform' });
-    
-    if (updateError) {
-      console.error('Error updating count:', updateError);
-    }
-    
-  } catch (error) {
-    console.error('Error:', error);
-  }
-}
-
-// Setup realtime subscription
-function setupRealtime() {
-  const channel = supabase.channel('click-counts-changes')
-    .on('postgres_changes', 
-      { event: 'UPDATE', schema: 'public', table: 'click_counts' },
-      (payload) => {
-        console.log('Realtime update:', payload);
-        const elementId = platformToId[payload.new.platform];
-        if (elementId) {
-          document.getElementById(elementId).innerText = payload.new.click_count;
+    // ============================================
+    // RENDER LINKS SECTION
+    // ============================================
+    function renderLinks() {
+        if (!allLinks || allLinks.length === 0) {
+            return `
+                <div class="links-container">
+                    <div class="no-data">
+                        📭 No links found.<br>
+                        <small>Add links to click_stats table in Supabase</small>
+                    </div>
+                </div>
+            `;
         }
-      }
-    )
-    .subscribe();
-}
-
-// Add click listeners to all buttons
-function setupClickListeners() {
-  document.querySelectorAll('.btn').forEach(btn => {
-    const platform = btn.getAttribute('data-platform');
-    if (platform) {
-      btn.addEventListener('click', () => {
-        updateClickCount(platform);
-      });
+        
+        const activeLinks = allLinks.filter(link => link.is_active === true).sort((a, b) => a.order - b.order);
+        
+        let linksHtml = '<div class="links-container">';
+        
+        activeLinks.forEach(link => {
+            linksHtml += `
+                <a href="${link.button_url || '#'}" class="bio-link" target="_blank" data-id="${link.id}" data-platform="${link.platform}">
+                    <div class="link-left">
+                        <img class="link-icon" src="${link.button_icon || 'https://cdn.simpleicons.org/link'}" alt="${link.button_name}" onerror="this.src='https://cdn.simpleicons.org/link'">
+                        <span class="link-text">${link.button_name || link.platform}</span>
+                    </div>
+                    <span class="click-count" id="count-${link.id}">${formatNumber(link.click_count || 0)}</span>
+                </a>
+            `;
+        });
+        
+        linksHtml += '</div>';
+        return linksHtml;
     }
-  });
-}
-
-// Optional: Load profile from database (if you want dynamic profile)
-async function loadProfile() {
-  try {
-    const { data, error } = await supabase
-      .from('profile_settings')
-      .select('*')
-      .limit(1);
     
-    if (!error && data && data.length > 0) {
-      if (data[0].name) document.getElementById('profileName').innerText = data[0].name;
-      if (data[0].title) document.getElementById('profileTitle').innerText = data[0].title;
-      if (data[0].profile_image_url) document.getElementById('profileImg').src = data[0].profile_image_url;
-      if (data[0].footer_text) {
-        document.getElementById('footerText').innerHTML = `Copyright © 2026 MADE BY <br> "${data[0].name || 'Your_Name'}". <br> ${data[0].footer_text}`;
-      }
+    // Format large numbers
+    function formatNumber(num) {
+        if (num >= 1000000) return (num / 1000000).toFixed(1) + 'M';
+        if (num >= 1000) return (num / 1000).toFixed(1) + 'K';
+        return num.toString();
     }
-  } catch (error) {
-    console.error('Profile error:', error);
-  }
-}
-
-// Initialize everything
-async function init() {
-  await loadClickCounts();
-  setupRealtime();
-  setupClickListeners();
-  loadProfile(); // Optional - remove if not needed
-}
-
-// Start
-init();
+    
+    // ============================================
+    // UPDATE CLICK COUNT
+    // ============================================
+    async function updateClickCount(id) {
+        try {
+            const link = allLinks.find(l => l.id == id);
+            if (!link) return;
+            
+            const newCount = (link.click_count || 0) + 1;
+            
+            // Optimistic UI update
+            const countSpan = document.getElementById(`count-${id}`);
+            if (countSpan) {
+                countSpan.textContent = formatNumber(newCount);
+                countSpan.style.transform = 'scale(1.2)';
+                setTimeout(() => {
+                    if (countSpan) countSpan.style.transform = 'scale(1)';
+                }, 200);
+            }
+            
+            // Update database
+            const { error } = await supabase
+                .from('click_stats')
+                .update({ 
+                    click_count: newCount,
+                    updated_at: new Date()
+                })
+                .eq('id', id);
+            
+            if (error) {
+                console.error('Update error:', error);
+                // Revert on error
+                if (countSpan) countSpan.textContent = formatNumber(link.click_count || 0);
+            } else {
+                link.click_count = newCount;
+            }
+            
+        } catch (error) {
+            console.error('Error updating click:', error);
+        }
+    }
+    
+    // ============================================
+    // LOAD DATA FROM SUPABASE
+    // ============================================
+    async function loadData() {
+        try {
+            // Load profile
+            const { data: profile, error: profileError } = await supabase
+                .from('profile_info')
+                .select('*')
+                .limit(1)
+                .single();
+            
+            if (!profileError && profile) {
+                profileData = profile;
+            }
+            
+            // Load links
+            const { data: links, error: linksError } = await supabase
+                .from('click_stats')
+                .select('*')
+                .order('order', { ascending: true });
+            
+            if (linksError) throw linksError;
+            
+            allLinks = links || [];
+            
+            // Render everything
+            const appHtml = `
+                ${renderProfile()}
+                ${renderLinks()}
+                <div class="footer">
+                    ${profileData?.footer_text || '© 2024 All Rights Reserved'}
+                </div>
+            `;
+            
+            document.getElementById('app').innerHTML = appHtml;
+            
+            // Attach click handlers
+            document.querySelectorAll('.bio-link[data-id]').forEach(btn => {
+                btn.addEventListener('click', (e) => {
+                    const id = parseInt(btn.getAttribute('data-id'));
+                    updateClickCount(id);
+                });
+            });
+            
+        } catch (error) {
+            console.error('Error loading data:', error);
+            document.getElementById('app').innerHTML = `
+                <div class="loading">
+                    <div style="color: white;">❌ Error loading data</div>
+                    <small style="color: rgba(255,255,255,0.7);">${error.message}</small>
+                </div>
+            `;
+        }
+    }
+    
+    // ============================================
+    // SETUP REALTIME SUBSCRIPTION
+    // ============================================
+    function setupRealtime() {
+        console.log('Setting up realtime subscription...');
+        
+        // Subscribe to click_stats changes
+        const channel = supabase
+            .channel('click_stats_changes')
+            .on('postgres_changes', {
+                event: 'UPDATE',
+                schema: 'public',
+                table: 'click_stats'
+            }, (payload) => {
+                console.log('🔴 Realtime update received:', payload);
+                
+                const updatedLink = payload.new;
+                const index = allLinks.findIndex(l => l.id === updatedLink.id);
+                
+                if (index !== -1) {
+                    allLinks[index] = updatedLink;
+                    
+                    // Update UI
+                    const countSpan = document.getElementById(`count-${updatedLink.id}`);
+                    if (countSpan) {
+                        countSpan.textContent = formatNumber(updatedLink.click_count || 0);
+                        countSpan.style.animation = 'none';
+                        countSpan.offsetHeight; // Trigger reflow
+                        countSpan.style.backgroundColor = '#4CAF50';
+                        countSpan.style.color = 'white';
+                        setTimeout(() => {
+                            if (countSpan) {
+                                countSpan.style.backgroundColor = '';
+                                countSpan.style.color = '';
+                            }
+                        }, 500);
+                    }
+                }
+            })
+            .subscribe((status) => {
+                console.log('Realtime subscription status:', status);
+                const statusEl = document.getElementById('realtimeStatus');
+                if (statusEl) {
+                    if (status === 'SUBSCRIBED') {
+                        statusEl.textContent = '🟢 Live';
+                        statusEl.style.backgroundColor = '#4CAF50';
+                    } else {
+                        statusEl.textContent = '🟡 Connecting...';
+                        statusEl.style.backgroundColor = '#FF9800';
+                    }
+                }
+            });
+        
+        return channel;
+    }
+    
+    // ============================================
+    // INITIALIZE APP
+    // ============================================
+    async function init() {
+        await loadData();
+        setupRealtime();
+    }
+    
+    // Start the app
+    init();
 </script>
 
 </body>
-</html>
+</html> 
