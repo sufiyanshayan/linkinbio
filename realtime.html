@@ -8,9 +8,6 @@
 <!-- Google Font -->
 <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+Bengali:wght@400;700&display=swap" rel="stylesheet">
 
-<!-- Favicon -->
-<link rel="icon" type="image/png" href="Your_Favicon_Link">
-
 <!-- Supabase JS CDN -->
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
@@ -180,126 +177,142 @@ html, body {
 
 <script>
 // Supabase Configuration
-const SUPABASE_URL = 'https://gfahimzxyqwspkeqsvlg.supabase.co/';
+const SUPABASE_URL = 'https://gfahimzxyqwspkeqsvlg.supabase.co';
 const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImdmYWhpbXp4eXF3c3BrZXFzdmxnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODA0Njk5NDksImV4cCI6MjA5NjA0NTk0OX0.lkZ7wpWAKknxpMMDCsRG2OiPD2wOvwFejSozzLDe0Dc';
 
 // Initialize Supabase Client
 const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-// Table name: linkinbi0
+// Table name
 const TABLE_NAME = 'linkinbi0';
 
-// Function to update website data from Supabase
-async function loadAndRealtimeUpdate() {
-  try {
-    // প্রথমে existing ডাটা লোড করুন (id = 1 ধরে)
-    const { data, error } = await supabase
-      .from(TABLE_NAME)
-      .select('*')
-      .eq('id', 1)
-      .single();
-    
-    if (error) {
-      console.error('Error loading data:', error);
-      return;
-    }
-    
-    if (data) {
-      updateUI(data);
-    }
-    
-    // Realtime subscription - যেকোনো পরিবর্তন সাথে সাথে আপডেট হবে
-    supabase
-      .channel('linkinbi0_changes')
-      .on(
-        'postgres_changes',
-        {
-          event: '*',  // INSERT, UPDATE, DELETE সব ইভেন্ট ধরবে
-          schema: 'public',
-          table: TABLE_NAME,
-          filter: 'id=eq.1'  // শুধুমাত্র id=1 এই রো এর পরিবর্তন দেখবে
-        },
-        (payload) => {
-          console.log('Realtime update received:', payload);
-          if (payload.new) {
-            updateUI(payload.new);
-          }
+// ডাটা লোড করার ফাংশন (সরাসরি ID = 1 দিয়ে)
+async function loadData() {
+    try {
+        console.log('Loading data from Supabase...');
+        
+        const { data, error } = await supabase
+            .from(TABLE_NAME)
+            .select('*')
+            .eq('id', 1)
+            .single();
+        
+        if (error) {
+            console.error('Error:', error);
+            return;
         }
-      )
-      .subscribe();
-      
-  } catch (err) {
-    console.error('Supabase connection error:', err);
-  }
+        
+        if (data) {
+            console.log('Data loaded:', data);
+            updateUI(data);
+        }
+        
+    } catch(err) {
+        console.error('Connection error:', err);
+    }
 }
 
-// Function to update the UI elements
+// UI আপডেট ফাংশন (আপনার মূল এলিমেন্ট IDs অনুযায়ী)
 function updateUI(data) {
-  // Update profile image
-  if (data.profile_image) {
-    document.getElementById('profileImage').src = data.profile_image;
-  }
-  
-  // Update name
-  if (data.name) {
-    document.getElementById('nameText').textContent = data.name;
-  }
-  
-  // Update title
-  if (data.title) {
-    document.getElementById('titleText').textContent = data.title;
-  }
-  
-  // Update social links
-  if (data.facebook_url) {
-    document.getElementById('facebookLink').href = data.facebook_url;
-  }
-  
-  if (data.facebook_page_url) {
-    document.getElementById('facebookPageLink').href = data.facebook_page_url;
-  }
-  
-  if (data.instagram_url) {
-    document.getElementById('instagramLink').href = data.instagram_url;
-  }
-  
-  if (data.whatsapp_number) {
-    document.getElementById('whatsappLink').href = `https://wa.me/${data.whatsapp_number}`;
-  }
-  
-  if (data.tiktok_url) {
-    document.getElementById('tiktokLink').href = data.tiktok_url;
-  }
-  
-  if (data.telegram_url) {
-    document.getElementById('telegramLink').href = data.telegram_url;
-  }
-  
-  if (data.twitter_url) {
-    document.getElementById('twitterLink').href = data.twitter_url;
-  }
-  
-  if (data.phone_number) {
-    document.getElementById('phoneLink').href = `tel:${data.phone_number}`;
-  }
-  
-  if (data.about_url) {
-    document.getElementById('aboutLink').href = data.about_url;
-  }
-  
-  if (data.website_url) {
-    document.getElementById('websiteLink').href = data.website_url;
-  }
-  
-  // Update footer text if needed
-  if (data.footer_text) {
-    document.querySelector('.footer').innerHTML = data.footer_text;
-  }
+    // Profile Image
+    if (data.profile_image) {
+        document.getElementById('profileImage').src = data.profile_image;
+    }
+    
+    // Name
+    if (data.name) {
+        document.getElementById('nameText').textContent = data.name;
+    }
+    
+    // Title
+    if (data.title) {
+        document.getElementById('titleText').textContent = data.title;
+    }
+    
+    // Facebook
+    if (data.facebook_url) {
+        document.getElementById('facebookLink').href = data.facebook_url;
+    }
+    
+    // Facebook Page
+    if (data.facebook_page_url) {
+        document.getElementById('facebookPageLink').href = data.facebook_page_url;
+    }
+    
+    // Instagram
+    if (data.instagram_url) {
+        document.getElementById('instagramLink').href = data.instagram_url;
+    }
+    
+    // WhatsApp
+    if (data.whatsapp_number) {
+        let cleanNumber = data.whatsapp_number.replace(/[^0-9]/g, '');
+        document.getElementById('whatsappLink').href = `https://wa.me/${cleanNumber}`;
+    }
+    
+    // TikTok
+    if (data.tiktok_url) {
+        document.getElementById('tiktokLink').href = data.tiktok_url;
+    }
+    
+    // Telegram
+    if (data.telegram_url) {
+        document.getElementById('telegramLink').href = data.telegram_url;
+    }
+    
+    // Twitter
+    if (data.twitter_url) {
+        document.getElementById('twitterLink').href = data.twitter_url;
+    }
+    
+    // Phone
+    if (data.phone_number) {
+        let cleanPhone = data.phone_number.replace(/[^0-9]/g, '');
+        document.getElementById('phoneLink').href = `tel:${cleanPhone}`;
+    }
+    
+    // About URL
+    if (data.about_url) {
+        document.getElementById('aboutLink').href = data.about_url;
+    }
+    
+    // Website
+    if (data.website_url) {
+        document.getElementById('websiteLink').href = data.website_url;
+    }
+    
+    // Footer Text
+    if (data.footer_text) {
+        document.querySelector('.footer').innerHTML = data.footer_text;
+    }
 }
 
-// Start the application when page loads
+// Realtime subscription (লাইভ আপডেটের জন্য)
+function setupRealtime() {
+    const channel = supabase
+        .channel('linkinbi0_changes')
+        .on(
+            'postgres_changes',
+            {
+                event: 'UPDATE',
+                schema: 'public',
+                table: TABLE_NAME,
+                filter: 'id=eq.1'
+            },
+            (payload) => {
+                console.log('Realtime update:', payload);
+                if (payload.new) {
+                    updateUI(payload.new);
+                }
+            }
+        )
+        .subscribe();
+}
+
+// পেজ লোড হলে
 document.addEventListener('DOMContentLoaded', () => {
-  loadAndRealtimeUpdate();
+    loadData();
+    setupRealtime();
 });
 </script>
 
