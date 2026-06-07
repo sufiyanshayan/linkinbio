@@ -3,26 +3,26 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Your_Name</title>
+<title>Link In Bio</title>
 
 <!-- Google Font -->
 <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+Bengali:wght@400;700&display=swap" rel="stylesheet">
 
-<!-- Supabase JS CDN -->
+<!-- Supabase JS -->
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
 <style>
 * {
   box-sizing: border-box;
-}
-
-html, body {
   margin: 0;
   padding: 0;
-  height: 100%;
+}
+
+body {
   font-family: "Noto Serif Bengali", serif;
   background: #f7f7f7;
-  overflow-x: hidden;
+  min-height: 100vh;
+  padding: 20px;
 }
 
 .wrapper {
@@ -43,7 +43,6 @@ html, body {
   gap: 8px;
 }
 
-/* Profile Picture */
 .profile img {
   width: 100px;
   height: 100px;
@@ -54,21 +53,18 @@ html, body {
   box-shadow: 0 0 0 4px #fff, 0 0 14px rgba(0,0,0,0.35);
 }
 
-/* Name */
 .name {
   font-size: 18px;
   font-weight: 700;
   margin-bottom: 4px;
 }
 
-/* Title */
 .title {
   font-size: 12px;
   color: #555;
   margin-bottom: 14px;
 }
 
-/* Buttons */
 .btn {
   display: flex;
   align-items: center;
@@ -95,12 +91,27 @@ html, body {
   box-shadow: 0 6px 18px rgba(0,0,0,0.12);
 }
 
-/* Footer */
 .footer {
   margin-top: 16px;
   font-size: 12px;
   color: #555;
   text-align: center;
+}
+
+.loading {
+  text-align: center;
+  padding: 40px;
+  color: #666;
+}
+
+.error {
+  background: #ffebee;
+  color: #c62828;
+  padding: 12px;
+  border-radius: 12px;
+  margin-bottom: 16px;
+  text-align: center;
+  font-size: 12px;
 }
 </style>
 </head>
@@ -108,71 +119,60 @@ html, body {
 <body>
 
 <div class="wrapper">
-  <div class="container">
-
+  <div id="loadingMsg" class="loading">⏳ লোড হচ্ছে...</div>
+  
+  <div id="mainContent" class="container" style="display: none;">
     <div class="profile">
-      <img src="Your_Profile_Picture_Link" alt="Profile Picture" id="profileImage">
+      <img src="" alt="Profile Picture" id="profileImage">
     </div>
 
-    <div class="name" id="nameText">Your_Name</div>
-    <div class="title" id="titleText">Your_Title</div>
+    <div class="name" id="nameText"></div>
+    <div class="title" id="titleText"></div>
 
-    <a class="btn" href="https://www.facebook.com/your_username" target="_blank" rel="noopener noreferrer" id="facebookLink">
-      <img src="https://cdn.simpleicons.org/facebook/000000" alt="Facebook Logo">
-      Facebook
+    <a class="btn" href="#" target="_blank" rel="noopener noreferrer" id="facebookLink">
+      <img src="https://cdn.simpleicons.org/facebook/000000" alt="Facebook"> Facebook
     </a>
 
-    <a class="btn" href="https://www.facebook.com/your_username" target="_blank" rel="noopener noreferrer" id="facebookPageLink">
-      <img src="https://cdn.simpleicons.org/facebook/000000" alt="Facebook Logo">
-      Facebook Page
+    <a class="btn" href="#" target="_blank" rel="noopener noreferrer" id="facebookPageLink">
+      <img src="https://cdn.simpleicons.org/facebook/000000" alt="Facebook Page"> Facebook Page
     </a>
 
-    <a class="btn" href="https://www.instagram.com/your_username" target="_blank" rel="noopener noreferrer" id="instagramLink">
-      <img src="https://cdn.simpleicons.org/instagram/000000" alt="Instagram Logo">
-      Instagram
+    <a class="btn" href="#" target="_blank" rel="noopener noreferrer" id="instagramLink">
+      <img src="https://cdn.simpleicons.org/instagram/000000" alt="Instagram"> Instagram
     </a>
 
-    <a class="btn" href="https://wa.me/8801234567890" target="_blank" rel="noopener noreferrer" id="whatsappLink">
-      <img src="https://cdn.simpleicons.org/whatsapp/000000" alt="WhatsApp Logo">
-      WhatsApp
+    <a class="btn" href="#" target="_blank" rel="noopener noreferrer" id="whatsappLink">
+      <img src="https://cdn.simpleicons.org/whatsapp/000000" alt="WhatsApp"> WhatsApp
     </a>
 
-    <a class="btn" href="https://www.tiktok.com/@your_username" target="_blank" rel="noopener noreferrer" id="tiktokLink">
-      <img src="https://cdn.simpleicons.org/tiktok/000000" alt="TikTok Logo">
-      TikTok
+    <a class="btn" href="#" target="_blank" rel="noopener noreferrer" id="tiktokLink">
+      <img src="https://cdn.simpleicons.org/tiktok/000000" alt="TikTok"> TikTok
     </a>
 
-    <a class="btn" href="https://t.me/your_username" target="_blank" rel="noopener noreferrer" id="telegramLink">
-      <img src="https://cdn.simpleicons.org/telegram/000000" alt="Telegram Logo">
-      Telegram
+    <a class="btn" href="#" target="_blank" rel="noopener noreferrer" id="telegramLink">
+      <img src="https://cdn.simpleicons.org/telegram/000000" alt="Telegram"> Telegram
     </a>
 
-    <a class="btn" href="https://x.com/your_username" target="_blank" rel="noopener noreferrer" id="twitterLink">
-      <img src="https://cdn.simpleicons.org/x/000000" alt="Twitter (X) Logo">
-      Twitter (X)
+    <a class="btn" href="#" target="_blank" rel="noopener noreferrer" id="twitterLink">
+      <img src="https://cdn.simpleicons.org/x/000000" alt="Twitter"> Twitter (X)
     </a>
 
-    <a class="btn" href="tel:01234567890" id="phoneLink">
-      <img src="https://cdn-icons-png.flaticon.com/512/597/597177.png" alt="Phone Logo">
-      Call Me
+    <a class="btn" href="#" id="phoneLink">
+      <img src="https://cdn-icons-png.flaticon.com/512/597/597177.png" alt="Phone"> Call Me
     </a>
 
     <a class="btn" href="#" target="_blank" rel="noopener noreferrer" id="aboutLink">
-      <img src="https://cdn.simpleicons.org/aboutdotme/000000" alt="About Logo">
-      About Me
+      <img src="https://cdn.simpleicons.org/aboutdotme/000000" alt="About"> About Me
     </a>
 
     <a class="btn" href="#" target="_blank" rel="noopener noreferrer" id="websiteLink">
-      <img src="https://cdn-icons-png.flaticon.com/512/1006/1006771.png" alt="Website Logo">
-      My Website
+      <img src="https://cdn-icons-png.flaticon.com/512/1006/1006771.png" alt="Website"> My Website
     </a>
-
   </div>
 
-  <div class="footer">
-    Copyright © 2026 MADE BY <br> "Your_Name". <br> All Rights Reserved.
+  <div class="footer" id="footerText">
+    Copyright © 2026
   </div>
-
 </div>
 
 <script>
@@ -180,140 +180,91 @@ html, body {
 const SUPABASE_URL = 'https://gfahimzxyqwspkeqsvlg.supabase.co';
 const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImdmYWhpbXp4eXF3c3BrZXFzdmxnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODA0Njk5NDksImV4cCI6MjA5NjA0NTk0OX0.lkZ7wpWAKknxpMMDCsRG2OiPD2wOvwFejSozzLDe0Dc';
 
-// Initialize Supabase Client
 const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-// Table name
-const TABLE_NAME = 'linkinbi0';
+// আপনার টেবিলের নাম এখানে দিন
+const TABLE_NAME = 'linkinbi0';  // যদি linkinbio হয় তাহলে এটা পরিবর্তন করুন
 
-// ডাটা লোড করার ফাংশন (সরাসরি ID = 1 দিয়ে)
 async function loadData() {
     try {
-        console.log('Loading data from Supabase...');
-        
         const { data, error } = await supabase
             .from(TABLE_NAME)
             .select('*')
-            .eq('id', 1)
-            .single();
+            .limit(1);
         
         if (error) {
             console.error('Error:', error);
+            document.getElementById('loadingMsg').innerHTML = '<div class="error">❌ ডাটাবেস সংযোগে সমস্যা: ' + error.message + '</div>';
             return;
         }
         
-        if (data) {
-            console.log('Data loaded:', data);
-            updateUI(data);
+        if (!data || data.length === 0) {
+            document.getElementById('loadingMsg').innerHTML = '<div class="error">❌ কোনো ডাটা পাওয়া যায়নি। অ্যাডমিন প্যানেল থেকে ডাটা যোগ করুন।</div>';
+            return;
         }
         
-    } catch(err) {
+        // ডাটা পেয়েছি, UI দেখান
+        document.getElementById('loadingMsg').style.display = 'none';
+        document.getElementById('mainContent').style.display = 'flex';
+        
+        const info = data[0];
+        
+        // প্রোফাইল ইমেজ
+        if (info.profile_image) document.getElementById('profileImage').src = info.profile_image;
+        
+        // নাম
+        if (info.name) document.getElementById('nameText').innerHTML = info.name;
+        
+        // টাইটেল
+        if (info.title) document.getElementById('titleText').innerHTML = info.title;
+        
+        // ফেসবুক
+        if (info.facebook_url) document.getElementById('facebookLink').href = info.facebook_url;
+        
+        // ফেসবুক পেজ
+        if (info.facebook_page_url) document.getElementById('facebookPageLink').href = info.facebook_page_url;
+        
+        // ইনস্টাগ্রাম
+        if (info.instagram_url) document.getElementById('instagramLink').href = info.instagram_url;
+        
+        // হোয়াটসঅ্যাপ
+        if (info.whatsapp_number) {
+            let wa = info.whatsapp_number.replace(/[^0-9]/g, '');
+            document.getElementById('whatsappLink').href = 'https://wa.me/' + wa;
+        }
+        
+        // টিকটক
+        if (info.tiktok_url) document.getElementById('tiktokLink').href = info.tiktok_url;
+        
+        // টেলিগ্রাম
+        if (info.telegram_url) document.getElementById('telegramLink').href = info.telegram_url;
+        
+        // টুইটার
+        if (info.twitter_url) document.getElementById('twitterLink').href = info.twitter_url;
+        
+        // ফোন
+        if (info.phone_number) {
+            let ph = info.phone_number.replace(/[^0-9]/g, '');
+            document.getElementById('phoneLink').href = 'tel:' + ph;
+        }
+        
+        // এবাউট
+        if (info.about_url) document.getElementById('aboutLink').href = info.about_url;
+        
+        // ওয়েবসাইট
+        if (info.website_url) document.getElementById('websiteLink').href = info.website_url;
+        
+        // ফুটার
+        if (info.footer_text) document.getElementById('footerText').innerHTML = info.footer_text;
+        
+    } catch (err) {
         console.error('Connection error:', err);
+        document.getElementById('loadingMsg').innerHTML = '<div class="error">❌ সংযোগ error: ' + err.message + '</div>';
     }
 }
 
-// UI আপডেট ফাংশন (আপনার মূল এলিমেন্ট IDs অনুযায়ী)
-function updateUI(data) {
-    // Profile Image
-    if (data.profile_image) {
-        document.getElementById('profileImage').src = data.profile_image;
-    }
-    
-    // Name
-    if (data.name) {
-        document.getElementById('nameText').textContent = data.name;
-    }
-    
-    // Title
-    if (data.title) {
-        document.getElementById('titleText').textContent = data.title;
-    }
-    
-    // Facebook
-    if (data.facebook_url) {
-        document.getElementById('facebookLink').href = data.facebook_url;
-    }
-    
-    // Facebook Page
-    if (data.facebook_page_url) {
-        document.getElementById('facebookPageLink').href = data.facebook_page_url;
-    }
-    
-    // Instagram
-    if (data.instagram_url) {
-        document.getElementById('instagramLink').href = data.instagram_url;
-    }
-    
-    // WhatsApp
-    if (data.whatsapp_number) {
-        let cleanNumber = data.whatsapp_number.replace(/[^0-9]/g, '');
-        document.getElementById('whatsappLink').href = `https://wa.me/${cleanNumber}`;
-    }
-    
-    // TikTok
-    if (data.tiktok_url) {
-        document.getElementById('tiktokLink').href = data.tiktok_url;
-    }
-    
-    // Telegram
-    if (data.telegram_url) {
-        document.getElementById('telegramLink').href = data.telegram_url;
-    }
-    
-    // Twitter
-    if (data.twitter_url) {
-        document.getElementById('twitterLink').href = data.twitter_url;
-    }
-    
-    // Phone
-    if (data.phone_number) {
-        let cleanPhone = data.phone_number.replace(/[^0-9]/g, '');
-        document.getElementById('phoneLink').href = `tel:${cleanPhone}`;
-    }
-    
-    // About URL
-    if (data.about_url) {
-        document.getElementById('aboutLink').href = data.about_url;
-    }
-    
-    // Website
-    if (data.website_url) {
-        document.getElementById('websiteLink').href = data.website_url;
-    }
-    
-    // Footer Text
-    if (data.footer_text) {
-        document.querySelector('.footer').innerHTML = data.footer_text;
-    }
-}
-
-// Realtime subscription (লাইভ আপডেটের জন্য)
-function setupRealtime() {
-    const channel = supabase
-        .channel('linkinbi0_changes')
-        .on(
-            'postgres_changes',
-            {
-                event: 'UPDATE',
-                schema: 'public',
-                table: TABLE_NAME,
-                filter: 'id=eq.1'
-            },
-            (payload) => {
-                console.log('Realtime update:', payload);
-                if (payload.new) {
-                    updateUI(payload.new);
-                }
-            }
-        )
-        .subscribe();
-}
-
-// পেজ লোড হলে
-document.addEventListener('DOMContentLoaded', () => {
-    loadData();
-    setupRealtime();
-});
+// পেজ লোড হলে ডাটা লোড করুন
+document.addEventListener('DOMContentLoaded', loadData);
 </script>
 
 </body>
